@@ -45,7 +45,7 @@
 
                         level = new Level(levelReader.levelWidth, levelReader.levelHeight);
 
-                        level.gameType = this.config.gametype;
+                        level.gameID = this.config.gameID;
                         level.levelIndex = levelIndex;
                         level.levelMode = levelMode;
 

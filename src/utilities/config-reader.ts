@@ -23,17 +23,17 @@
         }
 
 
-        /** return the game config for a given GameType */
-        public getConfig(gameType : GameTypes) : Promise<GameConfig> {
+        /** return the game config for a given GameId */
+        public getConfig(GameId : number) : Promise<GameConfig> {
 
             return new Promise<GameConfig>((resolve, reject)=> {
 
                 this.configs.then((configs:GameConfig[]) => {
 
-                    let config:GameConfig = configs.find((type) => type.gametype == gameType)
+                    let config:GameConfig = configs.find((type) => type.gameID == GameId)
 
                     if (config == null) {
-                        this.log.log("config for GameTypes:"+ GameTypes.toString(gameType) +" not found!");
+                        this.log.log("config for GameID:"+ GameId +" not found!");
                         reject();
                         return;
                     }
@@ -67,7 +67,7 @@
 
                 newConfig.name = configData["name"];
                 newConfig.path = configData["path"];
-                newConfig.gametype = GameTypes.fromString(configData["gametype"]);
+                newConfig.gameID =  parseInt (configData["ID"]);
 
                 /// read level config
                 if (configData["level.useoddtable"] != null){

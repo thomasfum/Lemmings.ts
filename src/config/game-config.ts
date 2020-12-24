@@ -6,8 +6,8 @@ module Lemmings {
         public name: string = "";
         /** Path/Url to the resources */
         public path: string = "";
-        /** unique GameType Name */
-        public gametype: GameTypes = GameTypes.UNKNOWN;
+        /** unique Game ID */
+        public gameID: number=-1;
 
         public audioConfig:AudioConfig = new AudioConfig();
 

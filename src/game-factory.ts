@@ -15,28 +15,28 @@ module Lemmings {
 
 
         /** return a game object to controle/run the game */
-        public getGame(gameType : GameTypes) : Promise<Game> {
+        public getGame(gameTypeId : number) : Promise<Game> {
 
             return new Promise<Game>((resolve, reject)=> {
 
                 /// load resources
-                this.getGameResources(gameType)
+                this.getGameResources(gameTypeId)
                     .then(res => resolve(new Game(res)));
             });
 
         }
        
         /** return the config of a game type */
-        public getConfig(gameType : GameTypes) : Promise<GameConfig> {
-            return this.configReader.getConfig(gameType);
+        public getConfig(gameTypeId : number) : Promise<GameConfig> {
+            return this.configReader.getConfig(gameTypeId);
         }
 
         /** return a Game Resources that gaves access to images, maps, sounds  */
-        public getGameResources(gameType : GameTypes) : Promise<GameResources> {
+        public getGameResources(gameTypeId : number) : Promise<GameResources> {
 
             return new Promise<GameResources>((resolve, reject)=> {
 
-                this.configReader.getConfig(gameType).then(config => {
+                this.configReader.getConfig(gameTypeId).then(config => {
 
                     if (config == null) {
                         reject();

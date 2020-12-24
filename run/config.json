@@ -2,7 +2,7 @@
   {
     "name" : "lemmings",
     "path" : "lemmings",
-    "gametype" : "LEMMINGS",
+    "ID":0,
 
     "audio.version" : 1,
     "audio.adlibChannelConfigPosition" : 1452,
@@ -28,7 +28,7 @@
   {
     "name" : "Oh No",
     "path" : "lemmings_ohNo",
-    "gametype" : "OHNO",
+    "ID":1,
 
     "audio.version" : 2,
     "audio.adlibChannelConfigPosition" : 1334,
@@ -55,7 +55,7 @@
   {
     "name" : "Xmas Lemmings 1991",
     "path" : "lemmings_X-Mas91",
-    "gametype" : "XMAS91",
+    "ID":2,
 
     "audio.version" : 2,
     "audio.adlibChannelConfigPosition" : 1332,
@@ -79,7 +79,7 @@
  {
     "name" : "Xmas Lemmings 1992",
     "path" : "lemmings_X-Mas92",
-    "gametype" : "XMAS92",
+    "ID":3,
 
     "audio.version" : 2,
     "audio.adlibChannelConfigPosition" : 1332,
@@ -103,7 +103,7 @@
   {
     "name" : "Holiday Lemmings 1993",
     "path" : "lemmings_Holiday93",
-    "gametype" : "HOLIDAY93",
+    "ID":4,
 
     "audio.version" : 2,
     "audio.adlibChannelConfigPosition" : 1332,
@@ -127,7 +127,7 @@
   {
     "name" : "Holiday Lemmings 1994",
     "path" : "lemmings_Holiday94",
-    "gametype" : "HOLIDAY94",
+    "ID":5,
 
     "audio.version" : 2,
     "audio.adlibChannelConfigPosition" : 1334,
@@ -154,7 +154,7 @@
   {
     "name" : "Gar",
     "path" : "gar",
-    "gametype" : "GAR",
+    "ID":6,
 
     "audio.version" : 2,
     "audio.adlibChannelConfigPosition" : 1334,
@@ -181,7 +181,7 @@
   {
     "name" : "Conway",
     "path" : "conway",
-    "gametype" : "CONWAY",
+    "ID":7,
 
     "audio.version" : 2,
     "audio.adlibChannelConfigPosition" : 1334,

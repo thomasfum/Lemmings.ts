@@ -18,7 +18,7 @@ module Lemmings {
         public triggers: Trigger[] = [];
 
 
-        public gameType: GameTypes;
+        public gameID: number;
         public levelMode: number;
         public levelIndex: number;
 

@@ -9,21 +9,21 @@ var Lemmings;
             this.configReader = new Lemmings.ConfigReader(configFileReader);
         }
         /** return a game object to controle/run the game */
-        getGame(gameType) {
+        getGame(gameTypeId) {
             return new Promise((resolve, reject) => {
                 /// load resources
-                this.getGameResources(gameType)
+                this.getGameResources(gameTypeId)
                     .then(res => resolve(new Lemmings.Game(res)));
             });
         }
         /** return the config of a game type */
-        getConfig(gameType) {
-            return this.configReader.getConfig(gameType);
+        getConfig(gameTypeId) {
+            return this.configReader.getConfig(gameTypeId);
         }
         /** return a Game Resources that gaves access to images, maps, sounds  */
-        getGameResources(gameType) {
+        getGameResources(gameTypeId) {
             return new Promise((resolve, reject) => {
-                this.configReader.getConfig(gameType).then(config => {
+                this.configReader.getConfig(gameTypeId).then(config => {
                     if (config == null) {
                         reject();
                         return;
@@ -206,46 +206,6 @@ var Lemmings;
         }
         GameStateTypes.fromString = fromString;
     })(GameStateTypes = Lemmings.GameStateTypes || (Lemmings.GameStateTypes = {}));
-})(Lemmings || (Lemmings = {}));
-var Lemmings;
-(function (Lemmings) {
-    let GameTypes;
-    (function (GameTypes) {
-        GameTypes[GameTypes["UNKNOWN"] = 0] = "UNKNOWN";
-        GameTypes[GameTypes["LEMMINGS"] = 1] = "LEMMINGS";
-        GameTypes[GameTypes["OHNO"] = 2] = "OHNO";
-        GameTypes[GameTypes["XMAS91"] = 3] = "XMAS91";
-        GameTypes[GameTypes["XMAS92"] = 4] = "XMAS92";
-        GameTypes[GameTypes["HOLIDAY93"] = 5] = "HOLIDAY93";
-        GameTypes[GameTypes["HOLIDAY94"] = 6] = "HOLIDAY94";
-        GameTypes[GameTypes["GAR"] = 7] = "GAR";
-        GameTypes[GameTypes["CONWAY"] = 8] = "CONWAY";
-    })(GameTypes = Lemmings.GameTypes || (Lemmings.GameTypes = {}));
-    ;
-    (function (GameTypes) {
-        function toString(type) {
-            return GameTypes[type];
-        }
-        GameTypes.toString = toString;
-        function length() {
-            return 9;
-        }
-        GameTypes.length = length;
-        function isValid(type) {
-            return ((type > GameTypes.UNKNOWN) && (type < this.lenght()));
-        }
-        GameTypes.isValid = isValid;
-        /** return the GameTypes with the given name */
-        function fromString(typeName) {
-            typeName = typeName.trim().toUpperCase();
-            for (let i = 0; i < this.length(); i++) {
-                if (GameTypes[i] == typeName)
-                    return i;
-            }
-            return GameTypes.UNKNOWN;
-        }
-        GameTypes.fromString = fromString;
-    })(GameTypes = Lemmings.GameTypes || (Lemmings.GameTypes = {}));
 })(Lemmings || (Lemmings = {}));
 var Lemmings;
 (function (Lemmings) {
@@ -446,8 +406,8 @@ var Lemmings;
             this.name = "";
             /** Path/Url to the resources */
             this.path = "";
-            /** unique GameType Name */
-            this.gametype = Lemmings.GameTypes.UNKNOWN;
+            /** unique Game ID */
+            this.gameID = -1;
             this.audioConfig = new Lemmings.AudioConfig();
             this.level = new Lemmings.LevelConfig();
         }
@@ -2624,7 +2584,7 @@ var Lemmings;
                     let levelsContainer = new Lemmings.FileContainer(files[0]);
                     levelReader = new Lemmings.LevelReader(levelsContainer.getPart(levelInfo.partIndex));
                     level = new Lemmings.Level(levelReader.levelWidth, levelReader.levelHeight);
-                    level.gameType = this.config.gametype;
+                    level.gameID = this.config.gameID;
                     level.levelIndex = levelIndex;
                     level.levelMode = levelMode;
                     level.screenPositionX = levelReader.screenPositionX;
@@ -7846,13 +7806,13 @@ var Lemmings;
                 });
             });
         }
-        /** return the game config for a given GameType */
-        getConfig(gameType) {
+        /** return the game config for a given GameId */
+        getConfig(GameId) {
             return new Promise((resolve, reject) => {
                 this.configs.then((configs) => {
-                    let config = configs.find((type) => type.gametype == gameType);
+                    let config = configs.find((type) => type.gameID == GameId);
                     if (config == null) {
-                        this.log.log("config for GameTypes:" + Lemmings.GameTypes.toString(gameType) + " not found!");
+                        this.log.log("config for GameID:" + GameId + " not found!");
                         reject();
                         return;
                     }
@@ -7876,7 +7836,7 @@ var Lemmings;
                 let configData = config[c];
                 newConfig.name = configData["name"];
                 newConfig.path = configData["path"];
-                newConfig.gametype = Lemmings.GameTypes.fromString(configData["gametype"]);
+                newConfig.gameID = parseInt(configData["ID"]);
                 /// read level config
                 if (configData["level.useoddtable"] != null) {
                     newConfig.level.useOddTable = (!!configData["level.useoddtable"]);
@@ -8012,8 +7972,8 @@ var Lemmings;
             let hashParts = window.location.hash.substr(1).split(",", 3).reverse();
             this.levelIndex = this.strToNum(hashParts[0]);
             this.levelGroupIndex = this.strToNum(hashParts[1]);
-            this.gameType = this.strToNum(hashParts[2]) + 1;
-            this.log.log("my selected level: " + Lemmings.GameTypes.toString(this.gameType) + " : " + this.levelIndex + " / " + this.levelGroupIndex);
+            this.gameID = this.strToNum(hashParts[2]);
+            this.log.log("selected level: " + this.gameID + " : " + this.levelIndex + " / " + this.levelGroupIndex);
         }
         set gameCanvas(el) {
             this.stage = new Lemmings.Stage(el);
@@ -8028,7 +7988,7 @@ var Lemmings;
                 return;
             }
             /// create new game
-            this.gameFactory.getGame(this.gameType)
+            this.gameFactory.getGame(this.gameID)
                 .then(game => game.loadLevel(this.levelGroupIndex, this.levelIndex))
                 .then(game => {
                 if (replayString != null) {
@@ -8148,7 +8108,7 @@ var Lemmings;
                 moveInterval = 0;
             this.levelIndex = (this.levelIndex + moveInterval) | 0;
             /// check if the levelIndex is out of bounds
-            this.gameFactory.getConfig(this.gameType).then((config) => {
+            this.gameFactory.getConfig(this.gameID).then((config) => {
                 /// jump to next level group?
                 if (this.levelIndex >= config.level.getGroupLength(this.levelGroupIndex)) {
                     this.levelGroupIndex++;
@@ -8166,7 +8126,7 @@ var Lemmings;
         }
         /** return the url hash for the pressent game/group/level-index */
         buildLevelIndexHash() {
-            return (this.gameType - 1) + "," + this.levelGroupIndex + "," + this.levelIndex;
+            return this.gameID + "," + this.levelGroupIndex + "," + this.levelIndex;
         }
         /** convert a string to a number */
         strToNum(str) {
@@ -8201,12 +8161,11 @@ var Lemmings;
             this.levelGroupIndex = newLevelGroupIndex;
             this.loadLevel();
         }
-        /** select a game type */
-        selectGameType(gameTypeName) {
-            if (gameTypeName == null)
-                gameTypeName = "LEMMINGS";
-            this.gameType = Lemmings.GameTypes.fromString(gameTypeName);
-            this.gameFactory.getGameResources(this.gameType)
+        selectGameType(gameTypeId) {
+            if (gameTypeId == null)
+                gameTypeId = 0;
+            this.gameID = gameTypeId;
+            this.gameFactory.getGameResources(this.gameID)
                 .then((newGameResources) => {
                 this.gameResources = newGameResources;
                 this.arrayToSelect(this.elementSelectLevelGroup, this.gameResources.getLevelGroups());

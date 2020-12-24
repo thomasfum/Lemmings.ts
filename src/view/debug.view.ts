@@ -5,7 +5,7 @@ module Lemmings {
 
         private levelIndex: number = 0;
         private levelGroupIndex: number = 0;
-        private gameType: GameTypes;
+        private gameID: number;
         private musicIndex: number = 0;
         private soundIndex: number = 0;
         private gameResources: GameResources = null;
@@ -33,9 +33,9 @@ module Lemmings {
       
             this.levelIndex = this.strToNum(hashParts[0]);
             this.levelGroupIndex = this.strToNum(hashParts[1]);
-            this.gameType = this.strToNum(hashParts[2]) + 1;
-
-            this.log.log("my selected level: "+ GameTypes.toString(this.gameType) +" : "+ this.levelIndex + " / "+ this.levelGroupIndex);
+            this.gameID= this.strToNum(hashParts[2]) ;
+            
+            this.log.log("selected level: "+this.gameID +" : "+ this.levelIndex + " / "+ this.levelGroupIndex);
         }
 
   
@@ -55,7 +55,7 @@ module Lemmings {
             }
 
             /// create new game
-            this.gameFactory.getGame(this.gameType)
+            this.gameFactory.getGame(this.gameID)
                 .then(game => game.loadLevel(this.levelGroupIndex, this.levelIndex))
                 .then(game => {
 
@@ -216,7 +216,7 @@ module Lemmings {
             this.levelIndex = (this.levelIndex + moveInterval)| 0;
 
             /// check if the levelIndex is out of bounds
-            this.gameFactory.getConfig(this.gameType).then((config) => {
+            this.gameFactory.getConfig(this.gameID).then((config) => {
 
                 /// jump to next level group?
                 if (this.levelIndex >= config.level.getGroupLength(this.levelGroupIndex)) {
@@ -239,7 +239,7 @@ module Lemmings {
 
         /** return the url hash for the pressent game/group/level-index */
         private buildLevelIndexHash() : string {
-            return (this.gameType - 1) +","+ this.levelGroupIndex +","+ this.levelIndex;
+            return this.gameID +","+ this.levelGroupIndex +","+ this.levelIndex;
         }
 
         /** convert a string to a number */
@@ -286,24 +286,23 @@ module Lemmings {
         }
 
 
-        /** select a game type */
-        public selectGameType(gameTypeName: string) {
+       public selectGameType(gameTypeId: number) {
 
-            if (gameTypeName == null) gameTypeName = "LEMMINGS";
+        if (gameTypeId == null) gameTypeId = 0;
 
-            this.gameType = Lemmings.GameTypes.fromString(gameTypeName);
+        this.gameID = gameTypeId;
 
-            this.gameFactory.getGameResources(this.gameType)
-                .then((newGameResources) => {
+            this.gameFactory.getGameResources(this.gameID)
+            .then((newGameResources) => {
 
-                    this.gameResources = newGameResources;
+                this.gameResources = newGameResources;
 
-                    this.arrayToSelect(this.elementSelectLevelGroup, this.gameResources.getLevelGroups());
-                    this.levelGroupIndex = 0;
+                this.arrayToSelect(this.elementSelectLevelGroup, this.gameResources.getLevelGroups());
+                this.levelGroupIndex = 0;
 
-                    this.loadLevel();
-                });
-        }
+                this.loadLevel();
+            });
+    }
 
 
         /** load a level and render it to the display */
