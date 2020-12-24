@@ -7,7 +7,9 @@ module Lemmings {
     XMAS91,
     XMAS92,
     HOLIDAY93,
-    HOLIDAY94
+    HOLIDAY94,
+    GAR,
+    CONWAY
   };
 
   export module GameTypes {
@@ -16,7 +18,7 @@ module Lemmings {
     }
 
     export function length() {
-      return 7;
+      return 9;
     } 
 
     export function isValid(type: GameTypes) : boolean {
@@ -29,7 +31,8 @@ module Lemmings {
       typeName = typeName.trim().toUpperCase();
 
       for(let i=0; i<this.length(); i++) {
-        if (GameTypes[i] == typeName) return i;
+        if (GameTypes[i] == typeName) 
+          return i;
       }
 
       return GameTypes.UNKNOWN;

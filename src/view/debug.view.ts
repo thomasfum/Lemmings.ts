@@ -35,7 +35,7 @@ module Lemmings {
             this.levelGroupIndex = this.strToNum(hashParts[1]);
             this.gameType = this.strToNum(hashParts[2]) + 1;
 
-            this.log.log("selected level: "+ GameTypes.toString(this.gameType) +" : "+ this.levelIndex + " / "+ this.levelGroupIndex);
+            this.log.log("my selected level: "+ GameTypes.toString(this.gameType) +" : "+ this.levelIndex + " / "+ this.levelGroupIndex);
         }
 
   
