@@ -104,11 +104,13 @@ module Lemmings {
 
 
         private handelOnZoom():void {
+            /*
             this.controller.onZoom.on((e) => {
                 let stageImage = this.getStageImageAt(e.x, e.y);
                 if (stageImage == null) return;
                 this.updateViewPoint(stageImage, 0, 0, e.deltaZoom);
             });
+            */
         }
 
 
@@ -143,15 +145,14 @@ module Lemmings {
         
             let stageHeight = ctx.canvas.height;
             let stageWidth = ctx.canvas.width;
-
+         
             this.gameImgProps.y = 0;
-            this.gameImgProps.height = stageHeight - 100;
+            this.gameImgProps.height = stageHeight - 80;
             this.gameImgProps.width = stageWidth;
 
-            this.guiImgProps.y = stageHeight - 100;
-            this.guiImgProps.height = 100;
+            this.guiImgProps.y = stageHeight - 80;
+            this.guiImgProps.height = 80;
             this.guiImgProps.width = stageWidth;
-            
         }
 
         public getStageImageAt(x: number, y:number):StageImageProperties {
