@@ -1,8 +1,13 @@
 # Lemmings.ts
-A Web Lemmings Clone/Remake in TypeScript - 🎉 Yes it's 100% JavaScript 🎉
+A Web Lemmings Clone/Remake in TypeScript 
+Forked from tomsoftware/Lemmings.ts
+
+The goal is to finish it and extand it to custom levels like the ones present here:
+<a href="http://www.garjen.co.uk/Lemmings.php/">[Custom levels]</a>
+
 
 <p style="text-align:center" align="center">
-<a href="http://lemmings.hmilch.net/">[play the game]</a>
+<a href="http://lemmings.hmilch.net/">[Play the tomsoftware game]</a>
 </p>
 
 ## Feature
