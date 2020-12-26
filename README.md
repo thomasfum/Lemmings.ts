@@ -7,6 +7,7 @@ The goal is to finish it and extand it to custom levels like the ones present he
 
 
 <p style="text-align:center" align="center">
+<a href="http://tfumey.free.fr/lem/lemmings.html">[Play the game]</a>
 <a href="http://lemmings.hmilch.net/">[Play the tomsoftware game]</a>
 </p>
 
@@ -26,7 +27,7 @@ The goal is to finish it and extand it to custom levels like the ones present he
 * touch support
 
 ## How to run
-* download the *Lemmings.ts.zip* from ![releases](https://github.com/tomsoftware/Lemmings.ts/releases)
+* download the *Lemmings.ts.zip* from ![releases](https://github.com/thomasfum/Lemmings.ts/releases)
 * copy the original *Lemmings*, *OhNo* and *Holiday* binaries into the directory **run/{version}/**
 * start *lemmings.html*
 

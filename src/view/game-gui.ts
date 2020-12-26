@@ -15,7 +15,8 @@ module Lemmings {
             private skillPanelSprites: SkillPanelSprites,
             private skills: GameSkills,
             private gameTimer: GameTimer,
-            private gameVictoryCondition: GameVictoryCondition) {
+            private gameVictoryCondition: GameVictoryCondition,
+            private roundMaskLayer: SolidLayer ) {
 
             gameTimer.onGameTick.on(() => {
                 this.gameTimeChanged = true;
@@ -173,6 +174,9 @@ module Lemmings {
                 this.drawSelection(dispaly, this.getPanelIndexBySkill(this.skills.getSelectedSkill()));
             }
 
+            ///////
+            //
+            dispaly.drawFrame(this.roundMaskLayer.getMiniMap(),210,19);//TODO: check if correct
         }
 
         /** left pad a string with spaces */

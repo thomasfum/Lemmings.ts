@@ -97,7 +97,7 @@ module Lemmings {
                     })
                     .then(skillPanelSprites => {
                         /// setup gui
-                        this.gameGui = new GameGui(this, skillPanelSprites, this.skills, this.gameTimer, this.gameVictoryCondition);
+                        this.gameGui = new GameGui(this, skillPanelSprites, this.skills, this.gameTimer, this.gameVictoryCondition,this.level.getGroundMaskLayer());
 
                         if (this.guiDispaly != null) {
                             this.gameGui.setGuiDisplay(this.guiDispaly);

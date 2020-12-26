@@ -269,7 +269,7 @@ var Lemmings;
                 })
                     .then(skillPanelSprites => {
                     /// setup gui
-                    this.gameGui = new Lemmings.GameGui(this, skillPanelSprites, this.skills, this.gameTimer, this.gameVictoryCondition);
+                    this.gameGui = new Lemmings.GameGui(this, skillPanelSprites, this.skills, this.gameTimer, this.gameVictoryCondition, this.level.getGroundMaskLayer());
                     if (this.guiDispaly != null) {
                         this.gameGui.setGuiDisplay(this.guiDispaly);
                     }
@@ -3016,6 +3016,24 @@ var Lemmings;
         setGroundAt(x, y) {
             let index = x + y * this.width;
             this.groundMask[index] = 1;
+        }
+        getMiniMap() {
+            let f;
+            f = new Lemmings.Frame(480, 80); //TODO: TBD
+            let stepx = 16;
+            let stepy = 9;
+            //TODO: average pixels.... is probably better
+            for (let x = 0; x < this.width; x = x + stepx) {
+                for (let y = 0; y < this.height; y = y + stepy) {
+                    let index = x + y * this.width;
+                    let c = this.groundMask[index];
+                    if (c != 0)
+                        f.setPixel(x / stepx, y / stepy, Lemmings.ColorPalette.colorFromRGB(255, 255, 125)); //TODO: To be checked.
+                    else
+                        f.setPixel(x / stepx, y / stepy, Lemmings.ColorPalette.colorFromRGB(0, 0, 0));
+                }
+            }
+            return f;
         }
     }
     Lemmings.SolidLayer = SolidLayer;
@@ -8499,12 +8517,13 @@ var Lemmings;
 (function (Lemmings) {
     /** handles the in-game-gui. e.g. the panel on the bottom of the game */
     class GameGui {
-        constructor(game, skillPanelSprites, skills, gameTimer, gameVictoryCondition) {
+        constructor(game, skillPanelSprites, skills, gameTimer, gameVictoryCondition, roundMaskLayer) {
             this.game = game;
             this.skillPanelSprites = skillPanelSprites;
             this.skills = skills;
             this.gameTimer = gameTimer;
             this.gameVictoryCondition = gameVictoryCondition;
+            this.roundMaskLayer = roundMaskLayer;
             this.gameTimeChanged = true;
             this.skillsCountChangd = true;
             this.skillSelectionChanged = true;
@@ -8632,6 +8651,9 @@ var Lemmings;
                 this.skillSelectionChanged = false;
                 this.drawSelection(dispaly, this.getPanelIndexBySkill(this.skills.getSelectedSkill()));
             }
+            ///////
+            //
+            dispaly.drawFrame(this.roundMaskLayer.getMiniMap(), 210, 19); //TODO: check if correct
         }
         /** left pad a string with spaces */
         stringPad(str, length) {
@@ -8989,6 +9011,8 @@ var Lemmings;
             this.mouseDownY = 0;
             this.lastMouseX = 0;
             this.lastMouseY = 0;
+            this.timeOutEvent = 0;
+            this.longtouch = false;
             this.mouseButton = false;
             this.onMouseMove = new Lemmings.EventHandler();
             this.onMouseUp = new Lemmings.EventHandler();
@@ -9003,15 +9027,32 @@ var Lemmings;
                 return false;
             });
             listenElement.addEventListener("touchmove", (e) => {
+                console.log("touch move");
                 let relativePos = this.getRelativePosition(listenElement, e.touches[0].clientX, e.touches[0].clientY);
                 this.handelMouseMove(relativePos);
+                /*
+                //TODO: clean
+                 console.log("clear touch timeout");
+                 clearTimeout(this.timeOutEvent);
+                 this.timeOutEvent = 0;
+                 */
                 e.stopPropagation();
                 e.preventDefault();
                 return false;
             });
             listenElement.addEventListener("touchstart", (e) => {
+                this.longtouch = false;
                 let relativePos = this.getRelativePosition(listenElement, e.touches[0].clientX, e.touches[0].clientY);
                 this.handelMouseDown(relativePos);
+                // Long press event trigger
+                var self = this;
+                this.timeOutEvent = setTimeout(function () {
+                    this.timeOutEvent = 0;
+                    console.log("long touch timeout");
+                    self.longtouch = true;
+                    //TODO: clean
+                    //console.log("longtouch="+ self.longtouch);
+                }, 500); //Long press 500 milliseconds
                 e.stopPropagation();
                 e.preventDefault();
                 return false;
@@ -9034,15 +9075,32 @@ var Lemmings;
                 this.handelMouseClear();
             });
             listenElement.addEventListener("touchend", (e) => {
-                let relativePos = this.getRelativePosition(listenElement, e.touches[0].clientX, e.touches[0].clientY);
-                this.handelMouseUp(relativePos);
+                //TODO: clean
+                //console.log("touch end");
+                //console.log("longtouch="+ this.longtouch);
+                //let relativePos = this.getRelativePosition(listenElement, e.touches[0].clientX, e.touches[0].clientY);
+                let relativePos = this.getRelativePosition(listenElement, e.changedTouches[0].pageX, e.changedTouches[0].pageY);
+                if (this.longtouch === true) {
+                    // double click event
+                    this.handleMouseDoubleClick(relativePos);
+                    console.log("long touch");
+                }
+                else {
+                    // click event
+                    this.handelMouseUp(relativePos);
+                    //console.log("simple touch");//TODO: clean
+                }
+                clearTimeout(this.timeOutEvent);
+                this.timeOutEvent = 0;
                 return false;
             });
             listenElement.addEventListener("touchleave", (e) => {
+                console.log("touch leave");
                 this.handelMouseClear();
                 return false;
             });
             listenElement.addEventListener("touchcancel", (e) => {
+                console.log("touch cancel");
                 this.handelMouseClear();
                 return false;
             });

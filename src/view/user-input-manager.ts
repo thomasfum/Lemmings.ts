@@ -40,6 +40,8 @@ module Lemmings {
         private lastMouseX = 0;
         private lastMouseY = 0;
 
+        private timeOutEvent  = 0;
+        public  longtouch:boolean= false ;
         private mouseButton:boolean = false;
 
         public onMouseMove = new EventHandler<MouseMoveEventArguemnts>();
@@ -61,18 +63,33 @@ module Lemmings {
 
 
             listenElement.addEventListener("touchmove", (e: TouchEvent) => {
+                console.log("touch move");
                 let relativePos = this.getRelativePosition(listenElement, e.touches[0].clientX, e.touches[0].clientY);
                 this.handelMouseMove(relativePos);
-
+               /*
+               //TODO: clean
+                console.log("clear touch timeout");
+                clearTimeout(this.timeOutEvent);
+                this.timeOutEvent = 0;
+                */
                 e.stopPropagation();
                 e.preventDefault();
                 return false;
             });
 
             listenElement.addEventListener("touchstart", (e: TouchEvent) => {
+                this.longtouch=false;
                 let relativePos = this.getRelativePosition(listenElement, e.touches[0].clientX, e.touches[0].clientY);
                 this.handelMouseDown(relativePos);
-
+                // Long press event trigger
+                var self = this;
+                this.timeOutEvent = setTimeout(function() {
+                    this.timeOutEvent = 0;
+                    console.log("long touch timeout");
+                    self.longtouch=true;
+                    //TODO: clean
+                    //console.log("longtouch="+ self.longtouch);
+                }, 500); //Long press 500 milliseconds
                 e.stopPropagation();
                 e.preventDefault();
                 return false;
@@ -101,22 +118,41 @@ module Lemmings {
             });
 
             listenElement.addEventListener("touchend", (e: TouchEvent) => {
-                let relativePos = this.getRelativePosition(listenElement, e.touches[0].clientX, e.touches[0].clientY);
-                this.handelMouseUp(relativePos);
+                //TODO: clean
+                //console.log("touch end");
+                //console.log("longtouch="+ this.longtouch);
+                //let relativePos = this.getRelativePosition(listenElement, e.touches[0].clientX, e.touches[0].clientY);
+                let relativePos = this.getRelativePosition(listenElement, e.changedTouches[0].pageX, e.changedTouches[0].pageY);
+                
+                if (this.longtouch=== true) {
+                         // double click event
+                         this.handleMouseDoubleClick(relativePos);
+                         console.log("long touch");
+                        
+                }else
+                {
+                    // click event
+                    this.handelMouseUp(relativePos);
+                    //console.log("simple touch");//TODO: clean
+                }
+                clearTimeout(this.timeOutEvent);
+                this.timeOutEvent = 0;
                 return false;
             });
 
             listenElement.addEventListener("touchleave", (e: TouchEvent) => {
+                console.log("touch leave");
                 this.handelMouseClear();
                 return false;
             });
 
             listenElement.addEventListener("touchcancel", (e: TouchEvent) => {
+                console.log("touch cancel");
                 this.handelMouseClear();
                 return false;
             });
 
-            
+           
             listenElement.addEventListener("dblclick", (e: MouseEvent) => {
                 let relativePos = this.getRelativePosition(listenElement, e.clientX, e.clientY);
                 this.handleMouseDoubleClick(relativePos);

@@ -33,6 +33,26 @@ module Lemmings {
 
             this.groundMask[index] = 1;
         }
+        
+        
+        public  getMiniMap():Frame {
+            let f: Frame;
+            f = new  Frame(480,80);//TODO: TBD
+            let stepx=16;
+            let stepy=9;
+            //TODO: average pixels.... is probably better
+            for (let x = 0; x <this.width; x=x+stepx) {
+                for (let y = 0; y <this.height; y=y+stepy) {
+                    let index = x + y * this.width;
+                    let c=this.groundMask[index];
+                    if(c!=0)
+                        f.setPixel(x/stepx,y/stepy,Lemmings.ColorPalette.colorFromRGB(255,255,125));//TODO: To be checked.
+                    else
+                        f.setPixel(x/stepx,y/stepy,Lemmings.ColorPalette.colorFromRGB(0,0,0));
+                }
+            }
+            return f;
+        }
 
         constructor(width: number, height: number, mask: Int8Array=null) {
             this.width = width;
