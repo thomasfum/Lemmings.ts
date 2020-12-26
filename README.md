@@ -17,6 +17,11 @@ The goal is to finish it and extand it to custom levels like the ones present he
 * Support playing of original music by interpreting the adlib.dat file and using an Adlib emulator(s) (DosBox or Robson Cozendey )
 
 ## ToDo
+* add de the map and the original mouse navigation
+* manage mouse cursor
+* add level presentation page (objecrives)
+* add level result page
+* automate music and sound
 * fix some game issues
 * touch support
 
@@ -42,3 +47,4 @@ Special thanks goes to:
 - Volker Oth, ccexplore and Mindless for their work on reverse engineering the Lemmings Level and Grafic Formats
 - DosBox for there OPL emulator
 - Robson Cozendey for his Java OPL3 emulator
+- tomsoftware for the original ts version
