@@ -178,6 +178,19 @@ module Lemmings {
             }
         }
 
+        public getLemmingPosList(): Position2D[]
+        {
+            let lemmingsPosList: Position2D[] = [];
+            let lems = this.lemmings;
+            for (let i = 0; i < lems.length; i++) {
+                if(lems[i].isRemoved()==false)
+                {
+                   let p2d = new Position2D (lems[i].x,lems[i].y);
+                   lemmingsPosList.push(p2d);
+                }
+            }
+            return lemmingsPosList;
+        }
         /** return the lemming with a given id */
         public getLemming(id:number): Lemming {
             return this.lemmings[id];

@@ -17,6 +17,7 @@ module Lemmings {
         private gameGui: GameGui;
         private guiDispaly: DisplayImage = null;
 
+
         private dispaly: DisplayImage = null;
         private gameDispaly: GameDisplay = null;
         private gameTimer: GameTimer = null;
@@ -42,11 +43,10 @@ module Lemmings {
             }
         }
 
-        public setGuiDisplay(dispaly: DisplayImage) {
+        public setGuiDisplay(dispaly: DisplayImage, stage: Stage) {
             this.guiDispaly = dispaly;
-
             if (this.gameGui != null) {
-                this.gameGui.setGuiDisplay(dispaly);
+                this.gameGui.setGuiDisplay(dispaly,stage);
             }
         }
 
@@ -97,10 +97,11 @@ module Lemmings {
                     })
                     .then(skillPanelSprites => {
                         /// setup gui
-                        this.gameGui = new GameGui(this, skillPanelSprites, this.skills, this.gameTimer, this.gameVictoryCondition,this.level.getGroundMaskLayer());
+                        
+                        this.gameGui = new GameGui(this, skillPanelSprites, this.skills, this.gameTimer, this.gameVictoryCondition,this.level);
 
                         if (this.guiDispaly != null) {
-                            this.gameGui.setGuiDisplay(this.guiDispaly);
+                            this.gameGui.setGuiDisplay(this.guiDispaly,null);
                         }
 
                         this.objectManager = new ObjectManager(this.gameTimer);

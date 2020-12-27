@@ -10,7 +10,8 @@ module Lemmings {
 
         private controller : UserInputManager = null;
 
-
+        private level:Level;
+        
         constructor(canvasForOutput: HTMLCanvasElement) {
             this.controller = new UserInputManager(canvasForOutput);
 
@@ -30,6 +31,8 @@ module Lemmings {
             this.updateStageSize();
 
             this.clear();
+         
+
         }
 
         private calcPosition2D(stageImage:StageImageProperties, e:Position2D):Position2D {
@@ -87,6 +90,7 @@ module Lemmings {
 
                     if (stageImage == this.gameImgProps) {
                         this.updateViewPoint(stageImage, e.deltaX, e.deltaY, 0);
+                        
                     }
                 }
                 else {
@@ -113,6 +117,11 @@ module Lemmings {
             */
         }
 
+        public setLevel(level:Level, lemingManager:LemmingManager)
+        {
+            this.level=level;
+            this.level.getGroundMaskLayer().SetViewParam(this.gameImgProps.viewPoint.x,this.level.width,lemingManager);
+        }
 
         private updateViewPoint(stageImage:StageImageProperties, deltaX:number, deltaY:number, deletaZoom:number) {
             stageImage.viewPoint.scale += deletaZoom * 0.5;
@@ -124,12 +133,10 @@ module Lemmings {
             stageImage.viewPoint.x = this.limitValue(0, stageImage.viewPoint.x, stageImage.display.getWidth() - stageImage.width / stageImage.viewPoint.scale);
             stageImage.viewPoint.y = this.limitValue(0, stageImage.viewPoint.y, stageImage.display.getHeight() - stageImage.height / stageImage.viewPoint.scale);
 
-            /// redraw
-            if (stageImage.display != null) {
-                this.clear(stageImage);
-                let gameImg = stageImage.display.getImageData();
-                this.draw(stageImage, gameImg);
-            };
+            this.guiImgProps.display.drawFrame(this.level.getGroundMaskLayer().getMiniMap(stageImage.viewPoint.x,this.level.width),209,18);//TODO: check if correct
+           
+            this.redraw();
+    
         }
 
         private limitValue(minLimit:number, value:number, maxLimit:number) :number {
@@ -153,6 +160,7 @@ module Lemmings {
             this.guiImgProps.y = stageHeight - 80;
             this.guiImgProps.height = 80;
             this.guiImgProps.width = stageWidth;
+
         }
 
         public getStageImageAt(x: number, y:number):StageImageProperties {

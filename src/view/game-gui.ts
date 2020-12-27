@@ -11,12 +11,14 @@ module Lemmings {
         private dispaly: DisplayImage = null;
         private deltaReleaseRate: number = 0;
 
+        private stage: Stage=null;
+
         constructor(private game: Game,
             private skillPanelSprites: SkillPanelSprites,
             private skills: GameSkills,
             private gameTimer: GameTimer,
             private gameVictoryCondition: GameVictoryCondition,
-            private roundMaskLayer: SolidLayer ) {
+            private level: Level ) {
 
             gameTimer.onGameTick.on(() => {
                 this.gameTimeChanged = true;
@@ -88,9 +90,13 @@ module Lemmings {
         }
 
         /** init the display */
-        public setGuiDisplay(dispaly: DisplayImage) {
+        public setGuiDisplay(dispaly: DisplayImage, stage: Stage) {
             this.dispaly = dispaly;
-
+            if(stage!=null)
+            {
+                this.stage=stage;
+                this.stage.setLevel(this.level, this.game.getLemmingManager());
+            }
             /// handle user input in gui
             this.dispaly.onMouseDown.on((e) => {
                 this.deltaReleaseRate = 0;
@@ -174,9 +180,9 @@ module Lemmings {
                 this.drawSelection(dispaly, this.getPanelIndexBySkill(this.skills.getSelectedSkill()));
             }
 
-            ///////
-            //
-            dispaly.drawFrame(this.roundMaskLayer.getMiniMap(),210,19);//TODO: check if correct
+            //draw minimap
+            dispaly.drawFrame(this.level.getGroundMaskLayer().getMiniMap(-1,-1),209,18);//TODO: check if correct
+           
         }
 
         /** left pad a string with spaces */

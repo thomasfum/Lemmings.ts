@@ -231,10 +231,10 @@ var Lemmings;
                 this.dispaly.setScreenPosition(this.level.screenPositionX, 0);
             }
         }
-        setGuiDisplay(dispaly) {
+        setGuiDisplay(dispaly, stage) {
             this.guiDispaly = dispaly;
             if (this.gameGui != null) {
-                this.gameGui.setGuiDisplay(dispaly);
+                this.gameGui.setGuiDisplay(dispaly, stage);
             }
         }
         /** load a new game/level */
@@ -269,9 +269,9 @@ var Lemmings;
                 })
                     .then(skillPanelSprites => {
                     /// setup gui
-                    this.gameGui = new Lemmings.GameGui(this, skillPanelSprites, this.skills, this.gameTimer, this.gameVictoryCondition, this.level.getGroundMaskLayer());
+                    this.gameGui = new Lemmings.GameGui(this, skillPanelSprites, this.skills, this.gameTimer, this.gameVictoryCondition, this.level);
                     if (this.guiDispaly != null) {
-                        this.gameGui.setGuiDisplay(this.guiDispaly);
+                        this.gameGui.setGuiDisplay(this.guiDispaly, null);
                     }
                     this.objectManager = new Lemmings.ObjectManager(this.gameTimer);
                     this.objectManager.addRange(this.level.objects);
@@ -851,6 +851,17 @@ var Lemmings;
             for (let i = 0; i < lems.length; i++) {
                 lems[i].renderDebug(gameDisplay);
             }
+        }
+        getLemmingPosList() {
+            let lemmingsPosList = [];
+            let lems = this.lemmings;
+            for (let i = 0; i < lems.length; i++) {
+                if (lems[i].isRemoved() == false) {
+                    let p2d = new Lemmings.Position2D(lems[i].x, lems[i].y);
+                    lemmingsPosList.push(p2d);
+                }
+            }
+            return lemmingsPosList;
         }
         /** return the lemming with a given id */
         getLemming(id) {
@@ -2993,6 +3004,8 @@ var Lemmings;
         constructor(width, height, mask = null) {
             this.width = 0;
             this.height = 0;
+            this.view_X = 0;
+            this.view_width = 0;
             this.width = width;
             this.height = height;
             if (mask != null) {
@@ -3017,21 +3030,59 @@ var Lemmings;
             let index = x + y * this.width;
             this.groundMask[index] = 1;
         }
-        getMiniMap() {
+        SetViewParam(x, width, lemmingManager) {
+            this.view_X = x;
+            this.view_width = width;
+            this.lemmingManager = lemmingManager;
+        }
+        getMiniMap(_x, _width) {
             let f;
-            f = new Lemmings.Frame(480, 80); //TODO: TBD
+            f = new Lemmings.Frame(102, 20); //TODO: TBD
+            //console.log("posimage:"+_x+ " ; "+_width);
+            if (_x != -1)
+                this.view_X = _x;
+            if (_width != -1)
+                this.view_width = _width;
+            f.clear();
             let stepx = 16;
             let stepy = 9;
+            //console.log("posimage:"+this.width/stepx+ " ; "+this.height/stepy);
             //TODO: average pixels.... is probably better
-            for (let x = 0; x < this.width; x = x + stepx) {
+            for (let x = 0; x <= this.width; x = x + stepx) {
                 for (let y = 0; y < this.height; y = y + stepy) {
                     let index = x + y * this.width;
                     let c = this.groundMask[index];
                     if (c != 0)
-                        f.setPixel(x / stepx, y / stepy, Lemmings.ColorPalette.colorFromRGB(255, 255, 125)); //TODO: To be checked.
+                        f.setPixel(Math.round(x / stepx), Math.round(y / stepy) + 1, Lemmings.ColorPalette.colorFromRGB(211, 211, 146));
                     else
-                        f.setPixel(x / stepx, y / stepy, Lemmings.ColorPalette.colorFromRGB(0, 0, 0));
+                        f.setPixel(Math.round(x / stepx), Math.round(y / stepy) + 1, Lemmings.ColorPalette.colorFromRGB(0, 0, 0));
                 }
+            }
+            //lemings:
+            let toto = this.lemmingManager.getLemmingPosList();
+            //console.log("Lem:"+toto);
+            for (let i = 0; i < toto.length; i++) {
+                f.setPixel(Math.round(toto[i].x / stepx), Math.round(toto[i].y / stepy) + 1, Lemmings.ColorPalette.colorFromRGB(0, 178, 0));
+            }
+            //erase top and bottom line
+            for (let x = 0; x < 102; x = x + 1) {
+                f.setPixel(x, 0, Lemmings.ColorPalette.colorFromRGB(0, 0, 0));
+                f.setPixel(x, 19, Lemmings.ColorPalette.colorFromRGB(0, 0, 0));
+            }
+            //erase last column...
+            for (let y = 0; y < 19; y = y + 1) {
+                f.setPixel(101, y, Lemmings.ColorPalette.colorFromRGB(0, 0, 0));
+            }
+            //draw viewport rect
+            let dx = Math.trunc(this.view_X / stepx);
+            //console.log("posimage:"+dx);
+            for (let x = dx; x <= dx + 21; x = x + 1) {
+                f.setPixel(x, 0, Lemmings.ColorPalette.colorFromRGB(255, 255, 255));
+                f.setPixel(x, 19, Lemmings.ColorPalette.colorFromRGB(255, 255, 255));
+            }
+            for (let y = 0; y < 19; y = y + 1) {
+                f.setPixel(dx, y, Lemmings.ColorPalette.colorFromRGB(255, 255, 255));
+                f.setPixel(dx + 21, y, Lemmings.ColorPalette.colorFromRGB(255, 255, 255));
             }
             return f;
         }
@@ -8013,7 +8064,7 @@ var Lemmings;
                     game.getCommandManager().loadReplay(replayString);
                 }
                 game.setGameDispaly(this.stage.getGameDisplay());
-                game.setGuiDisplay(this.stage.getGuiDisplay());
+                game.setGuiDisplay(this.stage.getGuiDisplay(), this.stage);
                 game.getGameTimer().speedFactor = this.gameSpeedFactor;
                 game.start();
                 this.changeHtmlText(this.elementGameState, Lemmings.GameStateTypes.toString(Lemmings.GameStateTypes.RUNNING));
@@ -8517,19 +8568,20 @@ var Lemmings;
 (function (Lemmings) {
     /** handles the in-game-gui. e.g. the panel on the bottom of the game */
     class GameGui {
-        constructor(game, skillPanelSprites, skills, gameTimer, gameVictoryCondition, roundMaskLayer) {
+        constructor(game, skillPanelSprites, skills, gameTimer, gameVictoryCondition, level) {
             this.game = game;
             this.skillPanelSprites = skillPanelSprites;
             this.skills = skills;
             this.gameTimer = gameTimer;
             this.gameVictoryCondition = gameVictoryCondition;
-            this.roundMaskLayer = roundMaskLayer;
+            this.level = level;
             this.gameTimeChanged = true;
             this.skillsCountChangd = true;
             this.skillSelectionChanged = true;
             this.backgroundChanged = true;
             this.dispaly = null;
             this.deltaReleaseRate = 0;
+            this.stage = null;
             gameTimer.onGameTick.on(() => {
                 this.gameTimeChanged = true;
                 this.doReleaseRateChanges();
@@ -8585,8 +8637,12 @@ var Lemmings;
             }
         }
         /** init the display */
-        setGuiDisplay(dispaly) {
+        setGuiDisplay(dispaly, stage) {
             this.dispaly = dispaly;
+            if (stage != null) {
+                this.stage = stage;
+                this.stage.setLevel(this.level, this.game.getLemmingManager());
+            }
             /// handle user input in gui
             this.dispaly.onMouseDown.on((e) => {
                 this.deltaReleaseRate = 0;
@@ -8651,9 +8707,8 @@ var Lemmings;
                 this.skillSelectionChanged = false;
                 this.drawSelection(dispaly, this.getPanelIndexBySkill(this.skills.getSelectedSkill()));
             }
-            ///////
-            //
-            dispaly.drawFrame(this.roundMaskLayer.getMiniMap(), 210, 19); //TODO: check if correct
+            //draw minimap
+            dispaly.drawFrame(this.level.getGroundMaskLayer().getMiniMap(-1, -1), 209, 18); //TODO: check if correct
         }
         /** left pad a string with spaces */
         stringPad(str, length) {
@@ -8835,6 +8890,10 @@ var Lemmings;
             });
             */
         }
+        setLevel(level, lemingManager) {
+            this.level = level;
+            this.level.getGroundMaskLayer().SetViewParam(this.gameImgProps.viewPoint.x, this.level.width, lemingManager);
+        }
         updateViewPoint(stageImage, deltaX, deltaY, deletaZoom) {
             stageImage.viewPoint.scale += deletaZoom * 0.5;
             stageImage.viewPoint.scale = this.limitValue(0.5, stageImage.viewPoint.scale, 10);
@@ -8842,13 +8901,8 @@ var Lemmings;
             stageImage.viewPoint.y += deltaY / stageImage.viewPoint.scale;
             stageImage.viewPoint.x = this.limitValue(0, stageImage.viewPoint.x, stageImage.display.getWidth() - stageImage.width / stageImage.viewPoint.scale);
             stageImage.viewPoint.y = this.limitValue(0, stageImage.viewPoint.y, stageImage.display.getHeight() - stageImage.height / stageImage.viewPoint.scale);
-            /// redraw
-            if (stageImage.display != null) {
-                this.clear(stageImage);
-                let gameImg = stageImage.display.getImageData();
-                this.draw(stageImage, gameImg);
-            }
-            ;
+            this.guiImgProps.display.drawFrame(this.level.getGroundMaskLayer().getMiniMap(stageImage.viewPoint.x, this.level.width), 209, 18); //TODO: check if correct
+            this.redraw();
         }
         limitValue(minLimit, value, maxLimit) {
             let useMax = Math.max(minLimit, maxLimit);
