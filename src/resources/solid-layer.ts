@@ -47,7 +47,7 @@ module Lemmings {
         
         public  getMiniMap(_x:number, _width:number):Frame {
             let f: Frame;
-            f = new  Frame(102,20);//TODO: TBD
+            f = new  Frame(102,20);
             //console.log("posimage:"+_x+ " ; "+_width);
 
             if(_x!=-1)
@@ -56,7 +56,7 @@ module Lemmings {
                 this.view_width=_width;
                 
             f.clear();
-            let stepx=16;
+            let stepx=16;//can be calulated by doing  this.view_width/102
             let stepy=9;
             
             //console.log("posimage:"+this.width/stepx+ " ; "+this.height/stepy);

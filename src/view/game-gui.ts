@@ -181,7 +181,7 @@ module Lemmings {
             }
 
             //draw minimap
-            dispaly.drawFrame(this.level.getGroundMaskLayer().getMiniMap(-1,-1),209,18);//TODO: check if correct
+            dispaly.drawFrame(this.level.getGroundMaskLayer().getMiniMap(-1,-1),209,18);
            
         }
 

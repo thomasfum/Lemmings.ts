@@ -66,12 +66,6 @@ module Lemmings {
                 console.log("touch move");
                 let relativePos = this.getRelativePosition(listenElement, e.touches[0].clientX, e.touches[0].clientY);
                 this.handelMouseMove(relativePos);
-               /*
-               //TODO: clean
-                console.log("clear touch timeout");
-                clearTimeout(this.timeOutEvent);
-                this.timeOutEvent = 0;
-                */
                 e.stopPropagation();
                 e.preventDefault();
                 return false;
@@ -87,8 +81,6 @@ module Lemmings {
                     this.timeOutEvent = 0;
                     console.log("long touch timeout");
                     self.longtouch=true;
-                    //TODO: clean
-                    //console.log("longtouch="+ self.longtouch);
                 }, 500); //Long press 500 milliseconds
                 e.stopPropagation();
                 e.preventDefault();
@@ -118,10 +110,6 @@ module Lemmings {
             });
 
             listenElement.addEventListener("touchend", (e: TouchEvent) => {
-                //TODO: clean
-                //console.log("touch end");
-                //console.log("longtouch="+ this.longtouch);
-                //let relativePos = this.getRelativePosition(listenElement, e.touches[0].clientX, e.touches[0].clientY);
                 let relativePos = this.getRelativePosition(listenElement, e.changedTouches[0].pageX, e.changedTouches[0].pageY);
                 
                 if (this.longtouch=== true) {
@@ -133,7 +121,6 @@ module Lemmings {
                 {
                     // click event
                     this.handelMouseUp(relativePos);
-                    //console.log("simple touch");//TODO: clean
                 }
                 clearTimeout(this.timeOutEvent);
                 this.timeOutEvent = 0;

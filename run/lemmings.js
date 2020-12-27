@@ -3037,14 +3037,14 @@ var Lemmings;
         }
         getMiniMap(_x, _width) {
             let f;
-            f = new Lemmings.Frame(102, 20); //TODO: TBD
+            f = new Lemmings.Frame(102, 20);
             //console.log("posimage:"+_x+ " ; "+_width);
             if (_x != -1)
                 this.view_X = _x;
             if (_width != -1)
                 this.view_width = _width;
             f.clear();
-            let stepx = 16;
+            let stepx = 16; //can be calulated by doing  this.view_width/102
             let stepy = 9;
             //console.log("posimage:"+this.width/stepx+ " ; "+this.height/stepy);
             //TODO: average pixels.... is probably better
@@ -8708,7 +8708,7 @@ var Lemmings;
                 this.drawSelection(dispaly, this.getPanelIndexBySkill(this.skills.getSelectedSkill()));
             }
             //draw minimap
-            dispaly.drawFrame(this.level.getGroundMaskLayer().getMiniMap(-1, -1), 209, 18); //TODO: check if correct
+            dispaly.drawFrame(this.level.getGroundMaskLayer().getMiniMap(-1, -1), 209, 18);
         }
         /** left pad a string with spaces */
         stringPad(str, length) {
@@ -8901,7 +8901,7 @@ var Lemmings;
             stageImage.viewPoint.y += deltaY / stageImage.viewPoint.scale;
             stageImage.viewPoint.x = this.limitValue(0, stageImage.viewPoint.x, stageImage.display.getWidth() - stageImage.width / stageImage.viewPoint.scale);
             stageImage.viewPoint.y = this.limitValue(0, stageImage.viewPoint.y, stageImage.display.getHeight() - stageImage.height / stageImage.viewPoint.scale);
-            this.guiImgProps.display.drawFrame(this.level.getGroundMaskLayer().getMiniMap(stageImage.viewPoint.x, this.level.width), 209, 18); //TODO: check if correct
+            this.guiImgProps.display.drawFrame(this.level.getGroundMaskLayer().getMiniMap(stageImage.viewPoint.x, this.level.width), 209, 18);
             this.redraw();
         }
         limitValue(minLimit, value, maxLimit) {
@@ -9084,12 +9084,6 @@ var Lemmings;
                 console.log("touch move");
                 let relativePos = this.getRelativePosition(listenElement, e.touches[0].clientX, e.touches[0].clientY);
                 this.handelMouseMove(relativePos);
-                /*
-                //TODO: clean
-                 console.log("clear touch timeout");
-                 clearTimeout(this.timeOutEvent);
-                 this.timeOutEvent = 0;
-                 */
                 e.stopPropagation();
                 e.preventDefault();
                 return false;
@@ -9104,8 +9098,6 @@ var Lemmings;
                     this.timeOutEvent = 0;
                     console.log("long touch timeout");
                     self.longtouch = true;
-                    //TODO: clean
-                    //console.log("longtouch="+ self.longtouch);
                 }, 500); //Long press 500 milliseconds
                 e.stopPropagation();
                 e.preventDefault();
@@ -9129,10 +9121,6 @@ var Lemmings;
                 this.handelMouseClear();
             });
             listenElement.addEventListener("touchend", (e) => {
-                //TODO: clean
-                //console.log("touch end");
-                //console.log("longtouch="+ this.longtouch);
-                //let relativePos = this.getRelativePosition(listenElement, e.touches[0].clientX, e.touches[0].clientY);
                 let relativePos = this.getRelativePosition(listenElement, e.changedTouches[0].pageX, e.changedTouches[0].pageY);
                 if (this.longtouch === true) {
                     // double click event
@@ -9142,7 +9130,6 @@ var Lemmings;
                 else {
                     // click event
                     this.handelMouseUp(relativePos);
-                    //console.log("simple touch");//TODO: clean
                 }
                 clearTimeout(this.timeOutEvent);
                 this.timeOutEvent = 0;
