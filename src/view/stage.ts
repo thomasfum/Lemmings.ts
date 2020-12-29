@@ -9,7 +9,8 @@ module Lemmings {
         private guiImgProps : StageImageProperties;
 
         private controller : UserInputManager = null;
-
+        private lemmingManager : LemmingManager = null;
+        private lastMousePos: Position2D = null;
         private level:Level;
         
         constructor(canvasForOutput: HTMLCanvasElement) {
@@ -82,6 +83,27 @@ module Lemmings {
 
 
 
+        private displyCursor(p: Position2D)
+        {
+            if(this.lemmingManager==null)
+             return;
+           // console.log( "cursor:" +x +", "+ y);
+            let lem = this.lemmingManager.getLemmingAt(p.x, p.y);
+             if (!lem)
+             {
+                //cursor croix
+                //console.log( "cursor:" + "no lem");
+             }
+             else
+             {
+                //cursor carré 
+                //afficher le type de lemmings
+                if(lem.isRemoved()==false)
+                    console.log( "cursor:" + lem.action.getActionName() +" "+ lem.id);
+
+             }
+        }
+   
         private handleOnMouseMove():void {
             this.controller.onMouseMove.on((e) => {
                 if (e.button) {
@@ -90,7 +112,8 @@ module Lemmings {
 
                     if (stageImage == this.gameImgProps) {
                         this.updateViewPoint(stageImage, e.deltaX, e.deltaY, 0);
-                        
+                        stageImage.display.onMouseMove.trigger(this.calcPosition2D(stageImage, e));
+                       
                     }
                 }
                 else {
@@ -100,9 +123,14 @@ module Lemmings {
 
                     let x = e.x - stageImage.x;
                     let y = e.y - stageImage.y;    
-
+                    
                     stageImage.display.onMouseMove.trigger(new Position2D(stageImage.viewPoint.getSceneX(x), stageImage.viewPoint.getSceneY(y)));
                 }
+                let stageImage = this.getStageImageAt(e.x, e.y);
+                if (stageImage == null) return;
+                if (stageImage.display == null) return;
+                this.displyCursor( this.calcPosition2D(stageImage, e));
+                this.lastMousePos=e;
             });
         }
 
@@ -117,10 +145,11 @@ module Lemmings {
             */
         }
 
-        public setLevel(level:Level, lemingManager:LemmingManager)
+        public setLevel(level:Level, lemmingManager:LemmingManager)
         {
             this.level=level;
-            this.level.getGroundMaskLayer().SetViewParam(this.gameImgProps.viewPoint.x,this.level.width,lemingManager);
+            this.lemmingManager=lemmingManager;
+            this.level.getGroundMaskLayer().SetViewParam(this.gameImgProps.viewPoint.x,this.level.width,lemmingManager);
         }
 
         private updateViewPoint(stageImage:StageImageProperties, deltaX:number, deltaY:number, deletaZoom:number) {
@@ -138,6 +167,8 @@ module Lemmings {
             this.redraw();
     
         }
+
+     
 
         private limitValue(minLimit:number, value:number, maxLimit:number) :number {
 
@@ -196,7 +227,10 @@ module Lemmings {
 
         /** redraw everything */
         public redraw() {
+            
             if (this.gameImgProps.display != null) {
+                if(this.lastMousePos!=null)
+                    this.displyCursor( this.calcPosition2D(this.gameImgProps, this.lastMousePos));
                 let gameImg = this.gameImgProps.display.getImageData();
                 this.draw(this.gameImgProps, gameImg);
             };

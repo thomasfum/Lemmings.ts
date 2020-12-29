@@ -8282,7 +8282,7 @@ var Lemmings;
             this.onMouseMove = new Lemmings.EventHandler();
             this.onDoubleClick = new Lemmings.EventHandler();
             this.onMouseDown.on((e) => {
-                this.setDebugPixel(e.x, e.y);
+                // this.setDebugPixel(e.x, e.y);
             });
         }
         getWidth() {
@@ -8538,6 +8538,7 @@ var Lemmings;
             this.triggerManager = triggerManager;
             this.dispaly = null;
         }
+        //C EST LA
         setGuiDisplay(dispaly) {
             this.dispaly = dispaly;
             this.dispaly.onMouseDown.on((e) => {
@@ -8814,6 +8815,8 @@ var Lemmings;
     class Stage {
         constructor(canvasForOutput) {
             this.controller = null;
+            this.lemmingManager = null;
+            this.lastMousePos = null;
             this.fadeTimer = 0;
             this.fadeAlpha = 0;
             this.controller = new Lemmings.UserInputManager(canvasForOutput);
@@ -8859,6 +8862,22 @@ var Lemmings;
                 stageImage.display.onMouseUp.trigger(pos);
             });
         }
+        displyCursor(p) {
+            if (this.lemmingManager == null)
+                return;
+            // console.log( "cursor:" +x +", "+ y);
+            let lem = this.lemmingManager.getLemmingAt(p.x, p.y);
+            if (!lem) {
+                //cursor croix
+                //console.log( "cursor:" + "no lem");
+            }
+            else {
+                //cursor carré 
+                //afficher le type de lemmings
+                if (lem.isRemoved() == false)
+                    console.log("cursor:" + lem.action.getActionName() + " " + lem.id);
+            }
+        }
         handleOnMouseMove() {
             this.controller.onMouseMove.on((e) => {
                 if (e.button) {
@@ -8867,6 +8886,7 @@ var Lemmings;
                         return;
                     if (stageImage == this.gameImgProps) {
                         this.updateViewPoint(stageImage, e.deltaX, e.deltaY, 0);
+                        stageImage.display.onMouseMove.trigger(this.calcPosition2D(stageImage, e));
                     }
                 }
                 else {
@@ -8879,6 +8899,13 @@ var Lemmings;
                     let y = e.y - stageImage.y;
                     stageImage.display.onMouseMove.trigger(new Lemmings.Position2D(stageImage.viewPoint.getSceneX(x), stageImage.viewPoint.getSceneY(y)));
                 }
+                let stageImage = this.getStageImageAt(e.x, e.y);
+                if (stageImage == null)
+                    return;
+                if (stageImage.display == null)
+                    return;
+                this.displyCursor(this.calcPosition2D(stageImage, e));
+                this.lastMousePos = e;
             });
         }
         handelOnZoom() {
@@ -8890,9 +8917,10 @@ var Lemmings;
             });
             */
         }
-        setLevel(level, lemingManager) {
+        setLevel(level, lemmingManager) {
             this.level = level;
-            this.level.getGroundMaskLayer().SetViewParam(this.gameImgProps.viewPoint.x, this.level.width, lemingManager);
+            this.lemmingManager = lemmingManager;
+            this.level.getGroundMaskLayer().SetViewParam(this.gameImgProps.viewPoint.x, this.level.width, lemmingManager);
         }
         updateViewPoint(stageImage, deltaX, deltaY, deletaZoom) {
             stageImage.viewPoint.scale += deletaZoom * 0.5;
@@ -8950,6 +8978,8 @@ var Lemmings;
         /** redraw everything */
         redraw() {
             if (this.gameImgProps.display != null) {
+                if (this.lastMousePos != null)
+                    this.displyCursor(this.calcPosition2D(this.gameImgProps, this.lastMousePos));
                 let gameImg = this.gameImgProps.display.getImageData();
                 this.draw(this.gameImgProps, gameImg);
             }

@@ -12,7 +12,7 @@ module Lemmings {
             private triggerManager: TriggerManager) {
         }
 
-
+        //C EST LA
         public setGuiDisplay(dispaly: DisplayImage) {
             this.dispaly = dispaly;
 

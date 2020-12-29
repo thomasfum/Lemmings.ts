@@ -18,8 +18,9 @@ module Lemmings {
 
         constructor(private stage: Stage) {
             this.onMouseDown.on((e) => {
-                this.setDebugPixel(e.x, e.y);
+               // this.setDebugPixel(e.x, e.y);
             });
+           
         }
 
         public onMouseUp = new EventHandler<Position2D>();
