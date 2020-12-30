@@ -34,11 +34,11 @@ module Lemmings {
             this.gameResources = gameResources;
         }
 
-        public setGameDispaly(dispaly: DisplayImage) {
+        public setGameDispaly(dispaly: DisplayImage, stage: Stage) {
             this.dispaly = dispaly;
 
             if (this.gameDispaly != null) {
-                this.gameDispaly.setGuiDisplay(dispaly);
+                this.gameDispaly.setGuiDisplay(dispaly, stage);
                 this.dispaly.setScreenPosition(this.level.screenPositionX, 0);
             }
         }
@@ -109,7 +109,7 @@ module Lemmings {
 
                         this.gameDispaly = new GameDisplay(this, this.level, this.lemmingManager, this.objectManager, this.triggerManager);
                         if (this.dispaly != null) {
-                            this.gameDispaly.setGuiDisplay(this.dispaly);
+                            this.gameDispaly.setGuiDisplay(this.dispaly,null);
                         }
 
                         /// let's start!

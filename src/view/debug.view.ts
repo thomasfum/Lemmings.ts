@@ -63,7 +63,7 @@ module Lemmings {
                         game.getCommandManager().loadReplay(replayString);
                     }
 
-                    game.setGameDispaly(this.stage.getGameDisplay());
+                    game.setGameDispaly(this.stage.getGameDisplay(),this.stage);
                     game.setGuiDisplay(this.stage.getGuiDisplay(),this.stage);
 
                     game.getGameTimer().speedFactor = this.gameSpeedFactor;

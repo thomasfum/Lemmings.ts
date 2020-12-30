@@ -151,8 +151,9 @@ module Lemmings {
             /////////
             /// green text
             this.drawGreenString(dispaly, "Out " + this.gameVictoryCondition.getOutCount() + "  ", 112, 0);
-            this.drawGreenString(dispaly, "In" + this.stringPad(this.gameVictoryCondition.getSurvivorPercentage() + "", 3) + "%", 186, 0);
-
+            this.drawGreenString(dispaly, "In" + this.stringLeftPad(this.gameVictoryCondition.getSurvivorPercentage() + "", 3) + "%", 186, 0);
+            this.drawGreenString(dispaly, this.stringRightPad(this.stage.GetLemAction(),10), 10, 0);
+            
             if (this.gameTimeChanged) {
                 this.gameTimeChanged = false;
 
@@ -186,7 +187,15 @@ module Lemmings {
         }
 
         /** left pad a string with spaces */
-        private stringPad(str: string, length: number): string {
+        private stringRightPad(str: string, length: number): string {
+            if (str.length >= length) return str;
+
+            return str+" ".repeat(length - str.length);
+        }
+        
+
+        /** left pad a string with spaces */
+        private stringLeftPad(str: string, length: number): string {
             if (str.length >= length) return str;
 
             return " ".repeat(length - str.length) + str;

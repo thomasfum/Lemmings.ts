@@ -12,6 +12,7 @@ module Lemmings {
         private lemmingManager : LemmingManager = null;
         private lastMousePos: Position2D = null;
         private level:Level;
+        private CurrentLemmingState: string ="";
         
         constructor(canvasForOutput: HTMLCanvasElement) {
             this.controller = new UserInputManager(canvasForOutput);
@@ -82,6 +83,34 @@ module Lemmings {
         }
 
 
+        private DrawCursor(gameImg: StageImageProperties,cross: boolean, pos: Position2D)
+        {
+            let cursorsize=10;
+            if(cross==true)
+            {
+                gameImg.display.drawVerticalLine(pos.x,pos.y-cursorsize,pos.y+cursorsize,200,100,100);
+                gameImg.display.drawHorizontalLine(pos.x-cursorsize,pos.y,pos.x+cursorsize,200,100,100);
+            }
+            else
+            {
+                gameImg.display.drawRect(pos.x-cursorsize,pos.y-cursorsize,cursorsize*2,cursorsize*2,200,100,100);
+            }
+        }
+        
+      
+        public GetLemAction()
+        {
+            return this.CurrentLemmingState;
+        }
+
+        public GetCursor(model: {cross: boolean, x: number; y: number})
+        {
+            model.cross=true;
+            model.x=33;
+            model.y=34;
+           return model;
+        }
+
 
         private displyCursor(p: Position2D)
         {
@@ -89,17 +118,26 @@ module Lemmings {
              return;
            // console.log( "cursor:" +x +", "+ y);
             let lem = this.lemmingManager.getLemmingAt(p.x, p.y);
-             if (!lem)
+           if (lem==null)
              {
                 //cursor croix
                 //console.log( "cursor:" + "no lem");
+                this.DrawCursor(this.gameImgProps,true,this.calcPosition2D(this.gameImgProps, this.lastMousePos));
+                this.CurrentLemmingState="";
              }
              else
              {
-                //cursor carré 
-                //afficher le type de lemmings
-                if(lem.isRemoved()==false)
-                    console.log( "cursor:" + lem.action.getActionName() +" "+ lem.id);
+                if (lem!=null)
+                {
+                    //cursor carré 
+                    //afficher le type de lemmings
+                    if(lem.isRemoved()==false)
+                    {
+                        console.log( "cursor:" + lem.action.getActionName() +" "+ lem.id)+ " at "+lem.x+","+lem.y;
+                        this.DrawCursor(this.gameImgProps,false,this.calcPosition2D(this.gameImgProps, this.lastMousePos));
+                        this.CurrentLemmingState=lem.action.getActionName()+" "+ (lem.id+1);
+                    }
+                }
 
              }
         }
@@ -129,8 +167,9 @@ module Lemmings {
                 let stageImage = this.getStageImageAt(e.x, e.y);
                 if (stageImage == null) return;
                 if (stageImage.display == null) return;
-                this.displyCursor( this.calcPosition2D(stageImage, e));
                 this.lastMousePos=e;
+                this.displyCursor( this.calcPosition2D(stageImage, e));
+                
             });
         }
 

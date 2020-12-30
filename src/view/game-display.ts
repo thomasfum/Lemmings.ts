@@ -3,6 +3,7 @@ module Lemmings {
     export class GameDisplay {
 
         private dispaly: DisplayImage = null;
+        private stage: Stage=null;
 
         constructor(
             private game: Game,
@@ -13,9 +14,12 @@ module Lemmings {
         }
 
         //C EST LA
-        public setGuiDisplay(dispaly: DisplayImage) {
+        public setGuiDisplay(dispaly: DisplayImage, stage: Stage) {
             this.dispaly = dispaly;
-
+            if(stage!=null)
+            {
+                this.stage=stage;
+            }
             this.dispaly.onMouseDown.on((e) => {
                 //console.log(e.x +" "+ e.y);
                 let lem = this.lemmingManager.getLemmingAt(e.x, e.y);

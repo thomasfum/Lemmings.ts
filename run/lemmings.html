@@ -10,7 +10,9 @@
     <style> 
       .PixelatedRendering {
         border: 1px solid #222;
+	
     }
+	<!--    cursor:none;  -->
     </style>
 
     <script type="text/javascript" >
@@ -18,7 +20,7 @@
     var debugView = new Lemmings.DebugView();
 
     function init() {
-        debugView.elementSoundNumber = document.getElementById("soundno");
+		debugView.elementSoundNumber = document.getElementById("soundno");
         debugView.elementTrackNumber = document.getElementById("trackno");
         debugView.elementLevelNumber = document.getElementById("levelno");   
         debugView.elementSelectedGame = document.getElementById("selectgame");
@@ -97,7 +99,7 @@
     <br />
 
     <div style="overflow-x: scroll; width:99%">
-    <canvas height="400" width="640" id="gameCanvas" class="PixelatedRendering">
+    <canvas height="400" width="640" id="gameCanvas" class="PixelatedRendering" >
       Sorry! Your browser does not support HTML5 Canvas and can not run this Application.
     </canvas>
     </div>
