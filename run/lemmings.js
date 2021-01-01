@@ -8805,7 +8805,7 @@ var Lemmings;
             /// green text
             this.drawGreenString(dispaly, "Out " + this.gameVictoryCondition.getOutCount() + "  ", 112, 0);
             this.drawGreenString(dispaly, "In" + this.stringLeftPad(this.gameVictoryCondition.getSurvivorPercentage() + "", 3) + "%", 186, 0);
-            this.drawGreenString(dispaly, this.stringRightPad(this.stage.GetLemAction(), 12), 10, 0);
+            this.drawGreenString(dispaly, this.stringRightPad(this.stage.GetLemAction(), 13), 0, 0);
             if (this.gameTimeChanged) {
                 this.gameTimeChanged = false;
                 this.renderGameTime(dispaly, 248, 0);
