@@ -13,6 +13,9 @@ module Lemmings {
         public getActionName(): string {
             return "countdown";
         }
+        public GetLemState(): LemmingStateType{
+            return LemmingStateType.EXPLODING;
+        }
 
         public triggerLemAction(lem: Lemming): boolean {
             return lem.setCountDown(this);

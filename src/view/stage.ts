@@ -110,12 +110,10 @@ module Lemmings {
         {
             if(this.lemmingManager==null)
              return;
-           // console.log( "cursor:" +x +", "+ y);
             let lem = this.lemmingManager.getLemmingAt(p.x, p.y);
            if (lem==null)
              {
-                //cursor croix
-                //console.log( "cursor:" + "no lem");
+                //cross cursor
                 this.DrawCursor(this.gameImgProps,true,this.calcPosition2D(this.gameImgProps, this.lastMousePos));
                 this.DrawCursor(this.guiImgProps,true,this.calcPosition2D(this.guiImgProps, this.lastMousePos));
                 this.CurrentLemmingState="";
@@ -124,14 +122,12 @@ module Lemmings {
              {
                 if (lem!=null)
                 {
-                    //cursor carré 
-                    //afficher le type de lemmings
+                    //square cursor
                     if(lem.isRemoved()==false)
                     {
-                        console.log( "cursor:" + lem.action.getActionName() +" "+ lem.id)+ " at "+lem.x+","+lem.y;
                         this.DrawCursor(this.gameImgProps,false,this.calcPosition2D(this.gameImgProps, this.lastMousePos));
                         this.DrawCursor(this.guiImgProps,true,this.calcPosition2D(this.guiImgProps, this.lastMousePos));
-                        this.CurrentLemmingState=lem.action.getActionName()+" "+ (lem.id+1);
+                        this.CurrentLemmingState=lem.GetCurrentSkill()+" "+ (lem.id+1);
                     }
                 }
 

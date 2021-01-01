@@ -23,6 +23,9 @@ module Lemmings {
         public getActionName(): string {
             return "digging";
         }
+        public GetLemState(): LemmingStateType{
+            return LemmingStateType.DIGGING;
+        }
 
         public triggerLemAction(lem: Lemming): boolean {
             lem.setAction(this);

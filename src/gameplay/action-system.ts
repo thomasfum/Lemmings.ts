@@ -13,6 +13,9 @@ module Lemmings {
 
         /** trigger a action by the player */
         triggerLemAction(lem : Lemming): boolean;
+
+        /** Get Lem state*/
+        GetLemState(): LemmingStateType;
     }
 
 }

@@ -13,6 +13,9 @@ module Lemmings {
         public getActionName(): string {
             return "drowning";
         }
+        public GetLemState(): LemmingStateType{
+            return LemmingStateType.DROWNING;
+        }
 
         public triggerLemAction(lem: Lemming): boolean {
             return false;

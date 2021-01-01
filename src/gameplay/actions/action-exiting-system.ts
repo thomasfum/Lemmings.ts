@@ -13,6 +13,9 @@ module Lemmings {
         public getActionName(): string {
             return "exiting";
         }
+        public GetLemState(): LemmingStateType{
+            return LemmingStateType.EXITING;
+        }
 
         public triggerLemAction(lem: Lemming): boolean {
             return false;

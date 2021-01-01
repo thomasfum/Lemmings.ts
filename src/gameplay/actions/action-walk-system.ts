@@ -24,6 +24,9 @@ module Lemmings {
         public getActionName(): string {
             return "walk";
         }
+        public GetLemState(): LemmingStateType{
+            return LemmingStateType.WALKING;
+        }
 
 
         public triggerLemAction(lem: Lemming): boolean {

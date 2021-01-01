@@ -28,6 +28,9 @@ module Lemmings {
         public getActionName(): string {
             return "mining";
         }
+        public GetLemState(): LemmingStateType{
+            return LemmingStateType.MINEING;
+        }
 
 
         public triggerLemAction(lem: Lemming): boolean {

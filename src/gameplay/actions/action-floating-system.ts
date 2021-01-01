@@ -17,6 +17,9 @@ module Lemmings {
         public getActionName(): string {
             return "floating";
         }
+        public GetLemState(): LemmingStateType{
+            return LemmingStateType.FLOATING;
+        }
 
 
         public triggerLemAction(lem: Lemming): boolean {

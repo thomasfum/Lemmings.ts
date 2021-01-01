@@ -13,6 +13,9 @@ module Lemmings {
         public getActionName(): string {
             return "blocking";
         }
+        public GetLemState(): LemmingStateType{
+            return LemmingStateType.BLOCKING;
+        }
 
         public triggerLemAction(lem: Lemming): boolean {
             lem.setAction(this);

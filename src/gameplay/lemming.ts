@@ -29,6 +29,63 @@ module Lemmings {
             return (8 - (this.countdown >> 4));
         }
 
+        public GetCurrentSkill(): string
+        {
+            if((this.canClimb==true)&&(this.hasParachute==true))
+                return "ATHLETE";
+            if(this.canClimb==true)
+                return "CLIMBER";
+            if(this.hasParachute==true)
+                return "FLOATER";
+            if(this.countdown>0)
+                return "BOMBER";
+
+            switch (this.action.GetLemState()) {
+                case LemmingStateType.WALKING:
+                    return "WALKER";
+                case LemmingStateType.BLOCKING:
+                    return "BLOCKER";
+                case LemmingStateType.BUILDING:
+                    return "BUILDER";
+                case LemmingStateType.DIGGING://digg down  side
+                    return "DIGGER";
+                case LemmingStateType.FALLING:// after falling down from too high
+                    return "FALLER";
+                case LemmingStateType.FLOATING://ombrella
+                    return "FLOATER";
+                case LemmingStateType.MINEING:////digg in diagonal
+                    return "MINER";
+                case LemmingStateType.BASHING://cdigg horizontally
+                    return "BASHER";
+                case LemmingStateType.CLIMBING:
+                    return "CLIMBER";
+                case LemmingStateType.EXPLODING:// fire ball and explosion particles
+                    return "BOMBER";
+                case LemmingStateType.SHRUG:// builder finished buildung
+                    return "BUILDER";
+                case LemmingStateType.FRYING:// killed by flameblower etc.
+                    return "WALKER";
+                case LemmingStateType.HOISTING:// end of climbing
+                    return "CLIMBER";
+                case LemmingStateType.DROWNING:// in water
+                    return "WALKER";
+                case LemmingStateType.EXITING:
+                    return "WALKER";
+                case LemmingStateType.JUMPING:
+                    return "WALKER";
+                case LemmingStateType.NO_STATE_TYPE:
+                    return "WALKER";
+                case LemmingStateType.OHNO:
+                    return "WALKER";
+                case LemmingStateType.OUT_OFF_LEVEL:
+                    return "WALKER";
+                case LemmingStateType.SPLATTING:// after falling down from too high
+                    return "WALKER";
+            }
+            return "WALKER";
+           // return this.action.getActionName();
+            
+        }
         /** switch the action of this lemming */
         public setAction(action: IActionSystem) {
             this.action = action;

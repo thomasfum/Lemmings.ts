@@ -948,6 +948,60 @@ var Lemmings;
         getCountDownTime() {
             return (8 - (this.countdown >> 4));
         }
+        GetCurrentSkill() {
+            if ((this.canClimb == true) && (this.hasParachute == true))
+                return "ATHLETE";
+            if (this.canClimb == true)
+                return "CLIMBER";
+            if (this.hasParachute == true)
+                return "FLOATER";
+            if (this.countdown > 0)
+                return "BOMBER";
+            switch (this.action.GetLemState()) {
+                case Lemmings.LemmingStateType.WALKING:
+                    return "WALKER";
+                case Lemmings.LemmingStateType.BLOCKING:
+                    return "BLOCKER";
+                case Lemmings.LemmingStateType.BUILDING:
+                    return "BUILDER";
+                case Lemmings.LemmingStateType.DIGGING: //digg down  side
+                    return "DIGGER";
+                case Lemmings.LemmingStateType.FALLING: // after falling down from too high
+                    return "FALLER";
+                case Lemmings.LemmingStateType.FLOATING: //ombrella
+                    return "FLOATER";
+                case Lemmings.LemmingStateType.MINEING: ////digg in diagonal
+                    return "MINER";
+                case Lemmings.LemmingStateType.BASHING: //cdigg horizontally
+                    return "BASHER";
+                case Lemmings.LemmingStateType.CLIMBING:
+                    return "CLIMBER";
+                case Lemmings.LemmingStateType.EXPLODING: // fire ball and explosion particles
+                    return "BOMBER";
+                case Lemmings.LemmingStateType.SHRUG: // builder finished buildung
+                    return "BUILDER";
+                case Lemmings.LemmingStateType.FRYING: // killed by flameblower etc.
+                    return "WALKER";
+                case Lemmings.LemmingStateType.HOISTING: // end of climbing
+                    return "CLIMBER";
+                case Lemmings.LemmingStateType.DROWNING: // in water
+                    return "WALKER";
+                case Lemmings.LemmingStateType.EXITING:
+                    return "WALKER";
+                case Lemmings.LemmingStateType.JUMPING:
+                    return "WALKER";
+                case Lemmings.LemmingStateType.NO_STATE_TYPE:
+                    return "WALKER";
+                case Lemmings.LemmingStateType.OHNO:
+                    return "WALKER";
+                case Lemmings.LemmingStateType.OUT_OFF_LEVEL:
+                    return "WALKER";
+                case Lemmings.LemmingStateType.SPLATTING: // after falling down from too high
+                    return "WALKER";
+            }
+            return "WALKER";
+            // return this.action.getActionName();
+        }
         /** switch the action of this lemming */
         setAction(action) {
             this.action = action;
@@ -1290,6 +1344,9 @@ var Lemmings;
         getActionName() {
             return "bashing";
         }
+        GetLemState() {
+            return Lemmings.LemmingStateType.BASHING;
+        }
         /** user called this action */
         triggerLemAction(lem) {
             lem.setAction(this);
@@ -1359,6 +1416,9 @@ var Lemmings;
         getActionName() {
             return "blocking";
         }
+        GetLemState() {
+            return Lemmings.LemmingStateType.BLOCKING;
+        }
         triggerLemAction(lem) {
             lem.setAction(this);
             return true;
@@ -1396,6 +1456,9 @@ var Lemmings;
         }
         getActionName() {
             return "building";
+        }
+        GetLemState() {
+            return Lemmings.LemmingStateType.BUILDING;
         }
         triggerLemAction(lem) {
             lem.setAction(this);
@@ -1453,6 +1516,9 @@ var Lemmings;
         getActionName() {
             return "climbing";
         }
+        GetLemState() {
+            return Lemmings.LemmingStateType.CLIMBING;
+        }
         triggerLemAction(lem) {
             if (lem.canClimb) {
                 return false;
@@ -1499,6 +1565,9 @@ var Lemmings;
         getActionName() {
             return "countdown";
         }
+        GetLemState() {
+            return Lemmings.LemmingStateType.EXPLODING;
+        }
         triggerLemAction(lem) {
             return lem.setCountDown(this);
         }
@@ -1541,6 +1610,9 @@ var Lemmings;
         }
         getActionName() {
             return "digging";
+        }
+        GetLemState() {
+            return Lemmings.LemmingStateType.DIGGING;
         }
         triggerLemAction(lem) {
             lem.setAction(this);
@@ -1589,6 +1661,9 @@ var Lemmings;
         getActionName() {
             return "drowning";
         }
+        GetLemState() {
+            return Lemmings.LemmingStateType.DROWNING;
+        }
         triggerLemAction(lem) {
             return false;
         }
@@ -1624,6 +1699,9 @@ var Lemmings;
         getActionName() {
             return "exiting";
         }
+        GetLemState() {
+            return Lemmings.LemmingStateType.EXITING;
+        }
         triggerLemAction(lem) {
             return false;
         }
@@ -1655,6 +1733,9 @@ var Lemmings;
         }
         getActionName() {
             return "exploding";
+        }
+        GetLemState() {
+            return Lemmings.LemmingStateType.EXPLODING;
         }
         triggerLemAction(lem) {
             return false;
@@ -1695,6 +1776,9 @@ var Lemmings;
         }
         getActionName() {
             return "falling";
+        }
+        GetLemState() {
+            return Lemmings.LemmingStateType.FALLING;
         }
         triggerLemAction(lem) {
             return false;
@@ -1745,6 +1829,9 @@ var Lemmings;
         getActionName() {
             return "floating";
         }
+        GetLemState() {
+            return Lemmings.LemmingStateType.FLOATING;
+        }
         triggerLemAction(lem) {
             if (lem.hasParachute) {
                 return false;
@@ -1792,6 +1879,9 @@ var Lemmings;
         getActionName() {
             return "hoist";
         }
+        GetLemState() {
+            return Lemmings.LemmingStateType.HOISTING;
+        }
         triggerLemAction(lem) {
             return false;
         }
@@ -1827,6 +1917,9 @@ var Lemmings;
         }
         getActionName() {
             return "jump";
+        }
+        GetLemState() {
+            return Lemmings.LemmingStateType.JUMPING;
         }
         triggerLemAction(lem) {
             return false;
@@ -1873,6 +1966,9 @@ var Lemmings;
         getActionName() {
             return "mining";
         }
+        GetLemState() {
+            return Lemmings.LemmingStateType.MINEING;
+        }
         triggerLemAction(lem) {
             lem.setAction(this);
             return true;
@@ -1909,6 +2005,9 @@ var Lemmings;
         }
         getActionName() {
             return "oh-no";
+        }
+        GetLemState() {
+            return Lemmings.LemmingStateType.OHNO;
         }
         triggerLemAction(lem) {
             return false;
@@ -1948,6 +2047,9 @@ var Lemmings;
         getActionName() {
             return "shruging";
         }
+        GetLemState() {
+            return Lemmings.LemmingStateType.SHRUG;
+        }
         triggerLemAction(lem) {
             return false;
         }
@@ -1976,6 +2078,9 @@ var Lemmings;
         }
         getActionName() {
             return "splatter";
+        }
+        GetLemState() {
+            return Lemmings.LemmingStateType.SPLATTING;
         }
         triggerLemAction(lem) {
             return false;
@@ -2010,6 +2115,9 @@ var Lemmings;
         }
         getActionName() {
             return "walk";
+        }
+        GetLemState() {
+            return Lemmings.LemmingStateType.WALKING;
         }
         triggerLemAction(lem) {
             return false;
@@ -8697,7 +8805,7 @@ var Lemmings;
             /// green text
             this.drawGreenString(dispaly, "Out " + this.gameVictoryCondition.getOutCount() + "  ", 112, 0);
             this.drawGreenString(dispaly, "In" + this.stringLeftPad(this.gameVictoryCondition.getSurvivorPercentage() + "", 3) + "%", 186, 0);
-            this.drawGreenString(dispaly, this.stringRightPad(this.stage.GetLemAction(), 10), 10, 0);
+            this.drawGreenString(dispaly, this.stringRightPad(this.stage.GetLemAction(), 12), 10, 0);
             if (this.gameTimeChanged) {
                 this.gameTimeChanged = false;
                 this.renderGameTime(dispaly, 248, 0);
@@ -8896,24 +9004,20 @@ var Lemmings;
         displyCursor(p) {
             if (this.lemmingManager == null)
                 return;
-            // console.log( "cursor:" +x +", "+ y);
             let lem = this.lemmingManager.getLemmingAt(p.x, p.y);
             if (lem == null) {
-                //cursor croix
-                //console.log( "cursor:" + "no lem");
+                //cross cursor
                 this.DrawCursor(this.gameImgProps, true, this.calcPosition2D(this.gameImgProps, this.lastMousePos));
                 this.DrawCursor(this.guiImgProps, true, this.calcPosition2D(this.guiImgProps, this.lastMousePos));
                 this.CurrentLemmingState = "";
             }
             else {
                 if (lem != null) {
-                    //cursor carré 
-                    //afficher le type de lemmings
+                    //square cursor
                     if (lem.isRemoved() == false) {
-                        console.log("cursor:" + lem.action.getActionName() + " " + lem.id) + " at " + lem.x + "," + lem.y;
                         this.DrawCursor(this.gameImgProps, false, this.calcPosition2D(this.gameImgProps, this.lastMousePos));
                         this.DrawCursor(this.guiImgProps, true, this.calcPosition2D(this.guiImgProps, this.lastMousePos));
-                        this.CurrentLemmingState = lem.action.getActionName() + " " + (lem.id + 1);
+                        this.CurrentLemmingState = lem.GetCurrentSkill() + " " + (lem.id + 1);
                     }
                 }
             }

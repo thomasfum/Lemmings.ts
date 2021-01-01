@@ -19,6 +19,9 @@ module Lemmings {
         public getActionName(): string {
             return "bashing";
         }
+        public GetLemState(): LemmingStateType{
+            return LemmingStateType.BASHING;
+        }
 
         /** user called this action */
         public triggerLemAction(lem: Lemming): boolean {

@@ -15,6 +15,9 @@ module Lemmings {
         public getActionName(): string {
             return "shruging";
         }
+        public GetLemState(): LemmingStateType{
+            return LemmingStateType.SHRUG;
+        }
 
         public triggerLemAction(lem: Lemming): boolean {
             return false;

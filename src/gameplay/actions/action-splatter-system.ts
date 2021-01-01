@@ -13,6 +13,9 @@ module Lemmings {
         public getActionName(): string {
             return "splatter";
         }
+        public GetLemState(): LemmingStateType{
+            return LemmingStateType.SPLATTING;
+        }
 
         public triggerLemAction(lem: Lemming): boolean {
             return false;

@@ -13,6 +13,9 @@ module Lemmings {
         public getActionName(): string {
             return "oh-no";
         }
+        public GetLemState(): LemmingStateType{
+            return LemmingStateType.OHNO;
+        }
 
         public triggerLemAction(lem: Lemming): boolean {
             return false;

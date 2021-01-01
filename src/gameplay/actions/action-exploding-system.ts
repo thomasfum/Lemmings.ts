@@ -15,6 +15,9 @@ module Lemmings {
         public getActionName(): string {
             return "exploding";
         }
+        public GetLemState(): LemmingStateType{
+            return LemmingStateType.EXPLODING;
+        }
 
         public triggerLemAction(lem: Lemming): boolean {
             return false;

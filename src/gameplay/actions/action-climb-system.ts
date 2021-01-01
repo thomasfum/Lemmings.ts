@@ -15,6 +15,9 @@ module Lemmings {
         public getActionName(): string {
             return "climbing";
         }
+        public GetLemState(): LemmingStateType{
+            return LemmingStateType.CLIMBING;
+        }
 
         public triggerLemAction(lem: Lemming): boolean {
             if (lem.canClimb) {

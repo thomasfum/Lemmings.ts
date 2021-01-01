@@ -14,6 +14,9 @@ module Lemmings {
         public getActionName(): string {
             return "falling";
         }
+        public GetLemState(): LemmingStateType{
+            return LemmingStateType.FALLING;
+        }
 
         public triggerLemAction(lem: Lemming): boolean {
             return false;
