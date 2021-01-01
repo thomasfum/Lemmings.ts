@@ -135,7 +135,7 @@ module Lemmings {
             let dispaly = this.dispaly;
 
             /// background
-            if (this.backgroundChanged) {
+          //  if (this.backgroundChanged) {
                 this.backgroundChanged = false;
 
                 let panelImage = this.skillPanelSprites.getPanelSprite();
@@ -146,7 +146,7 @@ module Lemmings {
                 this.gameTimeChanged = true;
                 this.skillsCountChangd = true;
                 this.skillSelectionChanged = true;
-            }
+            //}
 
             /////////
             /// green text

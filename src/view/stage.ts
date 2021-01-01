@@ -103,13 +103,7 @@ module Lemmings {
             return this.CurrentLemmingState;
         }
 
-        public GetCursor(model: {cross: boolean, x: number; y: number})
-        {
-            model.cross=true;
-            model.x=33;
-            model.y=34;
-           return model;
-        }
+      
 
 
         private displyCursor(p: Position2D)
@@ -123,6 +117,7 @@ module Lemmings {
                 //cursor croix
                 //console.log( "cursor:" + "no lem");
                 this.DrawCursor(this.gameImgProps,true,this.calcPosition2D(this.gameImgProps, this.lastMousePos));
+                this.DrawCursor(this.guiImgProps,true,this.calcPosition2D(this.guiImgProps, this.lastMousePos));
                 this.CurrentLemmingState="";
              }
              else
@@ -135,6 +130,7 @@ module Lemmings {
                     {
                         console.log( "cursor:" + lem.action.getActionName() +" "+ lem.id)+ " at "+lem.x+","+lem.y;
                         this.DrawCursor(this.gameImgProps,false,this.calcPosition2D(this.gameImgProps, this.lastMousePos));
+                        this.DrawCursor(this.guiImgProps,true,this.calcPosition2D(this.guiImgProps, this.lastMousePos));
                         this.CurrentLemmingState=lem.action.getActionName()+" "+ (lem.id+1);
                     }
                 }
@@ -169,6 +165,7 @@ module Lemmings {
                 if (stageImage.display == null) return;
                 this.lastMousePos=e;
                 this.displyCursor( this.calcPosition2D(stageImage, e));
+                
                 
             });
         }

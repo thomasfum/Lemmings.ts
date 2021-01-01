@@ -8342,8 +8342,10 @@ var Lemmings;
             let destH = this.imgData.height;
             let destData = this.imgData.data;
             x1 = (x1 >= destW) ? (destW - 1) : (x1 < 0) ? 0 : x1;
-            y1 = (y1 >= destH) ? (destH - 1) : (y1 < 0) ? 0 : y1;
-            y2 = (y2 >= destH) ? (destH - 1) : (y2 < 0) ? 0 : y2;
+            //            y1 = (y1 >= destH) ? (destH - 1) : (y1 < 0) ? 0 : y1;
+            //          y2 = (y2 >= destH) ? (destH - 1) : (y2 < 0) ? 0 : y2;
+            y1 = (y1 >= destH) ? (destH) : (y1 < 0) ? -1 : y1;
+            y2 = (y2 >= destH) ? (destH) : (y2 < 0) ? -1 : y2;
             for (let y = y1; y <= y2; y += 1) {
                 let destIndex = ((destW * y) + x1) * 4;
                 destData[destIndex] = red;
@@ -8360,8 +8362,12 @@ var Lemmings;
             let destH = this.imgData.height;
             let destData = this.imgData.data;
             x1 = (x1 >= destW) ? (destW - 1) : (x1 < 0) ? 0 : x1;
-            y1 = (y1 >= destH) ? (destH - 1) : (y1 < 0) ? 0 : y1;
+            //            y1 = (y1 >= destH) ? (destH - 1) : (y1 < 0) ? 0 : y1;
             x2 = (x2 >= destW) ? (destW - 1) : (x2 < 0) ? 0 : x2;
+            if (y1 >= destH)
+                return;
+            if (y1 <= 0)
+                return;
             for (let x = x1; x <= x2; x += 1) {
                 let destIndex = ((destW * y1) + x) * 4;
                 destData[destIndex] = red;
@@ -8677,16 +8683,16 @@ var Lemmings;
                 return;
             let dispaly = this.dispaly;
             /// background
-            if (this.backgroundChanged) {
-                this.backgroundChanged = false;
-                let panelImage = this.skillPanelSprites.getPanelSprite();
-                dispaly.initSize(panelImage.width, panelImage.height);
-                dispaly.setBackground(panelImage.getData());
-                /// redraw everything
-                this.gameTimeChanged = true;
-                this.skillsCountChangd = true;
-                this.skillSelectionChanged = true;
-            }
+            //  if (this.backgroundChanged) {
+            this.backgroundChanged = false;
+            let panelImage = this.skillPanelSprites.getPanelSprite();
+            dispaly.initSize(panelImage.width, panelImage.height);
+            dispaly.setBackground(panelImage.getData());
+            /// redraw everything
+            this.gameTimeChanged = true;
+            this.skillsCountChangd = true;
+            this.skillSelectionChanged = true;
+            //}
             /////////
             /// green text
             this.drawGreenString(dispaly, "Out " + this.gameVictoryCondition.getOutCount() + "  ", 112, 0);
@@ -8887,12 +8893,6 @@ var Lemmings;
         GetLemAction() {
             return this.CurrentLemmingState;
         }
-        GetCursor(model) {
-            model.cross = true;
-            model.x = 33;
-            model.y = 34;
-            return model;
-        }
         displyCursor(p) {
             if (this.lemmingManager == null)
                 return;
@@ -8902,6 +8902,7 @@ var Lemmings;
                 //cursor croix
                 //console.log( "cursor:" + "no lem");
                 this.DrawCursor(this.gameImgProps, true, this.calcPosition2D(this.gameImgProps, this.lastMousePos));
+                this.DrawCursor(this.guiImgProps, true, this.calcPosition2D(this.guiImgProps, this.lastMousePos));
                 this.CurrentLemmingState = "";
             }
             else {
@@ -8911,6 +8912,7 @@ var Lemmings;
                     if (lem.isRemoved() == false) {
                         console.log("cursor:" + lem.action.getActionName() + " " + lem.id) + " at " + lem.x + "," + lem.y;
                         this.DrawCursor(this.gameImgProps, false, this.calcPosition2D(this.gameImgProps, this.lastMousePos));
+                        this.DrawCursor(this.guiImgProps, true, this.calcPosition2D(this.guiImgProps, this.lastMousePos));
                         this.CurrentLemmingState = lem.action.getActionName() + " " + (lem.id + 1);
                     }
                 }

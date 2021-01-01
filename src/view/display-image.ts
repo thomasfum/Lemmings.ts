@@ -90,8 +90,12 @@ module Lemmings {
             let destData = this.imgData.data;
 
             x1 = (x1 >= destW) ? (destW - 1) : (x1 < 0) ? 0 : x1;
-            y1 = (y1 >= destH) ? (destH - 1) : (y1 < 0) ? 0 : y1;
-            y2 = (y2 >= destH) ? (destH - 1) : (y2 < 0) ? 0 : y2;
+//            y1 = (y1 >= destH) ? (destH - 1) : (y1 < 0) ? 0 : y1;
+  //          y2 = (y2 >= destH) ? (destH - 1) : (y2 < 0) ? 0 : y2;
+
+            y1 = (y1 >= destH) ? (destH ) : (y1 < 0) ? -1 : y1;
+            y2 = (y2 >= destH) ? (destH ) : (y2 < 0) ? -1: y2;
+
 
             for (let y = y1; y <= y2; y += 1) {
                 let destIndex = ((destW * y) + x1) * 4;
@@ -114,8 +118,13 @@ module Lemmings {
             let destData = this.imgData.data;
 
             x1 = (x1 >= destW) ? (destW - 1) : (x1 < 0) ? 0 : x1;
-            y1 = (y1 >= destH) ? (destH - 1) : (y1 < 0) ? 0 : y1;
+//            y1 = (y1 >= destH) ? (destH - 1) : (y1 < 0) ? 0 : y1;
             x2 = (x2 >= destW) ? (destW - 1) : (x2 < 0) ? 0 : x2;
+            if(y1>=destH)
+                return;
+            if(y1<=0)
+                return;
+
 
             for (let x = x1; x <= x2; x += 1) {
                 let destIndex = ((destW * y1) + x) * 4;
