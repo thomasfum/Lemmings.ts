@@ -1,7 +1,7 @@
 module Lemmings {
 
-    export class DebugView {
-        private log : LogHandler = new LogHandler("DebugView");
+    export class ReleaseView {
+        private log : LogHandler = new LogHandler("ReleaseView");
 
         private levelIndex: number = 0;
         private levelGroupIndex: number = 0;
@@ -23,7 +23,6 @@ module Lemmings {
         public elementSelectLevelGroup: HTMLSelectElement = null;
         public elementLevelName: HTMLElement = null;
         public elementGameState: HTMLElement = null;
-        public elementLevelVictory: HTMLElement = null;
 
         private gameSpeedFactor = 1;
 
@@ -298,7 +297,7 @@ module Lemmings {
 
                 this.gameResources = newGameResources;
 
-                this.arrayToSelect(this.elementSelectLevelGroup, this.gameResources.getLevelGroups());
+               // this.arrayToSelect(this.elementSelectLevelGroup, this.gameResources.getLevelGroups());
                 this.levelGroupIndex = 0;
 
                 this.loadLevel();
@@ -321,13 +320,7 @@ module Lemmings {
                 .then((level) => {
                     if (level == null) return;
 
-
-                //    let a: GameVictoryCondition ;
-                //    a =this.game.getVictoryCondition();
-
                     this.changeHtmlText(this.elementLevelName, level.name);
-                    this.changeHtmlText(this.elementLevelVictory,"Needed: "+level.needCount.toString());
-                   
 
                     if (this.stage != null){
                         let gameDisplay = this.stage.getGameDisplay();
@@ -342,6 +335,8 @@ module Lemmings {
                     window.location.hash = this.buildLevelIndexHash();
 
                     console.dir(level);
+                    //console.log('loaded');
+                    this.start();
                 });
 
         }

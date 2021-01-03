@@ -8144,6 +8144,7 @@ var Lemmings;
             this.elementSelectLevelGroup = null;
             this.elementLevelName = null;
             this.elementGameState = null;
+            this.elementLevelVictory = null;
             this.gameSpeedFactor = 1;
             /// split the hash of the url in parts + reverse
             let hashParts = window.location.hash.substr(1).split(",", 3).reverse();
@@ -8363,7 +8364,10 @@ var Lemmings;
                 .then((level) => {
                 if (level == null)
                     return;
+                //    let a: GameVictoryCondition ;
+                //    a =this.game.getVictoryCondition();
                 this.changeHtmlText(this.elementLevelName, level.name);
+                this.changeHtmlText(this.elementLevelVictory, "Needed: " + level.needCount.toString());
                 if (this.stage != null) {
                     let gameDisplay = this.stage.getGameDisplay();
                     gameDisplay.clear();
@@ -8910,6 +8914,265 @@ var Lemmings;
         }
     }
     Lemmings.GameGui = GameGui;
+})(Lemmings || (Lemmings = {}));
+var Lemmings;
+(function (Lemmings) {
+    class ReleaseView {
+        constructor() {
+            this.log = new Lemmings.LogHandler("ReleaseView");
+            this.levelIndex = 0;
+            this.levelGroupIndex = 0;
+            this.musicIndex = 0;
+            this.soundIndex = 0;
+            this.gameResources = null;
+            this.musicPlayer = null;
+            this.soundPlayer = null;
+            this.game = null;
+            this.gameFactory = new Lemmings.GameFactory("./");
+            this.stage = null;
+            this.elementSoundNumber = null;
+            this.elementTrackNumber = null;
+            this.elementLevelNumber = null;
+            this.elementSelectedGame = null;
+            this.elementSelectLevelGroup = null;
+            this.elementLevelName = null;
+            this.elementGameState = null;
+            this.gameSpeedFactor = 1;
+            /// split the hash of the url in parts + reverse
+            let hashParts = window.location.hash.substr(1).split(",", 3).reverse();
+            this.levelIndex = this.strToNum(hashParts[0]);
+            this.levelGroupIndex = this.strToNum(hashParts[1]);
+            this.gameID = this.strToNum(hashParts[2]);
+            this.log.log("selected level: " + this.gameID + " : " + this.levelIndex + " / " + this.levelGroupIndex);
+        }
+        set gameCanvas(el) {
+            this.stage = new Lemmings.Stage(el);
+        }
+        /** start or continue the game */
+        start(replayString) {
+            if (!this.gameFactory)
+                return;
+            /// is the game already running
+            if (this.game != null) {
+                this.continue();
+                return;
+            }
+            /// create new game
+            this.gameFactory.getGame(this.gameID)
+                .then(game => game.loadLevel(this.levelGroupIndex, this.levelIndex))
+                .then(game => {
+                if (replayString != null) {
+                    game.getCommandManager().loadReplay(replayString);
+                }
+                game.setGameDispaly(this.stage.getGameDisplay(), this.stage);
+                game.setGuiDisplay(this.stage.getGuiDisplay(), this.stage);
+                game.getGameTimer().speedFactor = this.gameSpeedFactor;
+                game.start();
+                this.changeHtmlText(this.elementGameState, Lemmings.GameStateTypes.toString(Lemmings.GameStateTypes.RUNNING));
+                game.onGameEnd.on((state) => this.onGameEnd(state));
+                this.game = game;
+            });
+        }
+        onGameEnd(gameResult) {
+            this.changeHtmlText(this.elementGameState, Lemmings.GameStateTypes.toString(gameResult.state));
+            this.stage.startFadeOut();
+            console.dir(gameResult);
+            window.setTimeout(() => {
+                if (gameResult.state == Lemmings.GameStateTypes.SUCCEEDED) {
+                    /// move to next level
+                    this.moveToLevel(1);
+                }
+                else {
+                    /// redo this level
+                    this.moveToLevel(0);
+                }
+            }, 2500);
+        }
+        /** load and run a replay */
+        loadReplay(replayString) {
+            this.start(replayString);
+        }
+        /** pause the game */
+        cheat() {
+            if (this.game == null) {
+                return;
+            }
+            this.game.cheat();
+        }
+        /** pause the game */
+        suspend() {
+            if (this.game == null) {
+                return;
+            }
+            this.game.getGameTimer().suspend();
+        }
+        /** continue the game after pause/suspend */
+        continue() {
+            if (this.game == null) {
+                return;
+            }
+            this.game.getGameTimer().continue();
+        }
+        nextFrame() {
+            if (this.game == null) {
+                return;
+            }
+            this.game.getGameTimer().tick();
+        }
+        selectSpeedFactor(newSpeed) {
+            if (this.game == null) {
+                return;
+            }
+            this.gameSpeedFactor = newSpeed;
+            this.game.getGameTimer().speedFactor = newSpeed;
+        }
+        playMusic(moveInterval) {
+            this.stopMusic();
+            if (!this.gameResources)
+                return;
+            if (moveInterval == null)
+                moveInterval = 0;
+            this.musicIndex += moveInterval;
+            this.musicIndex = (this.musicIndex < 0) ? 0 : this.musicIndex;
+            this.changeHtmlText(this.elementTrackNumber, this.musicIndex.toString());
+            this.gameResources.getMusicPlayer(this.musicIndex)
+                .then((player) => {
+                this.musicPlayer = player;
+                this.musicPlayer.play();
+            });
+        }
+        stopMusic() {
+            if (this.musicPlayer) {
+                this.musicPlayer.stop();
+                this.musicPlayer = null;
+            }
+        }
+        stopSound() {
+            if (this.soundPlayer) {
+                this.soundPlayer.stop();
+                this.soundPlayer = null;
+            }
+        }
+        playSound(moveInterval) {
+            this.stopSound();
+            if (moveInterval == null)
+                moveInterval = 0;
+            this.soundIndex += moveInterval;
+            this.soundIndex = (this.soundIndex < 0) ? 0 : this.soundIndex;
+            this.changeHtmlText(this.elementSoundNumber, this.soundIndex.toString());
+            this.gameResources.getSoundPlayer(this.soundIndex)
+                .then((player) => {
+                this.soundPlayer = player;
+                this.soundPlayer.play();
+            });
+        }
+        enableDebug() {
+            if (this.game == null) {
+                return;
+            }
+            this.game.setDebugMode(true);
+        }
+        /** add/subtract one to the current levelIndex */
+        moveToLevel(moveInterval) {
+            if (moveInterval == null)
+                moveInterval = 0;
+            this.levelIndex = (this.levelIndex + moveInterval) | 0;
+            /// check if the levelIndex is out of bounds
+            this.gameFactory.getConfig(this.gameID).then((config) => {
+                /// jump to next level group?
+                if (this.levelIndex >= config.level.getGroupLength(this.levelGroupIndex)) {
+                    this.levelGroupIndex++;
+                    this.levelIndex = 0;
+                }
+                /// jump to previous level group?
+                if ((this.levelIndex < 0) && (this.levelGroupIndex > 0)) {
+                    this.levelGroupIndex--;
+                    this.levelIndex = config.level.getGroupLength(this.levelGroupIndex) - 1;
+                }
+                /// update and load level
+                this.changeHtmlText(this.elementLevelNumber, (this.levelIndex + 1).toString());
+                this.loadLevel();
+            });
+        }
+        /** return the url hash for the pressent game/group/level-index */
+        buildLevelIndexHash() {
+            return this.gameID + "," + this.levelGroupIndex + "," + this.levelIndex;
+        }
+        /** convert a string to a number */
+        strToNum(str) {
+            return Number(str) | 0;
+        }
+        /** change the the text of a html element */
+        changeHtmlText(htmlElement, value) {
+            if (htmlElement == null) {
+                return;
+            }
+            htmlElement.innerText = value;
+        }
+        /** remove items of a <select> */
+        clearHtmlList(htmlList) {
+            while (htmlList.options.length) {
+                htmlList.remove(0);
+            }
+        }
+        /** add array elements to a <select> */
+        arrayToSelect(htmlList, list) {
+            this.clearHtmlList(htmlList);
+            for (var i = 0; i < list.length; i++) {
+                var opt = list[i];
+                var el = document.createElement("option");
+                el.textContent = opt;
+                el.value = i.toString();
+                htmlList.appendChild(el);
+            }
+        }
+        /** switch the selected level group */
+        selectLevelGroup(newLevelGroupIndex) {
+            this.levelGroupIndex = newLevelGroupIndex;
+            this.loadLevel();
+        }
+        selectGameType(gameTypeId) {
+            if (gameTypeId == null)
+                gameTypeId = 0;
+            this.gameID = gameTypeId;
+            this.gameFactory.getGameResources(this.gameID)
+                .then((newGameResources) => {
+                this.gameResources = newGameResources;
+                // this.arrayToSelect(this.elementSelectLevelGroup, this.gameResources.getLevelGroups());
+                this.levelGroupIndex = 0;
+                this.loadLevel();
+            });
+        }
+        /** load a level and render it to the display */
+        loadLevel() {
+            if (this.gameResources == null)
+                return;
+            if (this.game != null) {
+                this.game.stop();
+                this.game = null;
+            }
+            this.changeHtmlText(this.elementGameState, Lemmings.GameStateTypes.toString(Lemmings.GameStateTypes.UNKNOWN));
+            this.gameResources.getLevel(this.levelGroupIndex, this.levelIndex)
+                .then((level) => {
+                if (level == null)
+                    return;
+                this.changeHtmlText(this.elementLevelName, level.name);
+                if (this.stage != null) {
+                    let gameDisplay = this.stage.getGameDisplay();
+                    gameDisplay.clear();
+                    this.stage.resetFade();
+                    level.render(gameDisplay);
+                    gameDisplay.setScreenPosition(level.screenPositionX, 0);
+                    gameDisplay.redraw();
+                }
+                window.location.hash = this.buildLevelIndexHash();
+                console.dir(level);
+                //console.log('loaded');
+                this.start();
+            });
+        }
+    }
+    Lemmings.ReleaseView = ReleaseView;
 })(Lemmings || (Lemmings = {}));
 var Lemmings;
 (function (Lemmings) {
