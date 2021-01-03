@@ -54,3 +54,4 @@ Special thanks goes to:
 - DosBox for there OPL emulator
 - Robson Cozendey for his Java OPL3 emulator
 - tomsoftware for the original ts version
+- https://www.camanis.net/lemmings/files/docs/lemmings_main_dat_file_format.txt
