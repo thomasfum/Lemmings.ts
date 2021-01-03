@@ -7,8 +7,8 @@ The goal is to finish it and extand it to custom levels like the ones present he
 
 
 <p style="text-align:center" align="center">
-<a href="http://tfumey.free.fr/lem/lemmings.html">[Play the game]</a>
-<a href="http://lemmings.hmilch.net/">[Play the tomsoftware game]</a>
+<a href="http://tfumey.free.fr/lem/lemmings.html">[Play the game]</a></br>
+<a href="http://lemmings.hmilch.net/">[Play the original tomsoftware game]</a>
 </p>
 
 ## Feature
@@ -17,14 +17,19 @@ The goal is to finish it and extand it to custom levels like the ones present he
 * Read original Lemmings binaries on the fly
 * Support playing of original music by interpreting the adlib.dat file and using an Adlib emulator(s) (DosBox or Robson Cozendey )
 
+## Improvements since fork
+* Map added
+* First version of cursor
+* Long touch support
+* No need to change code to add new levels, use only config.json
+
 ## ToDo
-* add de the map and the original mouse navigation
-* manage mouse cursor
-* add level presentation page (objecrives)
+* add the original mouse navigation
+* add mouse cursor sprite
+* add level presentation page (objectives)
 * add level result page
 * automate music and sound
 * fix some game issues
-* touch support
 
 ## How to run
 * download the *Lemmings.ts.zip* from ![releases](https://github.com/thomasfum/Lemmings.ts/releases)
@@ -49,3 +54,4 @@ Special thanks goes to:
 - DosBox for there OPL emulator
 - Robson Cozendey for his Java OPL3 emulator
 - tomsoftware for the original ts version
+- https://www.camanis.net/lemmings/files/docs/lemmings_main_dat_file_format.txt
