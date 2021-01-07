@@ -8,6 +8,7 @@ The goal is to finish it and extand it to custom levels like the ones present he
 
 <p style="text-align:center" align="center">
 <a href="http://tfumey.free.fr/lem/lemmings.html">[Play the game]</a></br>
+<a href="http://tfumey.free.fr/lem/debug.html">[browse levels and versions with debug version]</a></br>
 <a href="http://lemmings.hmilch.net/">[Play the original tomsoftware game]</a>
 </p>
 
