@@ -56,6 +56,18 @@ module Lemmings {
         }
 
 
+        pagesSprites
+
+        public getPagesSprite(colorPalette:ColorPalette): Promise<pagesSprites> {
+            return new Promise<pagesSprites>((resolve, reject) => {
+
+                this.getMainDat().then(container => {
+
+                    resolve(new pagesSprites(container.getPart(3), container.getPart(4), colorPalette));
+                });
+            });
+        }
+
         public getSkillPanelSprite(colorPalette:ColorPalette): Promise<SkillPanelSprites> {
             return new Promise<SkillPanelSprites>((resolve, reject) => {
 

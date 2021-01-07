@@ -80,13 +80,13 @@ module Lemmings {
                         /// request next resources
                         let maskPromis = this.gameResources.getMasks();
                         let lemPromis = this.gameResources.getLemmingsSprite(this.level.colorPalette);
+                        
 
                         return Promise.all([maskPromis, lemPromis]);
                     })
                     .then(results => {
                         let masks = results[0];
                         let lemSprite = results[1];
-
                         let particleTable = new ParticleTable(this.level.colorPalette);
 
                         /// setup Lemmings
@@ -114,7 +114,11 @@ module Lemmings {
 
                         /// let's start!
                         resolve(this);
-                    });
+                    })
+                    
+                   
+                    
+                    ;
 
             });
         }

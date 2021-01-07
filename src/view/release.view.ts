@@ -1,5 +1,6 @@
 module Lemmings {
 
+
     export class ReleaseView {
         private log : LogHandler = new LogHandler("ReleaseView");
 
@@ -13,8 +14,11 @@ module Lemmings {
         private soundPlayer: AudioPlayer = null;
         private game : Game = null;
         private gameFactory = new GameFactory("./");
+        private currentLevel:Level;
 
         private stage : Stage = null;
+
+        private brownFrame : Frame;
         
         public elementSoundNumber: HTMLElement = null;
         public elementTrackNumber: HTMLElement = null;
@@ -26,6 +30,7 @@ module Lemmings {
 
         private gameSpeedFactor = 1;
 
+        private gameState: number=0;//welcome
 
         public constructor() {
             /// split the hash of the url in parts + reverse
@@ -41,6 +46,16 @@ module Lemmings {
   
         public set gameCanvas(el:HTMLCanvasElement){
             this.stage = new Stage(el);
+            el.addEventListener("mouseup", (e: MouseEvent) => {
+                if( this.gameState==1)
+                {
+                    console.log(" mouse up release ");
+                    this.StartActualGame();
+                }
+                e.stopPropagation();
+                e.preventDefault();
+                return false;
+            });
         }
         
         
@@ -286,11 +301,11 @@ module Lemmings {
         }
 
 
-       public selectGameType(gameTypeId: number) {
+        public selectGameType(gameTypeId: number) {
 
-        if (gameTypeId == null) gameTypeId = 0;
+            if (gameTypeId == null) gameTypeId = 0;
 
-        this.gameID = gameTypeId;
+            this.gameID = gameTypeId;
 
             this.gameFactory.getGameResources(this.gameID)
             .then((newGameResources) => {
@@ -302,8 +317,24 @@ module Lemmings {
 
                 this.loadLevel();
             });
-    }
+        }
 
+        private StartActualGame()
+        {
+            let FullPage =this.stage.getFullPageDisplay();
+            FullPage.clear();
+            FullPage.redraw();
+            console.log("start actual game");
+            let gameDisplay = this.stage.getGameDisplay();
+            gameDisplay.clear();
+            this.stage.resetFade();
+            this.currentLevel.render(gameDisplay);
+            gameDisplay.setScreenPosition(this.currentLevel.screenPositionX, 0);
+            gameDisplay.redraw();
+            this.gameState=2;//palying
+            this.start();
+        
+        }
 
         /** load a level and render it to the display */
         private loadLevel() {
@@ -313,30 +344,75 @@ module Lemmings {
                 this.game = null;
             }
 
+            
 
             this.changeHtmlText(this.elementGameState, GameStateTypes.toString(GameStateTypes.UNKNOWN));
 
             this.gameResources.getLevel(this.levelGroupIndex, this.levelIndex)
                 .then((level) => {
                     if (level == null) return;
-
+                    this.gameState=1;//targets
+                    this.currentLevel=level;
                     this.changeHtmlText(this.elementLevelName, level.name);
+                    let GamePalette: ColorPalette;
+                    GamePalette= new ColorPalette();
+                    GamePalette.setColorRGB(0,     0,  0,  0);//  Black 
+                    GamePalette.setColorRGB(1,   128, 64, 32);//  Browns 
+                    GamePalette.setColorRGB(2,    96, 48, 32);// 
+                    GamePalette.setColorRGB(3,    48,  0, 16);//
+                    GamePalette.setColorRGB(4,    32,  8,124);//  Purples 
+                    GamePalette.setColorRGB(5,    64, 44,144);//
+                    GamePalette.setColorRGB(6,   104, 88,164);// 
+                    GamePalette.setColorRGB(7,   152,140,188);// 
+                    GamePalette.setColorRGB(8,     0, 80,  0);//  Greens
+                    GamePalette.setColorRGB(9,     0, 96, 16);//
+                    GamePalette.setColorRGB(10,    0,112, 32);//
+                    GamePalette.setColorRGB(11,    0,128, 64);//
+                    GamePalette.setColorRGB(12,  208,208,208);//  White 
+                    GamePalette.setColorRGB(13,  176,176,  0);//  Yellow 
+                    GamePalette.setColorRGB(14,   64, 80,176);//  Blue 
+                    GamePalette.setColorRGB(15,   224,128,144);//  Pink 
 
-                    if (this.stage != null){
-                        let gameDisplay = this.stage.getGameDisplay();
-                        gameDisplay.clear();
-                        this.stage.resetFade();
-                        level.render(gameDisplay);
-                        
-                        gameDisplay.setScreenPosition(level.screenPositionX, 0);
-                        gameDisplay.redraw();
-                    }
+                    //ici charger les ressources pour les fontes
+                    let PagesPromis= this.gameResources.getPagesSprite(GamePalette).then((pagspr)=>{
+                        this.brownFrame=pagspr.getPanelSprite();
+                       // pagspr.getLetterSprite("a");
+
+
+                        if (this.stage != null){
+
+                            let gameDisplay = this.stage.getGameDisplay();
+                            gameDisplay.clear();
+                            gameDisplay.redraw();
+                            //fullpage
+                            let FullPage =this.stage.getFullPageDisplay();
+                           
+                            FullPage.clear();
+                            this.stage.resetFade();
+                            level.RenderStart(FullPage,this.gameState,this.brownFrame,pagspr);
+                            this.stage.redrawFullpage();
+                                        
+    /*
+                            //game
+                            let gameDisplay = this.stage.getGameDisplay();
+                            gameDisplay.clear();
+                            this.stage.resetFade();
+                            level.render(gameDisplay);
+                            gameDisplay.setScreenPosition(level.screenPositionX, 0);
+                            gameDisplay.redraw();
+      */                      
+                        }
+
+                    });
+                    
+
+                  
 
                     window.location.hash = this.buildLevelIndexHash();
 
                     console.dir(level);
                     //console.log('loaded');
-                    this.start();
+                   // this.start();
                 });
 
         }

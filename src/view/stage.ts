@@ -7,13 +7,14 @@ module Lemmings {
         private stageCav: HTMLCanvasElement;
         private gameImgProps : StageImageProperties;
         private guiImgProps : StageImageProperties;
+        private FullPageProps : StageImageProperties;
 
         private controller : UserInputManager = null;
         private lemmingManager : LemmingManager = null;
         private lastMousePos: Position2D = null;
         private level:Level;
         private CurrentLemmingState: string ="";
-        
+                
         constructor(canvasForOutput: HTMLCanvasElement) {
             this.controller = new UserInputManager(canvasForOutput);
 
@@ -29,7 +30,10 @@ module Lemmings {
 
             this.guiImgProps = new StageImageProperties();
             this.guiImgProps.viewPoint = new ViewPoint(0, 0, 2);
-            
+
+            //ici
+            this.FullPageProps = new StageImageProperties();
+          
             this.updateStageSize();
 
             this.clear();
@@ -37,6 +41,7 @@ module Lemmings {
 
         }
 
+        
         private calcPosition2D(stageImage:StageImageProperties, e:Position2D):Position2D {
             let x = (stageImage.viewPoint.getSceneX(e.x - stageImage.x));
             let y = (stageImage.viewPoint.getSceneY(e.y - stageImage.y));
@@ -48,7 +53,7 @@ module Lemmings {
         private handleOnDoubleClick(): void {
 
             this.controller.onDoubleClick.on((e) => {
-     
+               
                 let stageImage = this.getStageImageAt(e.x, e.y);
                 if ((stageImage == null) || (stageImage.display == null)) return;
 
@@ -60,7 +65,7 @@ module Lemmings {
         private handleOnMouseDown(): void {
 
             this.controller.onMouseDown.on((e) => {
-     
+               
                 let stageImage = this.getStageImageAt(e.x, e.y);
                 if ((stageImage == null) || (stageImage.display == null)) return;
 
@@ -72,7 +77,6 @@ module Lemmings {
         private handleOnMouseUp(): void {
 
             this.controller.onMouseUp.on((e) => {
-     
                 let stageImage = this.getStageImageAt(e.x, e.y);
                 if ((stageImage == null) || (stageImage.display == null)) return;
 
@@ -224,6 +228,12 @@ module Lemmings {
             this.guiImgProps.height = 80;
             this.guiImgProps.width = stageWidth;
 
+            this.FullPageProps.y=0;
+            this.FullPageProps.height = stageHeight;
+            this.FullPageProps.width = stageWidth;
+
+            
+
         }
 
         public getStageImageAt(x: number, y:number):StageImageProperties {
@@ -237,6 +247,14 @@ module Lemmings {
              && (stageImage.y <= y) && ((stageImage.y + stageImage.height) >= y));
         }
 
+
+        public getFullPageDisplay():DisplayImage {
+            if (this.FullPageProps.display != null) return this.FullPageProps.display;
+            this.FullPageProps.display = new DisplayImage(this);
+            this.FullPageProps.display.initSize(this.FullPageProps.width, this.FullPageProps.height);
+            return this.FullPageProps.display;
+        }
+        
         public getGameDisplay():DisplayImage {
             if (this.gameImgProps.display != null) return this.gameImgProps.display;
             this.gameImgProps.display = new DisplayImage(this);
@@ -257,6 +275,19 @@ module Lemmings {
             
         }
 
+
+
+              /** redraw everything */
+              public redrawFullpage() {
+    
+                if (this.FullPageProps.display != null) {
+
+                    let FullPageImg = this.FullPageProps.display.getImageData();
+                    this.draw(this.FullPageProps, FullPageImg);
+                };
+    
+            }
+
         /** redraw everything */
         public redraw() {
             
@@ -271,6 +302,12 @@ module Lemmings {
                 let guiImg = this.guiImgProps.display.getImageData();
                 this.draw(this.guiImgProps, guiImg);
             };
+/*
+            if (this.FullPageProps.display != null) {
+                let FullPageImg = this.FullPageProps.display.getImageData();
+                this.draw(this.FullPageProps, FullPageImg);
+            };
+*/
         }
 
 
@@ -278,8 +315,11 @@ module Lemmings {
             if (display == this.gameImgProps.display) {
                 return this.gameImgProps.createImage(width, height);
             }
-            else {
+            if (display == this.guiImgProps.display) {
                 return this.guiImgProps.createImage(width, height);
+            }
+            if (display == this.FullPageProps.display) {
+                return this.FullPageProps.createImage(width, height);
             }
         }
 

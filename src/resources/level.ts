@@ -20,6 +20,7 @@ module Lemmings {
 
         public gameID: number;
         public levelMode: number;
+        public levelModeText: string;
         public levelIndex: number;
 
         public name: string = "";
@@ -153,6 +154,46 @@ module Lemmings {
         constructor(width: number, height: number) {
             this.width = width;
             this.height = height;
+        }
+
+        public RenderStart(pageDisplay: DisplayImage, gameState: number, brownFrame: Frame,sprites: pagesSprites)
+        {
+            if(gameState==1)//target
+            {
+               
+                console.log("Level "+this.levelIndex+1);
+                console.log("Name "+this.name);
+                console.log("Number of Lemmings "+this.releaseCount);
+                console.log(Math.round(this.needCount*100/this.releaseCount)+ "% To Be Saved");
+                console.log("Release Rate "+this.releaseRate);
+                console.log("Time "+this.timeLimit +" Minutes");
+                console.log("Rating "+this.levelModeText);// +" ( " +this.levelMode+" )");
+
+                pageDisplay.drawFrame(brownFrame,0,0);
+
+                //pagspr.getLetterSprite("a");
+                this.drawString(pageDisplay,"Start",10,50,sprites);
+                //pageDisplay.drawRect(10,50,16,16,250,250,20);
+                //section 4 details  
+                // [0x69B0]     "!" 
+            }
+        }
+
+         /** draw a text with green letters */
+         private drawString(dispaly: DisplayImage, text: string, x: number, y: number,sprites: pagesSprites): number {
+
+            for (let i = 0; i < text.length; i++) {
+
+                let letterImg = sprites.getLetterSprite(text[i]);
+
+                if (letterImg != null) {
+                    dispaly.drawFrameCovered(letterImg, x, y, 0, 0, 0);
+                }
+
+                x += 16;
+            }
+
+            return x;
         }
 
         /** render ground to display */

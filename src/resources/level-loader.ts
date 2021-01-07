@@ -48,7 +48,7 @@
                         level.gameID = this.config.gameID;
                         level.levelIndex = levelIndex;
                         level.levelMode = levelMode;
-
+                        level.levelModeText=this.config.level.groups[levelMode];
                         level.screenPositionX = levelReader.screenPositionX;
                         level.isSuperLemming = levelReader.isSuperLemming;
                         
