@@ -16,9 +16,9 @@ module Lemmings {
             return this.panelSprite;
         }
 
-        // return a green letter 
+        // return a purple letter 
         public getLetterSprite(letter:string) : Frame {
-            return this.letterSprite[letter.toUpperCase()];
+            return this.letterSprite[letter];
         }
 /*
         // return a number letter 
@@ -50,13 +50,16 @@ module Lemmings {
             for (let l = 0; l < letters.length; l++) {
                 let paletteImg = new PaletteImage(16, 16);
                 paletteImg.processImage(fr4, 3);
+                paletteImg.processTransparentByColorIndex(0);
                 this.letterSprite[letters[l]] = paletteImg.createFrame(colorPalette);
             }
-
+            /*
             /// add space
             let emptyFrame = new Frame(16, 16);
             emptyFrame.fill(0, 0, 0);
+            emptyFrame.processTransparentByColorIndex(0);
             this.letterSprite[" "] = emptyFrame;
+            */
 /*
             let blackAndWithPalette = new ColorPalette();
             blackAndWithPalette.setColorRGB(1, 255, 255, 255);

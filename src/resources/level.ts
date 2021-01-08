@@ -169,13 +169,25 @@ module Lemmings {
                 console.log("Time "+this.timeLimit +" Minutes");
                 console.log("Rating "+this.levelModeText);// +" ( " +this.levelMode+" )");
 
-                pageDisplay.drawFrame(brownFrame,0,0);
+                pageDisplay.drawFrame(brownFrame, 0, 0);
+                pageDisplay.drawFrame(brownFrame, 0, 104);
+                pageDisplay.drawFrame(brownFrame, 320, 0);
+                pageDisplay.drawFrame(brownFrame, 320, 104);
+                pageDisplay.drawFrame(brownFrame, 0, 208);
+                pageDisplay.drawFrame(brownFrame, 0, 312);
+                pageDisplay.drawFrame(brownFrame, 320, 208);
+                pageDisplay.drawFrame(brownFrame, 320, 312);
 
-                //pagspr.getLetterSprite("a");
-                this.drawString(pageDisplay,"Start",10,50,sprites);
-                //pageDisplay.drawRect(10,50,16,16,250,250,20);
-                //section 4 details  
-                // [0x69B0]     "!" 
+                let x = 160;
+                let y = 70;
+                this.drawString(pageDisplay, "Level " + (this.levelIndex + 1) + this.name, 0, y + 26, sprites);
+                this.drawString(pageDisplay, "Number of Lemmings " + this.releaseCount, x, y +70, sprites);
+                this.drawString(pageDisplay, Math.round(this.needCount * 100 / this.releaseCount) + "% To Be Saved", x, y +70+ 38, sprites);
+                this.drawString(pageDisplay, "Release Rate " + this.releaseRate, x, y +70+ (2*38), sprites);
+                this.drawString(pageDisplay, "Time " + this.timeLimit + " Minutes", x, y + 70 + (3 * 38), sprites);
+                this.drawString(pageDisplay, "Rating  " + this.levelModeText, x, y+70 + (4 * 38), sprites);// +" ( " +this.levelMode+" )");
+                this.drawString(pageDisplay, "Press mouse button to continue" , 80, y +280, sprites);// +" ( " +this.levelMode+" )");
+                
             }
         }
 
@@ -183,13 +195,10 @@ module Lemmings {
          private drawString(dispaly: DisplayImage, text: string, x: number, y: number,sprites: pagesSprites): number {
 
             for (let i = 0; i < text.length; i++) {
-
                 let letterImg = sprites.getLetterSprite(text[i]);
-
                 if (letterImg != null) {
-                    dispaly.drawFrameCovered(letterImg, x, y, 0, 0, 0);
+                    dispaly.drawFrame(letterImg, x, y);
                 }
-
                 x += 16;
             }
 

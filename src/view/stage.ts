@@ -33,6 +33,7 @@ module Lemmings {
 
             //ici
             this.FullPageProps = new StageImageProperties();
+            this.FullPageProps.viewPoint.scale = 1;
           
             this.updateStageSize();
 
