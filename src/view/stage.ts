@@ -14,8 +14,10 @@ module Lemmings {
         private lastMousePos: Position2D = null;
         private level:Level;
         private CurrentLemmingState: string ="";
+        private GamePalette: ColorPalette=null;
+
                 
-        constructor(canvasForOutput: HTMLCanvasElement) {
+        constructor(canvasForOutput: HTMLCanvasElement,GamePalette: ColorPalette ) {
             this.controller = new UserInputManager(canvasForOutput);
 
             this.handleOnMouseUp();
@@ -23,6 +25,8 @@ module Lemmings {
             this.handleOnMouseMove();
             this.handleOnDoubleClick();
             this.handelOnZoom();
+
+            this.GamePalette= GamePalette;
 
             this.stageCav = canvasForOutput;
 
@@ -93,12 +97,103 @@ module Lemmings {
             let cursorsize=10;
             if(cross==true)
             {
-                gameImg.display.drawVerticalLine(pos.x,pos.y-cursorsize,pos.y+cursorsize,200,100,100);
-                gameImg.display.drawHorizontalLine(pos.x-cursorsize,pos.y,pos.x+cursorsize,200,100,100);
+
+                //gameImg.display.drawVerticalLine(pos.x,pos.y-cursorsize,pos.y+cursorsize,200,100,100);
+                //gameImg.display.drawHorizontalLine(pos.x-cursorsize,pos.y,pos.x+cursorsize,200,100,100);
+                //center
+                gameImg.display.setPixel(pos.x,pos.y,this.GamePalette.getR(14),this.GamePalette.getG(14),this.GamePalette.getB(14));
+                gameImg.display.setPixel(pos.x+1,pos.y+1,this.GamePalette.getR(14),this.GamePalette.getG(14),this.GamePalette.getB(14));
+                gameImg.display.setPixel(pos.x,pos.y+1,this.GamePalette.getR(14),this.GamePalette.getG(14),this.GamePalette.getB(14));
+                gameImg.display.setPixel(pos.x+1,pos.y,this.GamePalette.getR(14),this.GamePalette.getG(14),this.GamePalette.getB(14));
+                //up
+                gameImg.display.setPixel(pos.x,pos.y-2,this.GamePalette.getR(12),this.GamePalette.getG(12),this.GamePalette.getB(12));
+                gameImg.display.setPixel(pos.x+1,pos.y-2,this.GamePalette.getR(11),this.GamePalette.getG(11),this.GamePalette.getB(11));
+                gameImg.display.setPixel(pos.x,pos.y-4,this.GamePalette.getR(12),this.GamePalette.getG(12),this.GamePalette.getB(12));
+                gameImg.display.setPixel(pos.x+1,pos.y-4,this.GamePalette.getR(11),this.GamePalette.getG(11),this.GamePalette.getB(11));
+                gameImg.display.setPixel(pos.x,pos.y-6,this.GamePalette.getR(12),this.GamePalette.getG(12),this.GamePalette.getB(12));
+                gameImg.display.setPixel(pos.x+1,pos.y-6,this.GamePalette.getR(11),this.GamePalette.getG(11),this.GamePalette.getB(11));
+                //down
+                gameImg.display.setPixel(pos.x,pos.y+3,this.GamePalette.getR(11),this.GamePalette.getG(11),this.GamePalette.getB(11));
+                gameImg.display.setPixel(pos.x+1,pos.y+3,this.GamePalette.getR(12),this.GamePalette.getG(12),this.GamePalette.getB(12));
+                gameImg.display.setPixel(pos.x,pos.y+5,this.GamePalette.getR(11),this.GamePalette.getG(11),this.GamePalette.getB(11));
+                gameImg.display.setPixel(pos.x+1,pos.y+5,this.GamePalette.getR(12),this.GamePalette.getG(12),this.GamePalette.getB(12));
+                gameImg.display.setPixel(pos.x,pos.y+7,this.GamePalette.getR(11),this.GamePalette.getG(11),this.GamePalette.getB(11));
+                gameImg.display.setPixel(pos.x+1,pos.y+7,this.GamePalette.getR(12),this.GamePalette.getG(12),this.GamePalette.getB(12));
+                //left
+                gameImg.display.setPixel(pos.x-2,pos.y,this.GamePalette.getR(11),this.GamePalette.getG(11),this.GamePalette.getB(11));
+                gameImg.display.setPixel(pos.x-2,pos.y+1,this.GamePalette.getR(12),this.GamePalette.getG(12),this.GamePalette.getB(12));
+                gameImg.display.setPixel(pos.x-4,pos.y,this.GamePalette.getR(11),this.GamePalette.getG(11),this.GamePalette.getB(11));
+                gameImg.display.setPixel(pos.x-4,pos.y+1,this.GamePalette.getR(12),this.GamePalette.getG(12),this.GamePalette.getB(12));
+                gameImg.display.setPixel(pos.x-6,pos.y,this.GamePalette.getR(11),this.GamePalette.getG(11),this.GamePalette.getB(11));
+                gameImg.display.setPixel(pos.x-6,pos.y+1,this.GamePalette.getR(12),this.GamePalette.getG(12),this.GamePalette.getB(12));
+                //right
+                gameImg.display.setPixel(pos.x+3,pos.y,this.GamePalette.getR(12),this.GamePalette.getG(12),this.GamePalette.getB(12));
+                gameImg.display.setPixel(pos.x+3,pos.y+1,this.GamePalette.getR(11),this.GamePalette.getG(11),this.GamePalette.getB(11));
+                gameImg.display.setPixel(pos.x+5,pos.y,this.GamePalette.getR(12),this.GamePalette.getG(12),this.GamePalette.getB(12));
+                gameImg.display.setPixel(pos.x+5,pos.y+1,this.GamePalette.getR(11),this.GamePalette.getG(11),this.GamePalette.getB(11));
+                gameImg.display.setPixel(pos.x+7,pos.y,this.GamePalette.getR(12),this.GamePalette.getG(12),this.GamePalette.getB(12));
+                gameImg.display.setPixel(pos.x+7,pos.y+1,this.GamePalette.getR(11),this.GamePalette.getG(11),this.GamePalette.getB(11));
+                
+
             }
             else
             {
-                gameImg.display.drawRect(pos.x-cursorsize,pos.y-cursorsize,cursorsize*2,cursorsize*2,200,100,100);
+               // gameImg.display.drawRect(pos.x-cursorsize,pos.y-cursorsize,cursorsize*2,cursorsize*2,200,100,100);
+
+                //top    
+                gameImg.display.setPixel(pos.x,pos.y -6,this.GamePalette.getR(14),this.GamePalette.getG(14),this.GamePalette.getB(14));
+                gameImg.display.setPixel(pos.x+1,pos.y-6 ,this.GamePalette.getR(14),this.GamePalette.getG(14),this.GamePalette.getB(14));
+                
+                gameImg.display.setPixel(pos.x-3,pos.y -6,this.GamePalette.getR(12),this.GamePalette.getG(12),this.GamePalette.getB(12));
+                gameImg.display.setPixel(pos.x-4,pos.y-6 ,this.GamePalette.getR(12),this.GamePalette.getG(12),this.GamePalette.getB(12));
+                
+                gameImg.display.setPixel(pos.x+4,pos.y -6,this.GamePalette.getR(12),this.GamePalette.getG(12),this.GamePalette.getB(12));
+                gameImg.display.setPixel(pos.x+5,pos.y-6 ,this.GamePalette.getR(12),this.GamePalette.getG(12),this.GamePalette.getB(12));
+                
+                gameImg.display.setPixel(pos.x-5,pos.y -6,this.GamePalette.getR(11),this.GamePalette.getG(11),this.GamePalette.getB(11));
+                gameImg.display.setPixel(pos.x-6,pos.y-6 ,this.GamePalette.getR(11),this.GamePalette.getG(11),this.GamePalette.getB(11));
+
+                gameImg.display.setPixel(pos.x+6,pos.y -6,this.GamePalette.getR(11),this.GamePalette.getG(11),this.GamePalette.getB(11));
+                gameImg.display.setPixel(pos.x+7,pos.y-6 ,this.GamePalette.getR(11),this.GamePalette.getG(11),this.GamePalette.getB(11));
+  
+                //bottom
+                gameImg.display.setPixel(pos.x,pos.y +7,this.GamePalette.getR(14),this.GamePalette.getG(14),this.GamePalette.getB(14));
+                gameImg.display.setPixel(pos.x+1,pos.y +7 ,this.GamePalette.getR(14),this.GamePalette.getG(14),this.GamePalette.getB(14));
+                gameImg.display.setPixel(pos.x-3,pos.y +7,this.GamePalette.getR(12),this.GamePalette.getG(12),this.GamePalette.getB(12));
+                gameImg.display.setPixel(pos.x-4,pos.y+7 ,this.GamePalette.getR(12),this.GamePalette.getG(12),this.GamePalette.getB(12));
+                gameImg.display.setPixel(pos.x+4,pos.y +7,this.GamePalette.getR(12),this.GamePalette.getG(12),this.GamePalette.getB(12));
+                gameImg.display.setPixel(pos.x+5,pos.y+7 ,this.GamePalette.getR(12),this.GamePalette.getG(12),this.GamePalette.getB(12));
+
+                gameImg.display.setPixel(pos.x-5,pos.y+7,this.GamePalette.getR(11),this.GamePalette.getG(11),this.GamePalette.getB(11));
+                gameImg.display.setPixel(pos.x-6,pos.y+7 ,this.GamePalette.getR(11),this.GamePalette.getG(11),this.GamePalette.getB(11));
+
+                gameImg.display.setPixel(pos.x+6,pos.y +7,this.GamePalette.getR(11),this.GamePalette.getG(11),this.GamePalette.getB(11));
+                gameImg.display.setPixel(pos.x+7,pos.y+7 ,this.GamePalette.getR(11),this.GamePalette.getG(11),this.GamePalette.getB(11));
+
+                //left
+                gameImg.display.setPixel(pos.x-6,pos.y -5,this.GamePalette.getR(11),this.GamePalette.getG(11),this.GamePalette.getB(11));
+                gameImg.display.setPixel(pos.x-6,pos.y-4,this.GamePalette.getR(12),this.GamePalette.getG(12),this.GamePalette.getB(12));
+                gameImg.display.setPixel(pos.x-6,pos.y-3,this.GamePalette.getR(12),this.GamePalette.getG(12),this.GamePalette.getB(12));
+
+                gameImg.display.setPixel(pos.x-6,pos.y +0,this.GamePalette.getR(14),this.GamePalette.getG(14),this.GamePalette.getB(14));
+                gameImg.display.setPixel(pos.x-6,pos.y +1 ,this.GamePalette.getR(14),this.GamePalette.getG(14),this.GamePalette.getB(14));
+               
+                gameImg.display.setPixel(pos.x-6,pos.y+4,this.GamePalette.getR(12),this.GamePalette.getG(12),this.GamePalette.getB(12));
+                gameImg.display.setPixel(pos.x-6,pos.y+5,this.GamePalette.getR(12),this.GamePalette.getG(12),this.GamePalette.getB(12));
+                gameImg.display.setPixel(pos.x-6,pos.y+6 ,this.GamePalette.getR(11),this.GamePalette.getG(11),this.GamePalette.getB(11));
+
+                //right
+                gameImg.display.setPixel(pos.x+7,pos.y -5,this.GamePalette.getR(11),this.GamePalette.getG(11),this.GamePalette.getB(11));
+                gameImg.display.setPixel(pos.x+7,pos.y-4,this.GamePalette.getR(12),this.GamePalette.getG(12),this.GamePalette.getB(12));
+                gameImg.display.setPixel(pos.x+7,pos.y-3,this.GamePalette.getR(12),this.GamePalette.getG(12),this.GamePalette.getB(12));
+
+                gameImg.display.setPixel(pos.x+7,pos.y +0,this.GamePalette.getR(14),this.GamePalette.getG(14),this.GamePalette.getB(14));
+                gameImg.display.setPixel(pos.x+7,pos.y +1 ,this.GamePalette.getR(14),this.GamePalette.getG(14),this.GamePalette.getB(14));
+               
+                gameImg.display.setPixel(pos.x+7,pos.y+4,this.GamePalette.getR(12),this.GamePalette.getG(12),this.GamePalette.getB(12));
+                gameImg.display.setPixel(pos.x+7,pos.y+5,this.GamePalette.getR(12),this.GamePalette.getG(12),this.GamePalette.getB(12));
+                gameImg.display.setPixel(pos.x+7,pos.y+6 ,this.GamePalette.getR(11),this.GamePalette.getG(11),this.GamePalette.getB(11));
+  
             }
         }
         

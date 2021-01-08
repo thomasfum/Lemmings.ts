@@ -217,39 +217,35 @@ module Lemmings {
                     }
                     else
                     {
-                        
-                        
-
-
-                        if (survivorPercent < Math.round(this.needCount * 100 / this.releaseCount)) {
                             let diff = survivorPercent / Math.round(this.needCount * 100 / this.releaseCount);
+                            console.log("Diff="+diff);
                             if (diff < 0.5) {
                                 //2% / 50% -> 22% / 50%
                                 line1 = "Better rethink your strategy  before";
                                 line2 = "     you try this level again!";
-                            }else if (diff < 0.9) {
+                            }
+                            if ((diff > 0.5)&&(diff <= 0.9))
+                             {
                                 //27/50%
                                 line1 = "A little more practice on this level";
                                 line2 = "     is definitely recommended";
                             }
-                            else  { //46 / 50%
+                            if ((diff >=1)&&(diff <= 1.1))
+                            { //46 / 50%
                                 line1 = "RIGHT ON. You can't get much closer";
                                 line2 = " than that. Let's try the next...";
                             }
-                        }
-
-                        if (survivorPercent > Math.round(this.needCount * 100 / this.releaseCount)) {
-                            let diff = survivorPercent / Math.round(this.needCount * 100 / this.releaseCount);
+                            if ((diff > 1.1)&&(diff <= 5)) {//20% / 10%
+                                
+                                line1 = "That level seemed no problem to you on";
+                                line2 = "that attempt. Onto the next....";
+                            }
                             if (diff > 5) {//70% /10%
                                 line1 = "   You totally stormed that level!";
                                 line2 = "Let's see if you can storm the next...";
                             }
-                            else {//20% / 10%
-                                line1 = "That level seemed no problem to you on";
-                                line2 = "that attempt. Onto the next....";
-                            }
 
-                        }
+                        
                     }
 
                

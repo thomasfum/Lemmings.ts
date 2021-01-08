@@ -67,7 +67,7 @@ module Lemmings {
 
   
         public set gameCanvas(el:HTMLCanvasElement){
-            this.stage = new Stage(el);
+            this.stage = new Stage(el,  this.GamePalette);
             el.addEventListener("mouseup", (e: MouseEvent) => {
                 if( this.gameState==1)
                 {
@@ -163,9 +163,9 @@ module Lemmings {
             console.dir(gameResult);
 
             console.log("Level end");
-            this.suspend();
+            
             window.setTimeout(() => {
-
+                this.suspend();
                 //----------------------------
                 if (gameResult.state == GameStateTypes.SUCCEEDED) {
                     this.gameState = 3;//results good
