@@ -51,6 +51,10 @@
                         level.levelModeText=this.config.level.groups[levelMode];
                         level.screenPositionX = levelReader.screenPositionX;
                         level.isSuperLemming = levelReader.isSuperLemming;
+                        level.accessCode = "";
+                        if (levelMode < this.config.level.accessCode.length)
+                            if (levelIndex < this.config.level.accessCode[levelMode].length)
+                                level.accessCode=this.config.level.accessCode[levelMode][levelIndex];
                         
                         /// default level properties
                         let levelProperties = levelReader.levelProperties

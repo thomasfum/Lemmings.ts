@@ -280,9 +280,7 @@ module Lemmings {
 
               /** redraw everything */
               public redrawFullpage() {
-    
                 if (this.FullPageProps.display != null) {
-
                     let FullPageImg = this.FullPageProps.display.getImageData();
                     this.draw(this.FullPageProps, FullPageImg);
                 };
@@ -365,10 +363,7 @@ module Lemmings {
 
         /** draw everything to the stage/display */
         private draw(display:StageImageProperties, img:ImageData) {
-            
             if (display.ctx == null) return;
-
-  
 
             /// write image to context
             display.ctx.putImageData(img, 0, 0);

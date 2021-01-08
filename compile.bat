@@ -1,0 +1,1 @@
+tsc -p ./src/tsconfig_2017.json

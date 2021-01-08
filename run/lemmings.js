@@ -436,6 +436,7 @@ var Lemmings;
              *     ->  (FileId * 10 + FilePart) * (useOddTabelEntry? -1 : 1)
              */
             this.order = [];
+            this.accessCode = [];
         }
         getGroupLength(groupIndex) {
             if ((groupIndex < 0) || (groupIndex > this.order.length)) {
@@ -1618,6 +1619,10 @@ var Lemmings;
                     level.levelModeText = this.config.level.groups[levelMode];
                     level.screenPositionX = levelReader.screenPositionX;
                     level.isSuperLemming = levelReader.isSuperLemming;
+                    level.accessCode = "";
+                    if (levelMode < this.config.level.accessCode.length)
+                        if (levelIndex < this.config.level.accessCode[levelMode].length)
+                            level.accessCode = this.config.level.accessCode[levelMode][levelIndex];
                     /// default level properties
                     let levelProperties = levelReader.levelProperties;
                     /// switch level properties to odd table config
@@ -1689,6 +1694,7 @@ var Lemmings;
             this.skills = new Array(Lemmings.SkillTypes.length());
             this.screenPositionX = 0;
             this.isSuperLemming = false;
+            this.accessCode = "";
             this.width = width;
             this.height = height;
         }
@@ -1773,7 +1779,16 @@ var Lemmings;
             this.colorPalette = colorPalette;
             this.groundPalette = groundPalette;
         }
-        RenderStart(pageDisplay, gameState, brownFrame, sprites) {
+        RenderStart(pageDisplay, gameState, brownFrame, sprites, survivorPercent) {
+            pageDisplay.clear();
+            pageDisplay.drawFrame(brownFrame, 0, 0);
+            pageDisplay.drawFrame(brownFrame, 0, 104);
+            pageDisplay.drawFrame(brownFrame, 320, 0);
+            pageDisplay.drawFrame(brownFrame, 320, 104);
+            pageDisplay.drawFrame(brownFrame, 0, 208);
+            pageDisplay.drawFrame(brownFrame, 0, 312);
+            pageDisplay.drawFrame(brownFrame, 320, 208);
+            pageDisplay.drawFrame(brownFrame, 320, 312);
             if (gameState == 1) //target
              {
                 console.log("Level " + this.levelIndex + 1);
@@ -1783,25 +1798,76 @@ var Lemmings;
                 console.log("Release Rate " + this.releaseRate);
                 console.log("Time " + this.timeLimit + " Minutes");
                 console.log("Rating " + this.levelModeText); // +" ( " +this.levelMode+" )");
-                pageDisplay.drawFrame(brownFrame, 0, 0);
-                pageDisplay.drawFrame(brownFrame, 0, 104);
-                pageDisplay.drawFrame(brownFrame, 320, 0);
-                pageDisplay.drawFrame(brownFrame, 320, 104);
-                pageDisplay.drawFrame(brownFrame, 0, 208);
-                pageDisplay.drawFrame(brownFrame, 0, 312);
-                pageDisplay.drawFrame(brownFrame, 320, 208);
-                pageDisplay.drawFrame(brownFrame, 320, 312);
                 let x = 160;
                 let y = 70;
                 this.drawString(pageDisplay, "Level " + (this.levelIndex + 1) + this.name, 0, y + 26, sprites);
-                //this.drawString(pageDisplay, this.name, x, y +26, sprites);
                 this.drawString(pageDisplay, "Number of Lemmings " + this.releaseCount, x, y + 70, sprites);
                 this.drawString(pageDisplay, Math.round(this.needCount * 100 / this.releaseCount) + "% To Be Saved", x, y + 70 + 38, sprites);
                 this.drawString(pageDisplay, "Release Rate " + this.releaseRate, x, y + 70 + (2 * 38), sprites);
                 this.drawString(pageDisplay, "Time " + this.timeLimit + " Minutes", x, y + 70 + (3 * 38), sprites);
-                this.drawString(pageDisplay, "Rating " + this.levelModeText, x, y + 70 + (4 * 38), sprites); // +" ( " +this.levelMode+" )");
+                this.drawString(pageDisplay, "Rating  " + this.levelModeText, x, y + 70 + (4 * 38), sprites); // +" ( " +this.levelMode+" )");
                 this.drawString(pageDisplay, "Press mouse button to continue", 80, y + 280, sprites); // +" ( " +this.levelMode+" )");
-                //pageDisplay.drawRect(10,50,16,16,250,250,20);
+            }
+            if ((gameState == 3) || (gameState == 4)) //result ok
+             {
+                pageDisplay.clear();
+                this.drawString(pageDisplay, "All lemmings accounted for.", 113, 20, sprites);
+                this.drawString(pageDisplay, "You rescued " + Math.round(this.needCount * 100 / this.releaseCount) + "%", 224, 57, sprites);
+                this.drawString(pageDisplay, "You needed  " + survivorPercent + "%", 224, 77, sprites);
+                //0%
+                let line1 = "";
+                let line2 = "";
+                if (survivorPercent == 0) {
+                    line1 = "ROCK BOTTOM! I hope for your sake";
+                    line2 = "    that you nuked that level";
+                }
+                else if (survivorPercent == 100) {
+                    line1 = "Superb! You rescued every lemmings on";
+                    line2 = "that level. Can you do it again....?";
+                }
+                else {
+                    if (survivorPercent < Math.round(this.needCount * 100 / this.releaseCount)) {
+                        let diff = survivorPercent / Math.round(this.needCount * 100 / this.releaseCount);
+                        if (diff < 0.5) {
+                            //2% / 50% -> 22% / 50%
+                            line1 = "Better rethink your strategy  before";
+                            line2 = "     you try this level again!";
+                        }
+                        else if (diff < 0.9) {
+                            //27/50%
+                            line1 = "A little more practice on this level";
+                            line2 = "     is definitely recommended";
+                        }
+                        else { //46 / 50%
+                            line1 = "RIGHT ON. You can't get much closer";
+                            line2 = " than that. Let's try the next...";
+                        }
+                    }
+                    if (survivorPercent > Math.round(this.needCount * 100 / this.releaseCount)) {
+                        let diff = survivorPercent / Math.round(this.needCount * 100 / this.releaseCount);
+                        if (diff > 5) { //70% /10%
+                            line1 = "   You totally stormed that level!";
+                            line2 = "Let's see if you can storm the next...";
+                        }
+                        else { //20% / 10%
+                            line1 = "That level seemed no problem to you on";
+                            line2 = "that attempt. Onto the next....";
+                        }
+                    }
+                }
+                this.drawString(pageDisplay, line1, 40, 130, sprites);
+                this.drawString(pageDisplay, line2, 40, 150, sprites);
+                if (gameState == 3) //result good
+                 {
+                    if (this.accessCode != "") {
+                        this.drawString(pageDisplay, "Your Access Code for Level " + (this.levelIndex + 2), 78, 258, sprites);
+                        this.drawString(pageDisplay, "is " + this.accessCode, 227, 278, sprites);
+                    }
+                    this.drawString(pageDisplay, "Press left mouse button for next level", 23, 332, sprites);
+                }
+                if (gameState == 4) //result bad
+                    this.drawString(pageDisplay, "Press left mouse button to retry level", 23, 332, sprites);
+                this.drawString(pageDisplay, "Press right mouse button for menu", 58, 352, sprites);
             }
         }
         /** draw a text with green letters */
@@ -2306,6 +2372,7 @@ var Lemmings;
                 newConfig.level.order = configData["level.order"];
                 newConfig.level.filePrefix = configData["level.filePrefix"];
                 newConfig.level.groups = configData["level.groups"];
+                newConfig.level.accessCode = configData["level.accessCode"];
                 /// read audio config
                 newConfig.audioConfig.version = configData["audio.version"];
                 newConfig.audioConfig.adlibChannelConfigPosition = configData["audio.adlibChannelConfigPosition"];
@@ -2700,9 +2767,11 @@ var Lemmings;
             }
         }
         clear() {
+            console.log("clear1");
             if (this.imgData == null)
                 return;
             let img = new Uint32Array(this.imgData.data);
+            console.log("clear2:" + img.length);
             for (let i = 0; i < img.length; i++) {
                 img[i] = 0xFF00FF00;
             }
@@ -3215,6 +3284,7 @@ var Lemmings;
             this.game = null;
             this.gameFactory = new Lemmings.GameFactory("./");
             this.stage = null;
+            this.GamePalette = null;
             this.elementSoundNumber = null;
             this.elementTrackNumber = null;
             this.elementLevelNumber = null;
@@ -3223,12 +3293,29 @@ var Lemmings;
             this.elementLevelName = null;
             this.elementGameState = null;
             this.gameSpeedFactor = 1;
-            this.gameState = 0; //welcome
+            this.gameState = 0; //0=welcome,1=target,2=playing,3=results good;4=result bad
             /// split the hash of the url in parts + reverse
             let hashParts = window.location.hash.substr(1).split(",", 3).reverse();
             this.levelIndex = this.strToNum(hashParts[0]);
             this.levelGroupIndex = this.strToNum(hashParts[1]);
             this.gameID = this.strToNum(hashParts[2]);
+            this.GamePalette = new Lemmings.ColorPalette();
+            this.GamePalette.setColorRGB(0, 0, 0, 0); //  Black 
+            this.GamePalette.setColorRGB(1, 128, 64, 32); //  Browns 
+            this.GamePalette.setColorRGB(2, 96, 48, 32); // 
+            this.GamePalette.setColorRGB(3, 48, 0, 16); //
+            this.GamePalette.setColorRGB(4, 32, 8, 124); //  Purples 
+            this.GamePalette.setColorRGB(5, 64, 44, 144); //
+            this.GamePalette.setColorRGB(6, 104, 88, 164); // 
+            this.GamePalette.setColorRGB(7, 152, 140, 188); // 
+            this.GamePalette.setColorRGB(8, 0, 80, 0); //  Greens
+            this.GamePalette.setColorRGB(9, 0, 96, 16); //
+            this.GamePalette.setColorRGB(10, 0, 112, 32); //
+            this.GamePalette.setColorRGB(11, 0, 128, 64); //
+            this.GamePalette.setColorRGB(12, 208, 208, 208); //  White 
+            this.GamePalette.setColorRGB(13, 176, 176, 0); //  Yellow 
+            this.GamePalette.setColorRGB(14, 64, 80, 176); //  Blue 
+            this.GamePalette.setColorRGB(15, 224, 128, 144); //  Pink 
             this.log.log("selected level: " + this.gameID + " : " + this.levelIndex + " / " + this.levelGroupIndex);
         }
         set gameCanvas(el) {
@@ -3237,6 +3324,36 @@ var Lemmings;
                 if (this.gameState == 1) {
                     console.log(" mouse up release ");
                     this.StartActualGame();
+                }
+                if (this.gameState == 3) { //good
+                    if (e.button == 0) //left
+                     {
+                        /// move to next level
+                        console.log("good => next");
+                        this.gameState = 1;
+                        this.continue();
+                        this.moveToLevel(1);
+                    }
+                    if (e.button == 2) //right
+                     {
+                        console.log("back to menu");
+                        //   this.moveToLevel(0); //back to menu
+                    }
+                }
+                if (this.gameState == 4) { //bad
+                    /// redo this level
+                    if (e.button == 0) //left
+                     {
+                        console.log("bad => redo");
+                        this.gameState = 1;
+                        this.continue();
+                        this.moveToLevel(0);
+                    }
+                    if (e.button == 2) //right
+                     {
+                        console.log("back to menu");
+                        //   this.moveToLevel(0); //back to menu
+                    }
                 }
                 e.stopPropagation();
                 e.preventDefault();
@@ -3263,8 +3380,8 @@ var Lemmings;
                 game.setGuiDisplay(this.stage.getGuiDisplay(), this.stage);
                 game.getGameTimer().speedFactor = this.gameSpeedFactor;
                 game.start();
-                this.changeHtmlText(this.elementGameState, Lemmings.GameStateTypes.toString(Lemmings.GameStateTypes.RUNNING));
                 game.onGameEnd.on((state) => this.onGameEnd(state));
+                this.changeHtmlText(this.elementGameState, Lemmings.GameStateTypes.toString(Lemmings.GameStateTypes.RUNNING));
                 this.game = game;
             });
         }
@@ -3272,8 +3389,32 @@ var Lemmings;
             this.changeHtmlText(this.elementGameState, Lemmings.GameStateTypes.toString(gameResult.state));
             this.stage.startFadeOut();
             console.dir(gameResult);
+            console.log("Level end");
+            this.suspend();
             window.setTimeout(() => {
+                //----------------------------
                 if (gameResult.state == Lemmings.GameStateTypes.SUCCEEDED) {
+                    this.gameState = 3; //results good
+                }
+                else {
+                    this.gameState = 4; //results bad
+                }
+                let gameDisplay = this.stage.getGameDisplay();
+                gameDisplay.clear();
+                gameDisplay.redraw();
+                this.stage.resetFade();
+                let PagesPromis = this.gameResources.getPagesSprite(this.GamePalette).then((pagspr) => {
+                    this.brownFrame = pagspr.getPanelSprite();
+                    let FullPage = this.stage.getFullPageDisplay();
+                    FullPage.clear();
+                    this.stage.clear();
+                    this.currentLevel.RenderStart(FullPage, this.gameState, this.brownFrame, pagspr, this.game.getVictoryCondition().getSurvivorPercentage());
+                    this.stage.redrawFullpage();
+                });
+                //----------------------------
+                /*
+
+                if (gameResult.state == GameStateTypes.SUCCEEDED) {
                     /// move to next level
                     this.moveToLevel(1);
                 }
@@ -3281,6 +3422,7 @@ var Lemmings;
                     /// redo this level
                     this.moveToLevel(0);
                 }
+                */
             }, 2500);
         }
         /** load and run a replay */
@@ -3468,26 +3610,8 @@ var Lemmings;
                 this.gameState = 1; //targets
                 this.currentLevel = level;
                 this.changeHtmlText(this.elementLevelName, level.name);
-                let GamePalette;
-                GamePalette = new Lemmings.ColorPalette();
-                GamePalette.setColorRGB(0, 0, 0, 0); //  Black 
-                GamePalette.setColorRGB(1, 128, 64, 32); //  Browns 
-                GamePalette.setColorRGB(2, 96, 48, 32); // 
-                GamePalette.setColorRGB(3, 48, 0, 16); //
-                GamePalette.setColorRGB(4, 32, 8, 124); //  Purples 
-                GamePalette.setColorRGB(5, 64, 44, 144); //
-                GamePalette.setColorRGB(6, 104, 88, 164); // 
-                GamePalette.setColorRGB(7, 152, 140, 188); // 
-                GamePalette.setColorRGB(8, 0, 80, 0); //  Greens
-                GamePalette.setColorRGB(9, 0, 96, 16); //
-                GamePalette.setColorRGB(10, 0, 112, 32); //
-                GamePalette.setColorRGB(11, 0, 128, 64); //
-                GamePalette.setColorRGB(12, 208, 208, 208); //  White 
-                GamePalette.setColorRGB(13, 176, 176, 0); //  Yellow 
-                GamePalette.setColorRGB(14, 64, 80, 176); //  Blue 
-                GamePalette.setColorRGB(15, 224, 128, 144); //  Pink 
                 //ici charger les ressources pour les fontes
-                let PagesPromis = this.gameResources.getPagesSprite(GamePalette).then((pagspr) => {
+                let PagesPromis = this.gameResources.getPagesSprite(this.GamePalette).then((pagspr) => {
                     this.brownFrame = pagspr.getPanelSprite();
                     // pagspr.getLetterSprite("a");
                     if (this.stage != null) {
@@ -3497,8 +3621,9 @@ var Lemmings;
                         //fullpage
                         let FullPage = this.stage.getFullPageDisplay();
                         FullPage.clear();
+                        this.stage.redrawFullpage();
                         this.stage.resetFade();
-                        level.RenderStart(FullPage, this.gameState, this.brownFrame, pagspr);
+                        level.RenderStart(FullPage, this.gameState, this.brownFrame, pagspr, 0);
                         this.stage.redrawFullpage();
                         /*
                                                 //game
@@ -3832,8 +3957,6 @@ var Lemmings;
             if ((dH * display.viewPoint.scale) > outH) {
                 dH = outH / display.viewPoint.scale;
             }
-            console.log("DW=" + dW + ", dH=" + dH);
-            console.log("Scale=" + display.viewPoint.scale);
             //- drawImage(image,sx,sy,sw,sh,dx,dy,dw,dh)
             ctx.drawImage(display.cav, display.viewPoint.x, display.viewPoint.y, dW, dH, display.x, display.y, Math.trunc(dW * display.viewPoint.scale), Math.trunc(dH * display.viewPoint.scale));
             //- apply fading

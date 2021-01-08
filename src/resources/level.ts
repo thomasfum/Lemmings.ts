@@ -19,9 +19,9 @@ module Lemmings {
 
 
         public gameID: number;
-        public levelMode: number;
-        public levelModeText: string;
-        public levelIndex: number;
+        public levelMode: number;//Fun	Tricky	Taxing	Mayhem
+        public levelModeText: string;//Fun	Tricky	Taxing	Mayhem
+        public levelIndex: number;//0,1,2,3
 
         public name: string = "";
         public width = 0;
@@ -34,6 +34,7 @@ module Lemmings {
         public screenPositionX = 0;
 
         public isSuperLemming = false;
+        public accessCode: string = "";
 
         public colorPalette: ColorPalette;
         public groundPalette: ColorPalette;
@@ -156,27 +157,30 @@ module Lemmings {
             this.height = height;
         }
 
-        public RenderStart(pageDisplay: DisplayImage, gameState: number, brownFrame: Frame,sprites: pagesSprites)
+        public RenderStart(pageDisplay: DisplayImage, gameState: number, brownFrame: Frame,sprites: pagesSprites,survivorPercent:number)
         {
+
+            pageDisplay.clear();
+
+            pageDisplay.drawFrame(brownFrame, 0, 0);
+            pageDisplay.drawFrame(brownFrame, 0, 104);
+            pageDisplay.drawFrame(brownFrame, 320, 0);
+            pageDisplay.drawFrame(brownFrame, 320, 104);
+            pageDisplay.drawFrame(brownFrame, 0, 208);
+            pageDisplay.drawFrame(brownFrame, 0, 312);
+            pageDisplay.drawFrame(brownFrame, 320, 208);
+            pageDisplay.drawFrame(brownFrame, 320, 312);
+
             if(gameState==1)//target
             {
-               
                 console.log("Level "+this.levelIndex+1);
                 console.log("Name "+this.name);
                 console.log("Number of Lemmings "+this.releaseCount);
                 console.log(Math.round(this.needCount*100/this.releaseCount)+ "% To Be Saved");
                 console.log("Release Rate "+this.releaseRate);
                 console.log("Time "+this.timeLimit +" Minutes");
-                console.log("Rating "+this.levelModeText);// +" ( " +this.levelMode+" )");
-
-                pageDisplay.drawFrame(brownFrame, 0, 0);
-                pageDisplay.drawFrame(brownFrame, 0, 104);
-                pageDisplay.drawFrame(brownFrame, 320, 0);
-                pageDisplay.drawFrame(brownFrame, 320, 104);
-                pageDisplay.drawFrame(brownFrame, 0, 208);
-                pageDisplay.drawFrame(brownFrame, 0, 312);
-                pageDisplay.drawFrame(brownFrame, 320, 208);
-                pageDisplay.drawFrame(brownFrame, 320, 312);
+                console.log("Rating " + this.levelModeText);// +" ( " +this.levelMode+" )");
+              
 
                 let x = 160;
                 let y = 70;
@@ -188,6 +192,83 @@ module Lemmings {
                 this.drawString(pageDisplay, "Rating  " + this.levelModeText, x, y+70 + (4 * 38), sprites);// +" ( " +this.levelMode+" )");
                 this.drawString(pageDisplay, "Press mouse button to continue" , 80, y +280, sprites);// +" ( " +this.levelMode+" )");
                 
+            }
+            if ((gameState == 3) || (gameState == 4))//result ok
+            {
+                pageDisplay.clear();
+                this.drawString(pageDisplay, "All lemmings accounted for.", 113, 20, sprites);
+
+                this.drawString(pageDisplay, "You rescued " + Math.round(this.needCount * 100 / this.releaseCount) + "%", 224, 57, sprites);
+                this.drawString(pageDisplay, "You needed  " + survivorPercent + "%", 224, 77, sprites);
+
+                //0%
+                let line1 = "";
+                let line2 = "";
+
+                if (survivorPercent == 0) {
+                    line1 = "ROCK BOTTOM! I hope for your sake";
+                    line2 = "    that you nuked that level";
+                }
+                else
+                    if (survivorPercent == 100)
+                    {
+                        line1 = "Superb! You rescued every lemmings on";
+                        line2 = "that level. Can you do it again....?";
+                    }
+                    else
+                    {
+                        
+                        
+
+
+                        if (survivorPercent < Math.round(this.needCount * 100 / this.releaseCount)) {
+                            let diff = survivorPercent / Math.round(this.needCount * 100 / this.releaseCount);
+                            if (diff < 0.5) {
+                                //2% / 50% -> 22% / 50%
+                                line1 = "Better rethink your strategy  before";
+                                line2 = "     you try this level again!";
+                            }else if (diff < 0.9) {
+                                //27/50%
+                                line1 = "A little more practice on this level";
+                                line2 = "     is definitely recommended";
+                            }
+                            else  { //46 / 50%
+                                line1 = "RIGHT ON. You can't get much closer";
+                                line2 = " than that. Let's try the next...";
+                            }
+                        }
+
+                        if (survivorPercent > Math.round(this.needCount * 100 / this.releaseCount)) {
+                            let diff = survivorPercent / Math.round(this.needCount * 100 / this.releaseCount);
+                            if (diff > 5) {//70% /10%
+                                line1 = "   You totally stormed that level!";
+                                line2 = "Let's see if you can storm the next...";
+                            }
+                            else {//20% / 10%
+                                line1 = "That level seemed no problem to you on";
+                                line2 = "that attempt. Onto the next....";
+                            }
+
+                        }
+                    }
+
+               
+
+                this.drawString(pageDisplay, line1, 40, 130, sprites);
+                this.drawString(pageDisplay, line2, 40, 150, sprites);
+
+                if (gameState == 3)//result good
+                {
+                    if (this.accessCode != "") {
+                        this.drawString(pageDisplay, "Your Access Code for Level " + (this.levelIndex + 2), 78, 258, sprites);
+                        this.drawString(pageDisplay, "is " + this.accessCode, 227, 278, sprites);
+                    }
+
+                    this.drawString(pageDisplay, "Press left mouse button for next level", 23, 332, sprites);
+                }
+                if (gameState == 4)//result bad
+                    this.drawString(pageDisplay, "Press left mouse button to retry level", 23, 332, sprites);
+                this.drawString(pageDisplay, "Press right mouse button for menu", 58, 352, sprites);
             }
         }
 

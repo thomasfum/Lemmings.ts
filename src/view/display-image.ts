@@ -38,10 +38,11 @@ module Lemmings {
         }
 
         public clear() {
+            console.log("clear1");
             if (this.imgData == null) return;
-
+         
             let img = new Uint32Array(this.imgData.data);
-
+            console.log("clear2:" + img.length);
             for (let i = 0; i < img.length; i++) {
                 img[i] = 0xFF00FF00;
             }
