@@ -19,16 +19,20 @@ The goal is to finish it and extand it to custom levels like the ones present he
 * Support playing of original music by interpreting the adlib.dat file and using an Adlib emulator(s) (DosBox or Robson Cozendey )
 
 ## Improvements since fork
-* Map added
-* First version of cursor
+* Map added on game page
+* Mouse cursor added
 * Long touch support
 * No need to change code to add new levels, use only config.json
+* Level presentation page added (objective)
+* Result page added
 
 ## ToDo
 * add the original mouse navigation
-* add mouse cursor sprite
-* add level presentation page (objectives)
-* add level result page
+* add welcome page of each game
+* add game selection page
+* change mouse cursor according to palette
+* On level presentation page add level map
+* manage touch pad on objective and result page
 * automate music and sound
 * fix some game issues
 
