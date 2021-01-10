@@ -83,7 +83,7 @@ module Lemmings {
                 {
                     console.log(" GameSelect -> Welcome");
                     this.gameState=GameState.Welcome;
-                    this.RenderMainpage();
+                    this.RenderWelcomePage();
                 } else
 
                 if( this.gameState==GameState.Welcome)
@@ -427,7 +427,7 @@ module Lemmings {
                // this.arrayToSelect(this.elementSelectLevelGroup, this.gameResources.getLevelGroups());
                 this.levelGroupIndex = 0;
 
-                this.RenderMainpage();
+                this.RenderSelectpage();
               // this.loadLevel();
             });
         }
@@ -437,29 +437,75 @@ module Lemmings {
 //------------------------------------
         private RenderMainpage()
         {
-   //ici charger les ressources pour les fontes
-   let PagesPromis = this.gameResources.getPagesSprite(this.GamePalette).then((pagspr) => {//or this.GamePalette or level.colorPalette
-    this.brownFrame=pagspr.getPanelSprite();
-   // pagspr.getLetterSprite("a");
+            //ici charger les ressources pour les fontes
+            let PagesPromis = this.gameResources.getPagesSprite(this.GamePalette).then((pagspr) => {//or this.GamePalette or level.colorPalette
+                this.brownFrame=pagspr.getPanelSprite();
+                if (this.stage != null){
 
-
-    if (this.stage != null){
-
-        let gameDisplay = this.stage.getGameDisplay();
-        gameDisplay.clear();
-        gameDisplay.redraw();
-        //fullpage
-        let FullPage =this.stage.getFullPageDisplay();
-       
-        FullPage.clear();
-        this.stage.redrawFullpage();
-        this.stage.resetFade();
-        let level= new Level(0,0);
-        level.RenderStart(FullPage, this.gameState, this.brownFrame, pagspr,0);
-        
-        this.stage.redrawFullpage();
+                    let gameDisplay = this.stage.getGameDisplay();
+                    gameDisplay.clear();
+                    gameDisplay.redraw();
+                    //fullpage
+                    let FullPage =this.stage.getFullPageDisplay();
+                
+                    FullPage.clear();
+                    this.stage.redrawFullpage();
+                    this.stage.resetFade();
+                    let level= new Level(0,0);
+                    level.RenderStart(FullPage, this.gameState, this.brownFrame, pagspr,0);
+                    this.stage.redrawFullpage();
+            }
+        });
     }
-   });
+
+    
+    private RenderWelcomePage()
+    {
+        //ici charger les ressources pour les fontes
+        let PagesPromis = this.gameResources.getPagesSprite(this.GamePalette).then((pagspr) => {//or this.GamePalette or level.colorPalette
+            this.brownFrame=pagspr.getPanelSprite();
+            let logo=pagspr.getLogo();
+            let F1=pagspr.getF1();
+            let F2=pagspr.getF2();
+            let F3=pagspr.getF3();
+            if (this.stage != null){
+
+                let gameDisplay = this.stage.getGameDisplay();
+                gameDisplay.clear();
+                gameDisplay.redraw();
+                //fullpage
+                let FullPage =this.stage.getFullPageDisplay();
+            
+                FullPage.clear();
+                this.stage.redrawFullpage();
+                this.stage.resetFade();
+                let level= new Level(0,0);
+                level.RenderWelcome(FullPage, this.gameState, this.brownFrame, pagspr,0, logo,F1,F2,F3);
+                this.stage.redrawFullpage();
+        }
+    });
+    }
+    private RenderSelectpage()
+    {
+        //ici charger les ressources pour les fontes
+        let PagesPromis = this.gameResources.getPagesSprite(this.GamePalette).then((pagspr) => {//or this.GamePalette or level.colorPalette
+            this.brownFrame=pagspr.getPanelSprite();
+            if (this.stage != null){
+
+                let gameDisplay = this.stage.getGameDisplay();
+                gameDisplay.clear();
+                gameDisplay.redraw();
+                //fullpage
+                let FullPage =this.stage.getFullPageDisplay();
+            
+                FullPage.clear();
+                this.stage.redrawFullpage();
+                this.stage.resetFade();
+                let level= new Level(0,0);
+                level.RenderStart(FullPage, this.gameState, this.brownFrame, pagspr,0);
+                this.stage.redrawFullpage();
+        }
+    });
 }
 
 //--

@@ -161,11 +161,33 @@ module Lemmings {
             this.height = height;
         }
 
-        public RenderStart(pageDisplay: DisplayImage, gameState: GameState, brownFrame: Frame,sprites: pagesSprites,survivorPercent:number)
+        public RenderWelcome(pageDisplay: DisplayImage, gameState: GameState, brownFrame: Frame,sprites: pagesSprites,survivorPercent:number,logo: Frame,F1: Frame,F2: Frame,F3: Frame)
         {
-
             pageDisplay.clear();
 
+            pageDisplay.drawFrame(brownFrame, 0, 0);
+            pageDisplay.drawFrame(brownFrame, 0, 104);
+            pageDisplay.drawFrame(brownFrame, 320, 0);
+            pageDisplay.drawFrame(brownFrame, 320, 104);
+            pageDisplay.drawFrame(brownFrame, 0, 208);
+            pageDisplay.drawFrame(brownFrame, 0, 312);
+            pageDisplay.drawFrame(brownFrame, 320, 208);
+            pageDisplay.drawFrame(brownFrame, 320, 312);
+
+            pageDisplay.drawFrame(logo, 10, 0);
+            pageDisplay.drawFrame(F1, 10, 150);
+            pageDisplay.drawFrame(F2, 210, 150);
+            pageDisplay.drawFrame(F3, 410, 150);
+
+            this.drawString(pageDisplay, "(c) 1991-93", 0,  176, sprites);
+
+
+        }
+        
+
+        public RenderStart(pageDisplay: DisplayImage, gameState: GameState, brownFrame: Frame,sprites: pagesSprites,survivorPercent:number)
+        {
+            pageDisplay.clear();
             pageDisplay.drawFrame(brownFrame, 0, 0);
             pageDisplay.drawFrame(brownFrame, 0, 104);
             pageDisplay.drawFrame(brownFrame, 320, 0);
@@ -181,13 +203,13 @@ module Lemmings {
                 pageDisplay.clear();
                 this.drawString(pageDisplay, "GameSelect", 0,  26, sprites);
             }
-
+/*
             if(gameState==GameState.Welcome)//target
             {
                 pageDisplay.clear();
                 this.drawString(pageDisplay, "Welcome", 0,  26, sprites);
             }
-
+*/
             if(gameState==GameState.Objective)//target
             {
                 console.log("Level "+this.levelIndex+1);

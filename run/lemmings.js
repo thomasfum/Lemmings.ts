@@ -2874,6 +2874,22 @@ var Lemmings;
             this.colorPalette = colorPalette;
             this.groundPalette = groundPalette;
         }
+        RenderWelcome(pageDisplay, gameState, brownFrame, sprites, survivorPercent, logo, F1, F2, F3) {
+            pageDisplay.clear();
+            pageDisplay.drawFrame(brownFrame, 0, 0);
+            pageDisplay.drawFrame(brownFrame, 0, 104);
+            pageDisplay.drawFrame(brownFrame, 320, 0);
+            pageDisplay.drawFrame(brownFrame, 320, 104);
+            pageDisplay.drawFrame(brownFrame, 0, 208);
+            pageDisplay.drawFrame(brownFrame, 0, 312);
+            pageDisplay.drawFrame(brownFrame, 320, 208);
+            pageDisplay.drawFrame(brownFrame, 320, 312);
+            pageDisplay.drawFrame(logo, 10, 0);
+            pageDisplay.drawFrame(F1, 10, 150);
+            pageDisplay.drawFrame(F2, 210, 150);
+            pageDisplay.drawFrame(F3, 410, 150);
+            this.drawString(pageDisplay, "(c) 1991-93", 0, 176, sprites);
+        }
         RenderStart(pageDisplay, gameState, brownFrame, sprites, survivorPercent) {
             pageDisplay.clear();
             pageDisplay.drawFrame(brownFrame, 0, 0);
@@ -2889,11 +2905,13 @@ var Lemmings;
                 pageDisplay.clear();
                 this.drawString(pageDisplay, "GameSelect", 0, 26, sprites);
             }
-            if (gameState == Lemmings.GameState.Welcome) //target
-             {
-                pageDisplay.clear();
-                this.drawString(pageDisplay, "Welcome", 0, 26, sprites);
-            }
+            /*
+                        if(gameState==GameState.Welcome)//target
+                        {
+                            pageDisplay.clear();
+                            this.drawString(pageDisplay, "Welcome", 0,  26, sprites);
+                        }
+            */
             if (gameState == Lemmings.GameState.Objective) //target
              {
                 console.log("Level " + this.levelIndex + 1);
@@ -3115,6 +3133,38 @@ var Lemmings;
             let paletteImg = new Lemmings.PaletteImage(320, 104);
             paletteImg.processImage(fr3, 2);
             this.panelSprite = paletteImg.createFrame(colorPalette);
+            //read logo
+            let LogoImg = new Lemmings.PaletteImage(632, 94);
+            LogoImg.processImage(fr3, 4);
+            LogoImg.processTransparentByColorIndex(0);
+            this.logo = LogoImg.createFrame(colorPalette);
+            //read F1
+            let F1Img = new Lemmings.PaletteImage(120, 61);
+            F1Img.processImage(fr3, 4);
+            F1Img.processTransparentByColorIndex(0);
+            this.F1 = F1Img.createFrame(colorPalette);
+            //read F2
+            let F2Img = new Lemmings.PaletteImage(120, 61);
+            F2Img.processImage(fr3, 4);
+            F2Img.processTransparentByColorIndex(0);
+            this.F2 = F2Img.createFrame(colorPalette);
+            //read F3
+            let F3Img = new Lemmings.PaletteImage(120, 61);
+            F3Img.processImage(fr3, 4);
+            F3Img.processTransparentByColorIndex(0);
+            this.F3 = F3Img.createFrame(colorPalette);
+            /*
+                [0x9488]     F1 sign                       1          120x61        4
+                [0xA2D4]     F2 sign                       1          120x61        4
+                [0xB120]     F3 sign                       1          120x61        4
+                [0xBF6C]     Level Rating sign             1          120x61        4
+                [0xCDB8]     Exit to DOS sign              1          120x61        4
+                [0xDC04]     F4 sign                       1          120x61        4
+                [0xEA50]     music note icon               1           64x31        4
+                [0xEE30]     "FX" icon                     1           64x31        4
+            
+            
+            */
             /// read green panel letters
             let letters = ["!", "\"", "#", "$", "%", "&", "'", "(", ")", "*", "+", ",", "-", ".", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "<", "=", ">", "?", "@", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "[", "\\", "]", "^", "_", "`", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "{", "|", "}", "~"];
             fr4.setOffset(0x69B0);
@@ -3162,6 +3212,18 @@ var Lemmings;
         // return the sprite for the skill panel 
         getPanelSprite() {
             return this.panelSprite;
+        }
+        getLogo() {
+            return this.logo;
+        }
+        getF1() {
+            return this.F1;
+        }
+        getF2() {
+            return this.F2;
+        }
+        getF3() {
+            return this.F3;
         }
         // return a purple letter 
         getLetterSprite(letter) {
@@ -9407,7 +9469,7 @@ var Lemmings;
                 if (this.gameState == GameState.GameSelect) {
                     console.log(" GameSelect -> Welcome");
                     this.gameState = GameState.Welcome;
-                    this.RenderMainpage();
+                    this.RenderWelcomePage();
                 }
                 else if (this.gameState == GameState.Welcome) {
                     console.log(" Welcome -> Objective");
@@ -9670,7 +9732,7 @@ var Lemmings;
                 this.gameResources = newGameResources;
                 // this.arrayToSelect(this.elementSelectLevelGroup, this.gameResources.getLevelGroups());
                 this.levelGroupIndex = 0;
-                this.RenderMainpage();
+                this.RenderSelectpage();
                 // this.loadLevel();
             });
         }
@@ -9679,7 +9741,48 @@ var Lemmings;
             //ici charger les ressources pour les fontes
             let PagesPromis = this.gameResources.getPagesSprite(this.GamePalette).then((pagspr) => {
                 this.brownFrame = pagspr.getPanelSprite();
-                // pagspr.getLetterSprite("a");
+                if (this.stage != null) {
+                    let gameDisplay = this.stage.getGameDisplay();
+                    gameDisplay.clear();
+                    gameDisplay.redraw();
+                    //fullpage
+                    let FullPage = this.stage.getFullPageDisplay();
+                    FullPage.clear();
+                    this.stage.redrawFullpage();
+                    this.stage.resetFade();
+                    let level = new Lemmings.Level(0, 0);
+                    level.RenderStart(FullPage, this.gameState, this.brownFrame, pagspr, 0);
+                    this.stage.redrawFullpage();
+                }
+            });
+        }
+        RenderWelcomePage() {
+            //ici charger les ressources pour les fontes
+            let PagesPromis = this.gameResources.getPagesSprite(this.GamePalette).then((pagspr) => {
+                this.brownFrame = pagspr.getPanelSprite();
+                let logo = pagspr.getLogo();
+                let F1 = pagspr.getF1();
+                let F2 = pagspr.getF2();
+                let F3 = pagspr.getF3();
+                if (this.stage != null) {
+                    let gameDisplay = this.stage.getGameDisplay();
+                    gameDisplay.clear();
+                    gameDisplay.redraw();
+                    //fullpage
+                    let FullPage = this.stage.getFullPageDisplay();
+                    FullPage.clear();
+                    this.stage.redrawFullpage();
+                    this.stage.resetFade();
+                    let level = new Lemmings.Level(0, 0);
+                    level.RenderWelcome(FullPage, this.gameState, this.brownFrame, pagspr, 0, logo, F1, F2, F3);
+                    this.stage.redrawFullpage();
+                }
+            });
+        }
+        RenderSelectpage() {
+            //ici charger les ressources pour les fontes
+            let PagesPromis = this.gameResources.getPagesSprite(this.GamePalette).then((pagspr) => {
+                this.brownFrame = pagspr.getPanelSprite();
                 if (this.stage != null) {
                     let gameDisplay = this.stage.getGameDisplay();
                     gameDisplay.clear();
