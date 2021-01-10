@@ -1,6 +1,7 @@
 
 module Lemmings {
 
+    
     /** Level Data */
     export class Level {
 
@@ -160,7 +161,7 @@ module Lemmings {
             this.height = height;
         }
 
-        public RenderStart(pageDisplay: DisplayImage, gameState: number, brownFrame: Frame,sprites: pagesSprites,survivorPercent:number)
+        public RenderStart(pageDisplay: DisplayImage, gameState: GameState, brownFrame: Frame,sprites: pagesSprites,survivorPercent:number)
         {
 
             pageDisplay.clear();
@@ -174,7 +175,20 @@ module Lemmings {
             pageDisplay.drawFrame(brownFrame, 320, 208);
             pageDisplay.drawFrame(brownFrame, 320, 312);
 
-            if(gameState==1)//target
+
+            if(gameState==GameState.GameSelect)//target
+            {
+                pageDisplay.clear();
+                this.drawString(pageDisplay, "GameSelect", 0,  26, sprites);
+            }
+
+            if(gameState==GameState.Welcome)//target
+            {
+                pageDisplay.clear();
+                this.drawString(pageDisplay, "Welcome", 0,  26, sprites);
+            }
+
+            if(gameState==GameState.Objective)//target
             {
                 console.log("Level "+this.levelIndex+1);
                 console.log("Name "+this.name);
@@ -183,7 +197,7 @@ module Lemmings {
                 console.log("Release Rate "+this.releaseRate);
                 console.log("Time "+this.timeLimit +" Minutes");
                 console.log("Rating " + this.levelModeText);// +" ( " +this.levelMode+" )");
-              
+                pageDisplay.clear();
 
                 let x = 160;
                 let y = 70;
@@ -196,7 +210,7 @@ module Lemmings {
                 this.drawString(pageDisplay, "Press mouse button to continue" , 80, y +280, sprites);// +" ( " +this.levelMode+" )");
                 
             }
-            if ((gameState == 3) || (gameState == 4))//result ok
+            if ((gameState == GameState.ResultGood) || (gameState == GameState.ResultBad))//result ok
             {
                 pageDisplay.clear();
                 this.drawString(pageDisplay, "All lemmings accounted for.", 113, 20, sprites);
@@ -256,7 +270,7 @@ module Lemmings {
                 this.drawString(pageDisplay, line1, 40, 130, sprites);
                 this.drawString(pageDisplay, line2, 40, 150, sprites);
 
-                if (gameState == 3)//result good
+                if (gameState == GameState.ResultGood)//result good
                 {
 
                     if(this.codeGen==null)
@@ -271,7 +285,7 @@ module Lemmings {
 
                     this.drawString(pageDisplay, "Press left mouse button for next level", 23, 332, sprites);
                 }
-                if (gameState == 4)//result bad
+                if (gameState == GameState.ResultBad)//result bad
                     this.drawString(pageDisplay, "Press left mouse button to retry level", 23, 332, sprites);
                 this.drawString(pageDisplay, "Press right mouse button for menu", 58, 352, sprites);
             }

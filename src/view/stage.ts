@@ -235,6 +235,7 @@ module Lemmings {
         }
    
         private handleOnMouseMove():void {
+            
             this.controller.onMouseMove.on((e) => {
                 if (e.button) {
                     let stageImage = this.getStageImageAt(e.mouseDownX, e.mouseDownY);
@@ -264,6 +265,7 @@ module Lemmings {
                 
                 
             });
+            
         }
 
 
@@ -294,7 +296,8 @@ module Lemmings {
             stageImage.viewPoint.x = this.limitValue(0, stageImage.viewPoint.x, stageImage.display.getWidth() - stageImage.width / stageImage.viewPoint.scale);
             stageImage.viewPoint.y = this.limitValue(0, stageImage.viewPoint.y, stageImage.display.getHeight() - stageImage.height / stageImage.viewPoint.scale);
 
-            this.guiImgProps.display.drawFrame(this.level.getGroundMaskLayer().getMiniMap(stageImage.viewPoint.x,this.level.width),209,18);
+            if (this.guiImgProps.display!=null)
+                this.guiImgProps.display.drawFrame(this.level.getGroundMaskLayer().getMiniMap(stageImage.viewPoint.x,this.level.width),209,18);
            
             this.redraw();
     
