@@ -17,9 +17,7 @@ module Lemmings {
          *     ->  (FileId * 10 + FilePart) * (useOddTabelEntry? -1 : 1)
          */  
         public order: number[][] = [];
-
-        public accessCode: string[][] = [];
-
+    
         public getGroupLength(groupIndex : number) : number {
             if ((groupIndex < 0 ) || (groupIndex > this.order.length)) {
                 return 0;

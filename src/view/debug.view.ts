@@ -15,6 +15,7 @@ module Lemmings {
         private gameFactory = new GameFactory("./");
 
         private stage : Stage = null;
+        private GamePalette: ColorPalette=null;
         
         public elementSoundNumber: HTMLElement = null;
         public elementTrackNumber: HTMLElement = null;
@@ -36,12 +37,30 @@ module Lemmings {
             this.levelGroupIndex = this.strToNum(hashParts[1]);
             this.gameID= this.strToNum(hashParts[2]) ;
             
+            this.GamePalette = new ColorPalette();
+            this.GamePalette.setColorRGB(0, 0, 0, 0);//  Black 
+            this.GamePalette.setColorRGB(1, 128, 64, 32);//  Browns 
+            this.GamePalette.setColorRGB(2, 96, 48, 32);// 
+            this.GamePalette.setColorRGB(3, 48, 0, 16);//
+            this.GamePalette.setColorRGB(4, 32, 8, 124);//  Purples 
+            this.GamePalette.setColorRGB(5, 64, 44, 144);//
+            this.GamePalette.setColorRGB(6, 104, 88, 164);// 
+            this.GamePalette.setColorRGB(7, 152, 140, 188);// 
+            this.GamePalette.setColorRGB(8, 0, 80, 0);//  Greens
+            this.GamePalette.setColorRGB(9, 0, 96, 16);//
+            this.GamePalette.setColorRGB(10, 0, 112, 32);//
+            this.GamePalette.setColorRGB(11, 0, 128, 64);//
+            this.GamePalette.setColorRGB(12, 208, 208, 208);//  White 
+            this.GamePalette.setColorRGB(13, 176, 176, 0);//  Yellow 
+            this.GamePalette.setColorRGB(14, 64, 80, 176);//  Blue 
+            this.GamePalette.setColorRGB(15, 224, 128, 144);//  Pink 
+            
             this.log.log("selected level: "+this.gameID +" : "+ this.levelIndex + " / "+ this.levelGroupIndex);
         }
 
   
         public set gameCanvas(el:HTMLCanvasElement){
-            this.stage = new Stage(el);
+            this.stage = new Stage(el,this.GamePalette);
         }
         
         

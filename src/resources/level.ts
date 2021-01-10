@@ -7,6 +7,8 @@ module Lemmings {
         /** the background image */
         private groundImage: Uint8ClampedArray;
 
+        private codeGen: CodeGenerator=null;
+
         /** the background mask 0=noGround / 1=ground*/
         public groundMask: SolidLayer = null;
 
@@ -34,7 +36,8 @@ module Lemmings {
         public screenPositionX = 0;
 
         public isSuperLemming = false;
-        public accessCode: string = "";
+        public accessCodeKey: string = "";
+        
 
         public colorPalette: ColorPalette;
         public groundPalette: ColorPalette;
@@ -255,9 +258,15 @@ module Lemmings {
 
                 if (gameState == 3)//result good
                 {
-                    if (this.accessCode != "") {
+
+                    if(this.codeGen==null)
+                        this.codeGen= new CodeGenerator();
+
+
+                    let accessCode=this.codeGen.createCode(this.levelIndex,survivorPercent,this.accessCodeKey);
+                    if (accessCode != "") {
                         this.drawString(pageDisplay, "Your Access Code for Level " + (this.levelIndex + 2), 78, 258, sprites);
-                        this.drawString(pageDisplay, "is " + this.accessCode, 227, 278, sprites);
+                        this.drawString(pageDisplay, "is " + accessCode, 227, 278, sprites);
                     }
 
                     this.drawString(pageDisplay, "Press left mouse button for next level", 23, 332, sprites);

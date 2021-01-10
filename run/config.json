@@ -3,6 +3,7 @@
     "name" : "lemmings",
     "path" : "lemmings",
     "ID":0,
+	"accessCodeKey": "AJHLDHBBCJ",
 
     "audio.version" : 1,
     "audio.adlibChannelConfigPosition" : 1452,
@@ -35,6 +36,7 @@
     "name": "Oh No",
     "path": "lemmings_ohNo",
     "ID": 1,
+	"accessCodeKey": "AHPTDHBBAD",
 
     "audio.version": 2,
     "audio.adlibChannelConfigPosition": 1334,
@@ -69,6 +71,7 @@
     "name": "Xmas Lemmings 1991",
     "path": "lemmings_X-Mas91",
     "ID": 2,
+	"accessCodeKey": "AJHLDHBBCJ",
 
     "audio.version": 2,
     "audio.adlibChannelConfigPosition": 1332,
@@ -94,6 +97,7 @@
     "name": "Xmas Lemmings 1992",
     "path": "lemmings_X-Mas92",
     "ID": 3,
+	"accessCodeKey": "AJHLDHBBCJ",
 
     "audio.version": 2,
     "audio.adlibChannelConfigPosition": 1332,
@@ -119,6 +123,7 @@
     "name": "Holiday Lemmings 1993",
     "path": "lemmings_Holiday93",
     "ID": 4,
+	"accessCodeKey": "AJHLDHBBAD",
 
     "audio.version": 2,
     "audio.adlibChannelConfigPosition": 1332,
@@ -147,6 +152,7 @@
     "name": "Holiday Lemmings 1994",
     "path": "lemmings_Holiday94",
     "ID": 5,
+	"accessCodeKey": "AJPLDHBBCD",
 
     "audio.version": 2,
     "audio.adlibChannelConfigPosition": 1334,
@@ -180,6 +186,7 @@
     "name": "Gar",
     "path": "gar",
     "ID": 6,
+	"accessCodeKey": "XJPLDHBBCD",
 
     "audio.version": 2,
     "audio.adlibChannelConfigPosition": 1334,
@@ -208,6 +215,7 @@
     "name": "Conway",
     "path": "conway",
     "ID": 7,
+	"accessCodeKey": "YJPLDHBBCD",
 
     "audio.version": 2,
     "audio.adlibChannelConfigPosition": 1334,

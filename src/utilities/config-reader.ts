@@ -76,7 +76,7 @@
                 newConfig.level.order = <any>configData["level.order"];
                 newConfig.level.filePrefix = <any>configData["level.filePrefix"];
                 newConfig.level.groups = <any>configData["level.groups"];
-                newConfig.level.accessCode = <any>configData["level.accessCode"];
+                newConfig.accessCodeKey = <any>configData["accessCodeKey"];
 
                 /// read audio config
                 newConfig.audioConfig.version = <any>configData["audio.version"];
