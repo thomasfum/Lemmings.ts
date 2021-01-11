@@ -45,7 +45,10 @@ module Lemmings {
          
 
         }
-
+        public setGamePalette(GamePalette: ColorPalette )
+        {
+            this.GamePalette= GamePalette;
+        }
         
         private calcPosition2D(stageImage:StageImageProperties, e:Position2D):Position2D {
             let x = (stageImage.viewPoint.getSceneX(e.x - stageImage.x));

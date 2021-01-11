@@ -58,12 +58,12 @@ module Lemmings {
 
         pagesSprites
 
-        public getPagesSprite(colorPalette:ColorPalette): Promise<pagesSprites> {
+        public getPagesSprite(colorPalette:ColorPalette, nbGroup:number): Promise<pagesSprites> {
             return new Promise<pagesSprites>((resolve, reject) => {
 
                 this.getMainDat().then(container => {
 
-                    resolve(new pagesSprites(container.getPart(3), container.getPart(4), colorPalette));
+                    resolve(new pagesSprites(container.getPart(3), container.getPart(4), colorPalette,nbGroup));
                 });
             });
         }

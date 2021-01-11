@@ -38,6 +38,7 @@ module Lemmings {
 
         public isSuperLemming = false;
         public accessCodeKey: string = "";
+        public gamePaletteID: number =0;
         
 
         public colorPalette: ColorPalette;
@@ -161,8 +162,52 @@ module Lemmings {
             this.height = height;
         }
 
-        public RenderWelcome(pageDisplay: DisplayImage, gameState: GameState, brownFrame: Frame,sprites: pagesSprites,survivorPercent:number,logo: Frame,F1: Frame,F2: Frame,F3: Frame)
+        public RenderSelectpage(pageDisplay: DisplayImage, sprites: pagesSprites, GC: GameConfig[])
         {
+            let brownFrame=sprites.getPanelSprite();
+            pageDisplay.clear();
+            pageDisplay.drawFrame(brownFrame, 0, 0);
+            pageDisplay.drawFrame(brownFrame, 0, 104);
+            pageDisplay.drawFrame(brownFrame, 320, 0);
+            pageDisplay.drawFrame(brownFrame, 320, 104);
+            pageDisplay.drawFrame(brownFrame, 0, 208);
+            pageDisplay.drawFrame(brownFrame, 0, 312);
+            pageDisplay.drawFrame(brownFrame, 320, 208);
+            pageDisplay.drawFrame(brownFrame, 320, 312);
+            this.drawString(pageDisplay, "Select Game:", 0,  26, sprites);
+            for (var i = 0; i < GC.length; i++) {
+                this.drawString(pageDisplay, (i+1)+" : " + GC[i].name, 100,  26+ (30*(i+1)), sprites);
+            }
+         
+        }
+
+       
+       public RenderWelcome(pageDisplay: DisplayImage, sprites: pagesSprites,MusicLevel:number, DifficultyLevel: number, nbgroup: number)
+        {
+    
+            let brownFrame=sprites.getPanelSprite();
+            let logo=sprites.getLogo();
+            let F1=sprites.getF1();
+            let F2=sprites.getF2();
+            let F3=sprites.getF3();
+            let F4=sprites.getF4();
+            let FX=sprites.getFX();
+            let ExitDos=sprites.getExitDOS();
+            let LevelRating=sprites.getLeveRating();
+            let MusicNote=sprites.getMusicNote();
+
+            let LeftLemmingWorkingScroller=sprites.getLeftLemmingWorkingScroller();
+            let RighttLemmingWorkingScroller=sprites.getRightLemmingWorkingScroller();
+            let Reel=sprites.getReel();
+
+            let mayhemSign=sprites.getMayhemSign();
+            let taxingSign=sprites.getTaxingSign();
+            let trickySign=sprites.getTrickySign();
+            let funSign=sprites.getFunSign();
+            let funSign2=sprites.getFunSign2();
+                
+
+
             pageDisplay.clear();
 
             pageDisplay.drawFrame(brownFrame, 0, 0);
@@ -175,18 +220,55 @@ module Lemmings {
             pageDisplay.drawFrame(brownFrame, 320, 312);
 
             pageDisplay.drawFrame(logo, 10, 0);
-            pageDisplay.drawFrame(F1, 10, 150);
-            pageDisplay.drawFrame(F2, 210, 150);
-            pageDisplay.drawFrame(F3, 410, 150);
+            pageDisplay.drawFrame(F1, 80-10, 110);
+            pageDisplay.drawFrame(F2, 210-10, 110);
+            pageDisplay.drawFrame(F3, 340-10, 110);
 
-            this.drawString(pageDisplay, "(c) 1991-93", 0,  176, sprites);
+            if(MusicLevel==1)
+                pageDisplay.drawFrame(FX, 340-10+25+2, 110+25);
+            if(MusicLevel==2)
+                pageDisplay.drawFrame(MusicNote, 340-10+25+2, 110+25);
+                
+                      
+
+
+            pageDisplay.drawFrame(LevelRating, 470-10, 110);
+            if(nbgroup>1)
+            {
+                if(DifficultyLevel==0)
+                    pageDisplay.drawFrame(funSign, 470-10+25+8, 110+25);
+                if(DifficultyLevel==1)
+                    pageDisplay.drawFrame(trickySign, 470-10+25+8, 110+25);
+                if(DifficultyLevel==2)
+                    pageDisplay.drawFrame(taxingSign, 470-10+25+8, 110+25);
+                if(DifficultyLevel==3)
+                    pageDisplay.drawFrame(mayhemSign, 470-10+25+8, 110+25);
+                if(DifficultyLevel==4)
+                    pageDisplay.drawFrame(funSign2, 470-10+25+8, 110+25);
+            }
+
+            pageDisplay.drawFrame(ExitDos, 210-10, 220);
+            pageDisplay.drawFrame(F4, 340-10, 220);
+            
+
+            this.drawString(pageDisplay, "(c) MCMXCI, Psygnosis Ltd", 120,  300, sprites);
+            this.drawString(pageDisplay, "    A DMA Design Game", 120,  320, sprites);
+
+            pageDisplay.drawFrame(LeftLemmingWorkingScroller[0], 0, 382);
+            pageDisplay.drawFrame(RighttLemmingWorkingScroller[0], 600, 382);
+            for(let i=0; i<35;i++)
+            {
+                pageDisplay.drawFrame(Reel, 48+ (i*16), 382);
+            }
 
 
         }
-        
+     
 
-        public RenderStart(pageDisplay: DisplayImage, gameState: GameState, brownFrame: Frame,sprites: pagesSprites,survivorPercent:number)
+        public RenderStart(pageDisplay: DisplayImage, gameState: GameState, sprites: pagesSprites,survivorPercent:number)
         {
+
+            let brownFrame=sprites.getPanelSprite();
             pageDisplay.clear();
             pageDisplay.drawFrame(brownFrame, 0, 0);
             pageDisplay.drawFrame(brownFrame, 0, 104);
@@ -198,18 +280,6 @@ module Lemmings {
             pageDisplay.drawFrame(brownFrame, 320, 312);
 
 
-            if(gameState==GameState.GameSelect)//target
-            {
-                pageDisplay.clear();
-                this.drawString(pageDisplay, "GameSelect", 0,  26, sprites);
-            }
-/*
-            if(gameState==GameState.Welcome)//target
-            {
-                pageDisplay.clear();
-                this.drawString(pageDisplay, "Welcome", 0,  26, sprites);
-            }
-*/
             if(gameState==GameState.Objective)//target
             {
                 console.log("Level "+this.levelIndex+1);

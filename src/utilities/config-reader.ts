@@ -21,7 +21,16 @@
             });
 
         }
+        public getConfigs( ): Promise<GameConfig[]> 
+        {
+            return new Promise<GameConfig[]>((resolve, reject)=> {
 
+                this.configs.then((configs:GameConfig[]) => {
+                    resolve(configs);
+                });
+            });
+            
+        }
 
         /** return the game config for a given GameId */
         public getConfig(GameId : number) : Promise<GameConfig> {
@@ -77,6 +86,7 @@
                 newConfig.level.filePrefix = <any>configData["level.filePrefix"];
                 newConfig.level.groups = <any>configData["level.groups"];
                 newConfig.accessCodeKey = <any>configData["accessCodeKey"];
+                newConfig.gamePaletteID = <any>configData["gamePaletteID"];
 
                 /// read audio config
                 newConfig.audioConfig.version = <any>configData["audio.version"];

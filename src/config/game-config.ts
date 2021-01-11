@@ -14,6 +14,7 @@ module Lemmings {
         public level:LevelConfig = new LevelConfig();
 
         public accessCodeKey: string;
+        public gamePaletteID: number;
 
 
     }

@@ -19,16 +19,16 @@
 
     function init() {
 		releaseView.gameCanvas = document.getElementById("gameCanvas");
-		releaseView.selectGameType();
+		releaseView.InitGame();
     }
 
     </script>
 
   </head>
-  <body onload="init();">
+  <body onload="init();" oncontextmenu="return false;">
   
     <div style="overflow-x: scroll; width:99%">
-    <canvas height="400" width="640" id="gameCanvas" class="PixelatedRendering" >
+    <canvas height="400" width="640" id="gameCanvas" tabindex='1' class="PixelatedRendering" >
       Sorry! Your browser does not support HTML5 Canvas and can not run this Application.
     </canvas>
     </div>

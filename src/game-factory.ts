@@ -48,6 +48,22 @@ module Lemmings {
 
             });
         }
+
+
+        public getConfigs( ): Promise<GameConfig[]> 
+        {
+            return this.configReader.getConfigs();
+            /*
+            return new Promise<GameConfig[]>((resolve, reject)=> {
+
+                this.configReader.getConfigs().then((configs:GameConfig[]) => {
+                    resolve(configs);
+                });
+            });
+            */
+            
+        }
+
     }
 
 }

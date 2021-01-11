@@ -32,6 +32,17 @@ var Lemmings;
                 });
             });
         }
+        getConfigs() {
+            return this.configReader.getConfigs();
+            /*
+            return new Promise<GameConfig[]>((resolve, reject)=> {
+
+                this.configReader.getConfigs().then((configs:GameConfig[]) => {
+                    resolve(configs);
+                });
+            });
+            */
+        }
     }
     Lemmings.GameFactory = GameFactory;
 })(Lemmings || (Lemmings = {}));
@@ -73,10 +84,10 @@ var Lemmings;
                 });
             });
         }
-        getPagesSprite(colorPalette) {
+        getPagesSprite(colorPalette, nbGroup) {
             return new Promise((resolve, reject) => {
                 this.getMainDat().then(container => {
-                    resolve(new Lemmings.pagesSprites(container.getPart(3), container.getPart(4), colorPalette));
+                    resolve(new Lemmings.pagesSprites(container.getPart(3), container.getPart(4), colorPalette, nbGroup));
                 });
             });
         }
@@ -2717,6 +2728,7 @@ var Lemmings;
                     level.screenPositionX = levelReader.screenPositionX;
                     level.isSuperLemming = levelReader.isSuperLemming;
                     level.accessCodeKey = this.config.accessCodeKey;
+                    level.gamePaletteID = this.config.gamePaletteID;
                     /// default level properties
                     let levelProperties = levelReader.levelProperties;
                     /// switch level properties to odd table config
@@ -2790,6 +2802,7 @@ var Lemmings;
             this.screenPositionX = 0;
             this.isSuperLemming = false;
             this.accessCodeKey = "";
+            this.gamePaletteID = 0;
             this.width = width;
             this.height = height;
         }
@@ -2874,7 +2887,41 @@ var Lemmings;
             this.colorPalette = colorPalette;
             this.groundPalette = groundPalette;
         }
-        RenderWelcome(pageDisplay, gameState, brownFrame, sprites, survivorPercent, logo, F1, F2, F3) {
+        RenderSelectpage(pageDisplay, sprites, GC) {
+            let brownFrame = sprites.getPanelSprite();
+            pageDisplay.clear();
+            pageDisplay.drawFrame(brownFrame, 0, 0);
+            pageDisplay.drawFrame(brownFrame, 0, 104);
+            pageDisplay.drawFrame(brownFrame, 320, 0);
+            pageDisplay.drawFrame(brownFrame, 320, 104);
+            pageDisplay.drawFrame(brownFrame, 0, 208);
+            pageDisplay.drawFrame(brownFrame, 0, 312);
+            pageDisplay.drawFrame(brownFrame, 320, 208);
+            pageDisplay.drawFrame(brownFrame, 320, 312);
+            this.drawString(pageDisplay, "Select Game:", 0, 26, sprites);
+            for (var i = 0; i < GC.length; i++) {
+                this.drawString(pageDisplay, (i + 1) + " : " + GC[i].name, 100, 26 + (30 * (i + 1)), sprites);
+            }
+        }
+        RenderWelcome(pageDisplay, sprites, MusicLevel, DifficultyLevel, nbgroup) {
+            let brownFrame = sprites.getPanelSprite();
+            let logo = sprites.getLogo();
+            let F1 = sprites.getF1();
+            let F2 = sprites.getF2();
+            let F3 = sprites.getF3();
+            let F4 = sprites.getF4();
+            let FX = sprites.getFX();
+            let ExitDos = sprites.getExitDOS();
+            let LevelRating = sprites.getLeveRating();
+            let MusicNote = sprites.getMusicNote();
+            let LeftLemmingWorkingScroller = sprites.getLeftLemmingWorkingScroller();
+            let RighttLemmingWorkingScroller = sprites.getRightLemmingWorkingScroller();
+            let Reel = sprites.getReel();
+            let mayhemSign = sprites.getMayhemSign();
+            let taxingSign = sprites.getTaxingSign();
+            let trickySign = sprites.getTrickySign();
+            let funSign = sprites.getFunSign();
+            let funSign2 = sprites.getFunSign2();
             pageDisplay.clear();
             pageDisplay.drawFrame(brownFrame, 0, 0);
             pageDisplay.drawFrame(brownFrame, 0, 104);
@@ -2885,12 +2932,38 @@ var Lemmings;
             pageDisplay.drawFrame(brownFrame, 320, 208);
             pageDisplay.drawFrame(brownFrame, 320, 312);
             pageDisplay.drawFrame(logo, 10, 0);
-            pageDisplay.drawFrame(F1, 10, 150);
-            pageDisplay.drawFrame(F2, 210, 150);
-            pageDisplay.drawFrame(F3, 410, 150);
-            this.drawString(pageDisplay, "(c) 1991-93", 0, 176, sprites);
+            pageDisplay.drawFrame(F1, 80 - 10, 110);
+            pageDisplay.drawFrame(F2, 210 - 10, 110);
+            pageDisplay.drawFrame(F3, 340 - 10, 110);
+            if (MusicLevel == 1)
+                pageDisplay.drawFrame(FX, 340 - 10 + 25 + 2, 110 + 25);
+            if (MusicLevel == 2)
+                pageDisplay.drawFrame(MusicNote, 340 - 10 + 25 + 2, 110 + 25);
+            pageDisplay.drawFrame(LevelRating, 470 - 10, 110);
+            if (nbgroup > 1) {
+                if (DifficultyLevel == 0)
+                    pageDisplay.drawFrame(funSign, 470 - 10 + 25 + 8, 110 + 25);
+                if (DifficultyLevel == 1)
+                    pageDisplay.drawFrame(trickySign, 470 - 10 + 25 + 8, 110 + 25);
+                if (DifficultyLevel == 2)
+                    pageDisplay.drawFrame(taxingSign, 470 - 10 + 25 + 8, 110 + 25);
+                if (DifficultyLevel == 3)
+                    pageDisplay.drawFrame(mayhemSign, 470 - 10 + 25 + 8, 110 + 25);
+                if (DifficultyLevel == 4)
+                    pageDisplay.drawFrame(funSign2, 470 - 10 + 25 + 8, 110 + 25);
+            }
+            pageDisplay.drawFrame(ExitDos, 210 - 10, 220);
+            pageDisplay.drawFrame(F4, 340 - 10, 220);
+            this.drawString(pageDisplay, "(c) MCMXCI, Psygnosis Ltd", 120, 300, sprites);
+            this.drawString(pageDisplay, "    A DMA Design Game", 120, 320, sprites);
+            pageDisplay.drawFrame(LeftLemmingWorkingScroller[0], 0, 382);
+            pageDisplay.drawFrame(RighttLemmingWorkingScroller[0], 600, 382);
+            for (let i = 0; i < 35; i++) {
+                pageDisplay.drawFrame(Reel, 48 + (i * 16), 382);
+            }
         }
-        RenderStart(pageDisplay, gameState, brownFrame, sprites, survivorPercent) {
+        RenderStart(pageDisplay, gameState, sprites, survivorPercent) {
+            let brownFrame = sprites.getPanelSprite();
             pageDisplay.clear();
             pageDisplay.drawFrame(brownFrame, 0, 0);
             pageDisplay.drawFrame(brownFrame, 0, 104);
@@ -2900,18 +2973,6 @@ var Lemmings;
             pageDisplay.drawFrame(brownFrame, 0, 312);
             pageDisplay.drawFrame(brownFrame, 320, 208);
             pageDisplay.drawFrame(brownFrame, 320, 312);
-            if (gameState == Lemmings.GameState.GameSelect) //target
-             {
-                pageDisplay.clear();
-                this.drawString(pageDisplay, "GameSelect", 0, 26, sprites);
-            }
-            /*
-                        if(gameState==GameState.Welcome)//target
-                        {
-                            pageDisplay.clear();
-                            this.drawString(pageDisplay, "Welcome", 0,  26, sprites);
-                        }
-            */
             if (gameState == Lemmings.GameState.Objective) //target
              {
                 console.log("Level " + this.levelIndex + 1);
@@ -3112,23 +3173,28 @@ var Lemmings;
 (function (Lemmings) {
     /** manage the sprites need for the game skill panel */
     class pagesSprites {
-        /*
-                // return a number letter
-                public getNumberSpriteLeft(number:number) : Frame {
-                    return this.numberSpriteLeft[number];
-                }
-        
-                // return a number letter
-                public getNumberSpriteRight(number:number) : Frame {
-                    return this.numberSpriteRight[number];
-                }
-        
-                public getNumberSpriteEmpty() : Frame {
-                    return this.emptyNumberSprite;
-                }
-                */
-        constructor(fr3, fr4, colorPalette) {
+        constructor(fr3, fr4, colorPalette, nbGroup) {
             this.letterSprite = {};
+            this.blink = [];
+            this.leftLemmingWorkingScroller = [];
+            this.rightLemmingWorkingScroller = [];
+            let cinq = false;
+            if (nbGroup == 5)
+                cinq = true;
+            /*
+                offset (hex)  description              # of frames  width x height  bpp
+                ------------  -----------------------  -----------  --------------  ---
+                [0x0000]     brown background              1          320x104       2
+                [0x2080]     Lemmings logo                 1          632x94        4
+                [0x9488]     F1 sign                       1          120x61        4
+                [0xA2D4]     F2 sign                       1          120x61        4
+                [0xB120]     F3 sign                       1          120x61        4
+                [0xBF6C]     Level Rating sign             1          120x61        4
+                [0xCDB8]     Exit to DOS sign              1          120x61        4
+                [0xDC04]     F4 sign                       1          120x61        4
+                [0xEA50]     music note icon               1           64x31        4
+                [0xEE30]     "FX" icon                     1           64x31        4
+            */
             /// read  brown background
             let paletteImg = new Lemmings.PaletteImage(320, 104);
             paletteImg.processImage(fr3, 2);
@@ -3153,21 +3219,110 @@ var Lemmings;
             F3Img.processImage(fr3, 4);
             F3Img.processTransparentByColorIndex(0);
             this.F3 = F3Img.createFrame(colorPalette);
+            //read Level Rating sign
+            let LeveRatingImg = new Lemmings.PaletteImage(120, 61);
+            LeveRatingImg.processImage(fr3, 4);
+            LeveRatingImg.processTransparentByColorIndex(0);
+            this.LeveRating = LeveRatingImg.createFrame(colorPalette);
+            //read Level Rating sign
+            let ExitToDOSSignImg = new Lemmings.PaletteImage(120, 61);
+            ExitToDOSSignImg.processImage(fr3, 4);
+            ExitToDOSSignImg.processTransparentByColorIndex(0);
+            this.ExitToDOS = ExitToDOSSignImg.createFrame(colorPalette);
+            //read F4
+            let F4Img = new Lemmings.PaletteImage(120, 61);
+            F4Img.processImage(fr3, 4);
+            F4Img.processTransparentByColorIndex(0);
+            this.F4 = F4Img.createFrame(colorPalette);
+            //read music note icon
+            let musicNoteIconImg = new Lemmings.PaletteImage(64, 31);
+            musicNoteIconImg.processImage(fr3, 4);
+            //musicNoteIconImg.processTransparentByColorIndex(0);
+            this.MusicNote = musicNoteIconImg.createFrame(colorPalette);
+            //read "FX" icon
+            let FXIconImg = new Lemmings.PaletteImage(64, 31);
+            FXIconImg.processImage(fr3, 4);
+            //FXIconImg.processTransparentByColorIndex(0);
+            this.FX = FXIconImg.createFrame(colorPalette);
             /*
-                [0x9488]     F1 sign                       1          120x61        4
-                [0xA2D4]     F2 sign                       1          120x61        4
-                [0xB120]     F3 sign                       1          120x61        4
-                [0xBF6C]     Level Rating sign             1          120x61        4
-                [0xCDB8]     Exit to DOS sign              1          120x61        4
-                [0xDC04]     F4 sign                       1          120x61        4
-                [0xEA50]     music note icon               1           64x31        4
-                [0xEE30]     "FX" icon                     1           64x31        4
-            
-            
+            offset (hex)  description                   # of frames  width x height  bpp
+            ------------  -----------------------       -----------  --------------  ---
+            [0x0000]     blink1                               8           32x12        4
+            [0x0600]     blink2                               8           32x12        4
+            [0x0C00]     blink3                               8           32x12        4
+            [0x1200]     blink4                               8           32x12        4
+            [0x1800]     blink5                               8           32x12        4
+            [0x1E00]     blink6                               8           32x12        4
+            [0x2400]     blink7                               8           32x12        4
+            [0x2A00]     left Lemming working scroller       16           48x16        4
+            [0x4200]     right Lemming working scroller      16           48x16        4
+            [0x5A00]     reel                                 1           16x16        4
+            [0x5A80]     mayhem sign                          1           72x27        4
+            [0x5E4C]     taxing sign                          1           72x27        4
+            [0x6218]     tricky sign                          1           72x27        4
+            [0x65E4]     fun sign                             1           72x27        4
+            [0x69B0]     "!"                                  1           16x16        3
             */
+            for (let i = 0; i < 7; i++) {
+                this.blink[i] = [];
+                for (let j = 0; j < 8; j++) {
+                    //read "blink1" icon
+                    let blinkImg = new Lemmings.PaletteImage(32, 12);
+                    blinkImg.processImage(fr4, 4);
+                    //blink1Img.processTransparentByColorIndex(0);
+                    this.blink[i].push(blinkImg.createFrame(colorPalette));
+                }
+            }
+            for (let i = 0; i < 16; i++) {
+                let leftLemmingWorkingScrollerImg = new Lemmings.PaletteImage(48, 16);
+                leftLemmingWorkingScrollerImg.processImage(fr4, 4);
+                //blink1Img.processTransparentByColorIndex(0);
+                this.leftLemmingWorkingScroller.push(leftLemmingWorkingScrollerImg.createFrame(colorPalette));
+            }
+            for (let i = 0; i < 16; i++) {
+                let rightLemmingWorkingScrollerImg = new Lemmings.PaletteImage(48, 16);
+                rightLemmingWorkingScrollerImg.processImage(fr4, 4);
+                //blink1Img.processTransparentByColorIndex(0);
+                this.rightLemmingWorkingScroller.push(rightLemmingWorkingScrollerImg.createFrame(colorPalette));
+            }
+            //read "reel" icon
+            let ReelImg = new Lemmings.PaletteImage(16, 16);
+            ReelImg.processImage(fr4, 4);
+            //FXIconImg.processTransparentByColorIndex(0);
+            this.Reel = ReelImg.createFrame(colorPalette);
+            //read "mayhem sign" 
+            let mayhemImg = new Lemmings.PaletteImage(72, 27);
+            mayhemImg.processImage(fr4, 4);
+            //mayhemImg.processTransparentByColorIndex(0);
+            this.mayhemSign = mayhemImg.createFrame(colorPalette);
+            //read "taxing sign" 
+            let taxingImg = new Lemmings.PaletteImage(72, 27);
+            taxingImg.processImage(fr4, 4);
+            //taxingImg.processTransparentByColorIndex(0);
+            this.taxingSign = taxingImg.createFrame(colorPalette);
+            //read "tricky sign" 
+            let trickyImg = new Lemmings.PaletteImage(72, 27);
+            trickyImg.processImage(fr4, 4);
+            //trickyImg.processTransparentByColorIndex(0);
+            this.trickySign = trickyImg.createFrame(colorPalette);
+            //read "fun sign" 
+            let funImg = new Lemmings.PaletteImage(72, 27);
+            funImg.processImage(fr4, 4);
+            //funImg.processTransparentByColorIndex(0);
+            this.funSign = funImg.createFrame(colorPalette);
+            if (cinq) {
+                //read "fun sign" 
+                let funImg2 = new Lemmings.PaletteImage(72, 27);
+                funImg2.processImage(fr4, 4);
+                //funImg.processTransparentByColorIndex(0);
+                this.funSign2 = funImg2.createFrame(colorPalette);
+            }
             /// read green panel letters
             let letters = ["!", "\"", "#", "$", "%", "&", "'", "(", ")", "*", "+", ",", "-", ".", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "<", "=", ">", "?", "@", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "[", "\\", "]", "^", "_", "`", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "{", "|", "}", "~"];
-            fr4.setOffset(0x69B0);
+            if (cinq)
+                fr4.setOffset(0x6D7C); //72x*72=5184 = 0x1440
+            else
+                fr4.setOffset(0x69B0);
             for (let l = 0; l < letters.length; l++) {
                 let paletteImg = new Lemmings.PaletteImage(16, 16);
                 paletteImg.processImage(fr4, 3);
@@ -3204,11 +3359,6 @@ var Lemmings;
                         this.emptyNumberSprite.fill(255, 255, 255);
                         */
         }
-        /*
-                private numberSpriteLeft: Frame[] = [];
-                private numberSpriteRight: Frame[] = [];
-                private emptyNumberSprite : Frame;
-        */
         // return the sprite for the skill panel 
         getPanelSprite() {
             return this.panelSprite;
@@ -3224,6 +3374,48 @@ var Lemmings;
         }
         getF3() {
             return this.F3;
+        }
+        getF4() {
+            return this.F4;
+        }
+        getFX() {
+            return this.FX;
+        }
+        getExitDOS() {
+            return this.ExitToDOS;
+        }
+        getLeveRating() {
+            return this.LeveRating;
+        }
+        getMusicNote() {
+            return this.MusicNote;
+        }
+        getBlink(i) {
+            return this.blink[i];
+        }
+        getLeftLemmingWorkingScroller() {
+            return this.leftLemmingWorkingScroller;
+        }
+        getRightLemmingWorkingScroller() {
+            return this.rightLemmingWorkingScroller;
+        }
+        getReel() {
+            return this.Reel;
+        }
+        getMayhemSign() {
+            return this.mayhemSign;
+        }
+        getTaxingSign() {
+            return this.taxingSign;
+        }
+        getTrickySign() {
+            return this.trickySign;
+        }
+        getFunSign() {
+            return this.funSign;
+        }
+        getFunSign2() {
+            return this.funSign2;
         }
         // return a purple letter 
         getLetterSprite(letter) {
@@ -8453,6 +8645,13 @@ var Lemmings;
                 });
             });
         }
+        getConfigs() {
+            return new Promise((resolve, reject) => {
+                this.configs.then((configs) => {
+                    resolve(configs);
+                });
+            });
+        }
         /** return the game config for a given GameId */
         getConfig(GameId) {
             return new Promise((resolve, reject) => {
@@ -8492,6 +8691,7 @@ var Lemmings;
                 newConfig.level.filePrefix = configData["level.filePrefix"];
                 newConfig.level.groups = configData["level.groups"];
                 newConfig.accessCodeKey = configData["accessCodeKey"];
+                newConfig.gamePaletteID = configData["gamePaletteID"];
                 /// read audio config
                 newConfig.audioConfig.version = configData["audio.version"];
                 newConfig.audioConfig.adlibChannelConfigPosition = configData["audio.adlibChannelConfigPosition"];
@@ -9427,8 +9627,11 @@ var Lemmings;
             this.soundPlayer = null;
             this.game = null;
             this.gameFactory = new Lemmings.GameFactory("./");
+            this.MusicLevel = 2;
+            this.DifficultyLevel = 0;
             this.stage = null;
             this.GamePalette = null;
+            this.nbgroup = 4;
             this.elementSoundNumber = null;
             this.elementTrackNumber = null;
             this.elementLevelNumber = null;
@@ -9444,27 +9647,117 @@ var Lemmings;
             this.levelGroupIndex = this.strToNum(hashParts[1]);
             this.gameID = this.strToNum(hashParts[2]);
             this.gameState = GameState.GameSelect;
-            this.GamePalette = new Lemmings.ColorPalette();
-            this.GamePalette.setColorRGB(0, 0, 0, 0); //  Black 
-            this.GamePalette.setColorRGB(1, 128, 64, 32); //  Browns 
-            this.GamePalette.setColorRGB(2, 96, 48, 32); // 
-            this.GamePalette.setColorRGB(3, 48, 0, 16); //
-            this.GamePalette.setColorRGB(4, 32, 8, 124); //  Purples 
-            this.GamePalette.setColorRGB(5, 64, 44, 144); //
-            this.GamePalette.setColorRGB(6, 104, 88, 164); // 
-            this.GamePalette.setColorRGB(7, 152, 140, 188); // 
-            this.GamePalette.setColorRGB(8, 0, 80, 0); //  Greens
-            this.GamePalette.setColorRGB(9, 0, 96, 16); //
-            this.GamePalette.setColorRGB(10, 0, 112, 32); //
-            this.GamePalette.setColorRGB(11, 0, 128, 64); //
-            this.GamePalette.setColorRGB(12, 208, 208, 208); //  White 
-            this.GamePalette.setColorRGB(13, 176, 176, 0); //  Yellow 
-            this.GamePalette.setColorRGB(14, 64, 80, 176); //  Blue 
-            this.GamePalette.setColorRGB(15, 224, 128, 144); //  Pink 
+            this.SelectPalette(0);
             this.log.log("selected level: " + this.gameID + " : " + this.levelIndex + " / " + this.levelGroupIndex);
+        }
+        SelectPalette(ID) {
+            this.GamePalette = new Lemmings.ColorPalette();
+            if (ID == 0) //standard
+             {
+                this.GamePalette.setColorRGB(0, 0, 0, 0); //  Black 
+                this.GamePalette.setColorRGB(1, 128, 64, 32); //  Browns 
+                this.GamePalette.setColorRGB(2, 96, 48, 32); // 
+                this.GamePalette.setColorRGB(3, 48, 0, 16); //
+                this.GamePalette.setColorRGB(4, 32, 8, 124); //  Purples 
+                this.GamePalette.setColorRGB(5, 64, 44, 144); //
+                this.GamePalette.setColorRGB(6, 104, 88, 164); // 
+                this.GamePalette.setColorRGB(7, 152, 140, 188); // 
+                this.GamePalette.setColorRGB(8, 0, 80, 0); //  Greens
+                this.GamePalette.setColorRGB(9, 0, 96, 16); //
+                this.GamePalette.setColorRGB(10, 0, 112, 32); //
+                this.GamePalette.setColorRGB(11, 0, 128, 64); //
+                this.GamePalette.setColorRGB(12, 208, 208, 208); //  White 
+                this.GamePalette.setColorRGB(13, 176, 176, 0); //  Yellow 
+                this.GamePalette.setColorRGB(14, 64, 80, 176); //  Blue   <---------
+                this.GamePalette.setColorRGB(15, 224, 128, 144); //  Pink 
+            }
+            else //christmas
+             {
+                this.GamePalette.setColorRGB(0, 0, 0, 0); //  Black 
+                this.GamePalette.setColorRGB(1, 128, 64, 32); //  Browns 
+                this.GamePalette.setColorRGB(2, 96, 48, 32); // 
+                this.GamePalette.setColorRGB(3, 48, 0, 16); //
+                this.GamePalette.setColorRGB(4, 32, 8, 124); //  Purples 
+                this.GamePalette.setColorRGB(5, 64, 44, 144); //
+                this.GamePalette.setColorRGB(6, 104, 88, 164); // 
+                this.GamePalette.setColorRGB(7, 152, 140, 188); // 
+                this.GamePalette.setColorRGB(8, 0, 80, 0); //  Greens
+                this.GamePalette.setColorRGB(9, 0, 96, 16); //
+                this.GamePalette.setColorRGB(10, 0, 112, 32); //
+                this.GamePalette.setColorRGB(11, 0, 128, 64); //
+                this.GamePalette.setColorRGB(12, 208, 208, 208); //  White 
+                this.GamePalette.setColorRGB(13, 176, 176, 0); //  Yellow 
+                this.GamePalette.setColorRGB(14, 203, 16, 16); //  Red    <---------
+                this.GamePalette.setColorRGB(15, 224, 128, 144); //  Pink 
+            }
+            if (this.stage != null)
+                this.stage.setGamePalette(this.GamePalette);
         }
         set gameCanvas(el) {
             this.stage = new Lemmings.Stage(el, this.GamePalette);
+            window.addEventListener("onContextMenu", (e) => {
+                return false;
+            });
+            //el.addEventListener("keydown", this.manageKeyboard);
+            window.addEventListener("keydown", (e) => {
+                console.log(" Key: " + e.code + ", " + this.gameState);
+                if (this.gameState == GameState.GameSelect) {
+                    let noStr = "-1";
+                    if (e.code.startsWith("Digit")) {
+                        noStr = e.code.substring(5, 6);
+                        console.log("NO:" + noStr);
+                    }
+                    if (e.code.startsWith("Numpad")) {
+                        noStr = e.code.substring(6, 7);
+                        console.log("NO:" + noStr);
+                    }
+                    let no = parseInt(noStr);
+                    this.gameFactory.getConfigs().then((GameConfigs) => {
+                        let ID = GameConfigs[no - 1].gameID;
+                        this.nbgroup = GameConfigs[no - 1].level.groups.length;
+                        this.selectGameType(ID, GameConfigs[no - 1].gamePaletteID);
+                        this.gameState = GameState.Welcome;
+                    });
+                }
+                else if (this.gameState == GameState.Welcome) {
+                    if (e.code == "F1") //play
+                     {
+                        this.gameState = GameState.Objective;
+                        this.loadLevel();
+                    }
+                    if (e.code == "F3") //music
+                     {
+                        this.MusicLevel++;
+                        if (this.MusicLevel > 2)
+                            this.MusicLevel = 0;
+                        this.RenderWelcomePage();
+                    }
+                    if (e.code == "ArrowDown") //
+                     {
+                        this.DifficultyLevel--;
+                        if (this.DifficultyLevel < 0)
+                            this.DifficultyLevel = this.nbgroup - 1;
+                        this.RenderWelcomePage();
+                        this.levelGroupIndex = this.DifficultyLevel;
+                    }
+                    if (e.code == "ArrowUp") //
+                     {
+                        this.DifficultyLevel++;
+                        if (this.DifficultyLevel >= this.nbgroup)
+                            this.DifficultyLevel = 0;
+                        this.RenderWelcomePage();
+                        this.levelGroupIndex = this.DifficultyLevel;
+                    }
+                    if (e.code == "Escape") //
+                     {
+                        this.gameState = GameState.GameSelect;
+                        this.RenderSelectpage();
+                    }
+                }
+                e.stopPropagation();
+                e.preventDefault();
+                return false;
+            });
             el.addEventListener("mouseup", (e) => {
                 if (this.gameState == GameState.GameSelect) {
                     console.log(" GameSelect -> Welcome");
@@ -9492,7 +9785,8 @@ var Lemmings;
                     if (e.button == 2) //right
                      {
                         console.log("back to menu");
-                        //   this.moveToLevel(0); //back to menu
+                        this.gameState = GameState.Welcome;
+                        this.RenderWelcomePage(); //back to menu
                     }
                 }
                 else if (this.gameState == GameState.ResultBad) { //bad
@@ -9507,7 +9801,8 @@ var Lemmings;
                     if (e.button == 2) //right
                      {
                         console.log("back to menu");
-                        //   this.moveToLevel(0); //back to menu
+                        this.gameState = GameState.Welcome;
+                        this.RenderWelcomePage(); //back to menu
                     }
                 }
                 e.stopPropagation();
@@ -9536,12 +9831,12 @@ var Lemmings;
                 game.getGameTimer().speedFactor = this.gameSpeedFactor;
                 game.start();
                 game.onGameEnd.on((state) => this.onGameEnd(state));
-                this.changeHtmlText(this.elementGameState, Lemmings.GameStateTypes.toString(Lemmings.GameStateTypes.RUNNING));
+                //this.changeHtmlText(this.elementGameState, GameStateTypes.toString(GameStateTypes.RUNNING));
                 this.game = game;
             });
         }
         onGameEnd(gameResult) {
-            this.changeHtmlText(this.elementGameState, Lemmings.GameStateTypes.toString(gameResult.state));
+            //this.changeHtmlText(this.elementGameState, GameStateTypes.toString(gameResult.state));
             this.stage.startFadeOut();
             console.dir(gameResult);
             console.log("Level end");
@@ -9558,26 +9853,13 @@ var Lemmings;
                 gameDisplay.clear();
                 gameDisplay.redraw();
                 this.stage.resetFade();
-                let PagesPromis = this.gameResources.getPagesSprite(this.GamePalette).then((pagspr) => {
-                    this.brownFrame = pagspr.getPanelSprite();
+                let PagesPromis = this.gameResources.getPagesSprite(this.GamePalette, this.nbgroup).then((pagspr) => {
                     let FullPage = this.stage.getFullPageDisplay();
                     FullPage.clear();
                     this.stage.clear();
-                    this.currentLevel.RenderStart(FullPage, this.gameState, this.brownFrame, pagspr, this.game.getVictoryCondition().getSurvivorPercentage());
+                    this.currentLevel.RenderStart(FullPage, this.gameState, pagspr, this.game.getVictoryCondition().getSurvivorPercentage());
                     this.stage.redrawFullpage();
                 });
-                //----------------------------
-                /*
-
-                if (gameResult.state == GameStateTypes.SUCCEEDED) {
-                    /// move to next level
-                    this.moveToLevel(1);
-                }
-                else {
-                    /// redo this level
-                    this.moveToLevel(0);
-                }
-                */
             }, 2500);
         }
         /** load and run a replay */
@@ -9626,7 +9908,7 @@ var Lemmings;
                 moveInterval = 0;
             this.musicIndex += moveInterval;
             this.musicIndex = (this.musicIndex < 0) ? 0 : this.musicIndex;
-            this.changeHtmlText(this.elementTrackNumber, this.musicIndex.toString());
+            //this.changeHtmlText(this.elementTrackNumber, this.musicIndex.toString());
             this.gameResources.getMusicPlayer(this.musicIndex)
                 .then((player) => {
                 this.musicPlayer = player;
@@ -9651,7 +9933,7 @@ var Lemmings;
                 moveInterval = 0;
             this.soundIndex += moveInterval;
             this.soundIndex = (this.soundIndex < 0) ? 0 : this.soundIndex;
-            this.changeHtmlText(this.elementSoundNumber, this.soundIndex.toString());
+            //this.changeHtmlText(this.elementSoundNumber, this.soundIndex.toString());
             this.gameResources.getSoundPlayer(this.soundIndex)
                 .then((player) => {
                 this.soundPlayer = player;
@@ -9682,7 +9964,7 @@ var Lemmings;
                     this.levelIndex = config.level.getGroupLength(this.levelGroupIndex) - 1;
                 }
                 /// update and load level
-                this.changeHtmlText(this.elementLevelNumber, (this.levelIndex + 1).toString());
+                //this.changeHtmlText(this.elementLevelNumber, (this.levelIndex + 1).toString());
                 this.loadLevel();
             });
         }
@@ -9694,76 +9976,40 @@ var Lemmings;
         strToNum(str) {
             return Number(str) | 0;
         }
-        /** change the the text of a html element */
-        changeHtmlText(htmlElement, value) {
-            if (htmlElement == null) {
-                return;
-            }
-            htmlElement.innerText = value;
-        }
-        /** remove items of a <select> */
-        clearHtmlList(htmlList) {
-            while (htmlList.options.length) {
-                htmlList.remove(0);
-            }
-        }
-        /** add array elements to a <select> */
-        arrayToSelect(htmlList, list) {
-            this.clearHtmlList(htmlList);
-            for (var i = 0; i < list.length; i++) {
-                var opt = list[i];
-                var el = document.createElement("option");
-                el.textContent = opt;
-                el.value = i.toString();
-                htmlList.appendChild(el);
-            }
-        }
         /** switch the selected level group */
         selectLevelGroup(newLevelGroupIndex) {
             this.levelGroupIndex = newLevelGroupIndex;
             this.loadLevel();
         }
-        selectGameType(gameTypeId) {
-            if (gameTypeId == null)
-                gameTypeId = 0;
-            this.gameID = gameTypeId;
+        InitGame() {
+            console.log("Init Game");
+            this.gameID = 0;
+            this.gameState == GameState.GameSelect;
             this.gameFactory.getGameResources(this.gameID)
                 .then((newGameResources) => {
                 this.gameResources = newGameResources;
-                // this.arrayToSelect(this.elementSelectLevelGroup, this.gameResources.getLevelGroups());
                 this.levelGroupIndex = 0;
                 this.RenderSelectpage();
-                // this.loadLevel();
             });
         }
-        //------------------------------------
-        RenderMainpage() {
-            //ici charger les ressources pour les fontes
-            let PagesPromis = this.gameResources.getPagesSprite(this.GamePalette).then((pagspr) => {
-                this.brownFrame = pagspr.getPanelSprite();
-                if (this.stage != null) {
-                    let gameDisplay = this.stage.getGameDisplay();
-                    gameDisplay.clear();
-                    gameDisplay.redraw();
-                    //fullpage
-                    let FullPage = this.stage.getFullPageDisplay();
-                    FullPage.clear();
-                    this.stage.redrawFullpage();
-                    this.stage.resetFade();
-                    let level = new Lemmings.Level(0, 0);
-                    level.RenderStart(FullPage, this.gameState, this.brownFrame, pagspr, 0);
-                    this.stage.redrawFullpage();
-                }
+        selectGameType(gameTypeId, gamePaletteId) {
+            console.log("selectGameType");
+            if (gameTypeId == null)
+                gameTypeId = 0;
+            this.gameID = gameTypeId;
+            this.levelGroupIndex = 0;
+            this.levelIndex = 0;
+            this.gameFactory.getGameResources(this.gameID)
+                .then((newGameResources) => {
+                this.SelectPalette(gamePaletteId);
+                this.gameResources = newGameResources;
+                this.levelGroupIndex = 0;
+                this.RenderWelcomePage();
             });
         }
         RenderWelcomePage() {
             //ici charger les ressources pour les fontes
-            let PagesPromis = this.gameResources.getPagesSprite(this.GamePalette).then((pagspr) => {
-                this.brownFrame = pagspr.getPanelSprite();
-                let logo = pagspr.getLogo();
-                let F1 = pagspr.getF1();
-                let F2 = pagspr.getF2();
-                let F3 = pagspr.getF3();
+            let PagesPromis = this.gameResources.getPagesSprite(this.GamePalette, this.nbgroup).then((pagspr) => {
                 if (this.stage != null) {
                     let gameDisplay = this.stage.getGameDisplay();
                     gameDisplay.clear();
@@ -9774,31 +10020,31 @@ var Lemmings;
                     this.stage.redrawFullpage();
                     this.stage.resetFade();
                     let level = new Lemmings.Level(0, 0);
-                    level.RenderWelcome(FullPage, this.gameState, this.brownFrame, pagspr, 0, logo, F1, F2, F3);
+                    level.RenderWelcome(FullPage, pagspr, this.MusicLevel, this.DifficultyLevel, this.nbgroup);
                     this.stage.redrawFullpage();
                 }
             });
         }
         RenderSelectpage() {
-            //ici charger les ressources pour les fontes
-            let PagesPromis = this.gameResources.getPagesSprite(this.GamePalette).then((pagspr) => {
-                this.brownFrame = pagspr.getPanelSprite();
-                if (this.stage != null) {
-                    let gameDisplay = this.stage.getGameDisplay();
-                    gameDisplay.clear();
-                    gameDisplay.redraw();
-                    //fullpage
-                    let FullPage = this.stage.getFullPageDisplay();
-                    FullPage.clear();
-                    this.stage.redrawFullpage();
-                    this.stage.resetFade();
-                    let level = new Lemmings.Level(0, 0);
-                    level.RenderStart(FullPage, this.gameState, this.brownFrame, pagspr, 0);
-                    this.stage.redrawFullpage();
-                }
+            this.gameFactory.getConfigs().then((GameConfigs) => {
+                //ici charger les ressources pour les fontes
+                let PagesPromis = this.gameResources.getPagesSprite(this.GamePalette, this.nbgroup).then((pagspr) => {
+                    if (this.stage != null) {
+                        let gameDisplay = this.stage.getGameDisplay();
+                        gameDisplay.clear();
+                        gameDisplay.redraw();
+                        //fullpage
+                        let FullPage = this.stage.getFullPageDisplay();
+                        FullPage.clear();
+                        this.stage.redrawFullpage();
+                        this.stage.resetFade();
+                        let level = new Lemmings.Level(0, 0);
+                        level.RenderSelectpage(FullPage, pagspr, GameConfigs);
+                        this.stage.redrawFullpage();
+                    }
+                });
             });
         }
-        //--
         StartActualGame() {
             let FullPage = this.stage.getFullPageDisplay();
             FullPage.clear();
@@ -9821,17 +10067,16 @@ var Lemmings;
                 this.game.stop();
                 this.game = null;
             }
-            this.changeHtmlText(this.elementGameState, Lemmings.GameStateTypes.toString(Lemmings.GameStateTypes.UNKNOWN));
+            // this.changeHtmlText(this.elementGameState, GameStateTypes.toString(GameStateTypes.UNKNOWN));
             this.gameResources.getLevel(this.levelGroupIndex, this.levelIndex)
                 .then((level) => {
                 if (level == null)
                     return;
                 this.gameState = GameState.Objective; //targets
                 this.currentLevel = level;
-                this.changeHtmlText(this.elementLevelName, level.name);
+                //this.changeHtmlText(this.elementLevelName, level.name);
                 //ici charger les ressources pour les fontes
-                let PagesPromis = this.gameResources.getPagesSprite(this.GamePalette).then((pagspr) => {
-                    this.brownFrame = pagspr.getPanelSprite();
+                let PagesPromis = this.gameResources.getPagesSprite(this.GamePalette, this.nbgroup).then((pagspr) => {
                     if (this.stage != null) {
                         let gameDisplay = this.stage.getGameDisplay();
                         gameDisplay.clear();
@@ -9841,14 +10086,12 @@ var Lemmings;
                         FullPage.clear();
                         this.stage.redrawFullpage();
                         this.stage.resetFade();
-                        level.RenderStart(FullPage, this.gameState, this.brownFrame, pagspr, 0);
+                        level.RenderStart(FullPage, this.gameState, pagspr, 0);
                         this.stage.redrawFullpage();
                     }
                 });
                 window.location.hash = this.buildLevelIndexHash();
                 console.dir(level);
-                //console.log('loaded');
-                // this.start();
             });
         }
     }
@@ -9905,6 +10148,9 @@ var Lemmings;
             this.FullPageProps.viewPoint.scale = 1;
             this.updateStageSize();
             this.clear();
+        }
+        setGamePalette(GamePalette) {
+            this.GamePalette = GamePalette;
         }
         calcPosition2D(stageImage, e) {
             let x = (stageImage.viewPoint.getSceneX(e.x - stageImage.x));
