@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "es2015",
+    "sourceMap": true,
+    "outDir": "../run/",
+    "module": "amd",
+    "outFile": "../run/lemmings.js",
+  },
+  "include": [
+    "*",
+    "config/*",
+    "gameplay/*",
+    "gameplay/*",
+    "gameplay/actions/*",
+    "gameplay/commands/*",
+    "resources/*",
+    "resources/file/*",
+    "resources/lemmings/*",
+    "resources/sound/*",
+    "resources/sound/Cozendey/*",
+    "resources/sound/DBOPL/*",
+    "utilities/*",
+    "view/*"
+  ]
+}

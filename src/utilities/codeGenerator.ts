@@ -72,7 +72,9 @@ constructor() {
 	this.codeBase["gameObject.VERSION.XMAS91.value"]	 = this.codeBase["gameObject.VERSION.LEMMINGS.value"]; //- they use the same codebase
 	this.codeBase["gameObject.VERSION.XMAS92.value"]	 = this.codeBase["gameObject.VERSION.LEMMINGS.value"];
 */
-}
+    }
+
+    /*
     //- return (codeInfo) from Lemmings-Code.
     //const bar = { levelValue: 0, persentValue: 0, supriseValue: 0, failValue: 0 ,lemmingsVersion: "" };
 	public reverseCode(codeString: string, configs: GameConfig[], model: {levelValue: number; persentValue: number; supriseValue: number; failValue: number;gameID: number })
@@ -88,7 +90,7 @@ constructor() {
             }
         }
         return -1;
-/*
+//----------------
 		//- check for all know Lemmings Versions
 		for (var versionName in gameObject.VERSION)
 		{
@@ -99,10 +101,10 @@ constructor() {
                 model.gameID=ID;
 			//if (inf != null) return inf;
 		}
-*/
+//----------------
 		return ret;
 	}
-
+*/
 
 	
 	public reverseCodeSub(codeString:string, codeBase: string, model: {levelValue: number; persentValue: number; supriseValue: number; failValue: number;gameID: number })

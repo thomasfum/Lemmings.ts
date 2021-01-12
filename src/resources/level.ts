@@ -180,7 +180,41 @@ module Lemmings {
             }
          
         }
+        public RenderEnterCodePage(pageDisplay: DisplayImage, sprites: pagesSprites, AccesscodeEntered: string, message: string ) {
+            let brownFrame = sprites.getPanelSprite();
+            pageDisplay.clear();
 
+
+            pageDisplay.drawFrame(brownFrame, 0, 0);
+            pageDisplay.drawFrame(brownFrame, 0, 104);
+            pageDisplay.drawFrame(brownFrame, 320, 0);
+            pageDisplay.drawFrame(brownFrame, 320, 104);
+            pageDisplay.drawFrame(brownFrame, 0, 208);
+            pageDisplay.drawFrame(brownFrame, 0, 312);
+            pageDisplay.drawFrame(brownFrame, 320, 208);
+            pageDisplay.drawFrame(brownFrame, 320, 312);
+
+            this.drawString(pageDisplay, "Enter access code", 120, 100, sprites);
+            this.drawString(pageDisplay, AccesscodeEntered, 120, 120, sprites);
+            if(message!="")
+                this.drawString(pageDisplay, message, 120, 140, sprites);
+            
+
+        }
+
+        public RenderWelcomeDyn(pageDisplay: DisplayImage, sprites: pagesSprites) {
+            let LeftLemmingWorkingScroller = sprites.getLeftLemmingWorkingScroller();
+            let RighttLemmingWorkingScroller = sprites.getRightLemmingWorkingScroller();
+            let Reel = sprites.getReel();
+
+
+            for (let i = 0; i < 35; i++) {
+                pageDisplay.drawFrame(Reel, 48 + (i * 16), 382 -20);
+            }
+            pageDisplay.drawFrame(LeftLemmingWorkingScroller[0], 0, 382 -20);
+            pageDisplay.drawFrame(RighttLemmingWorkingScroller[0], 600, 382 -20);
+
+        }
        
        public RenderWelcome(pageDisplay: DisplayImage, sprites: pagesSprites,MusicLevel:number, DifficultyLevel: number, nbgroup: number)
         {
@@ -232,8 +266,9 @@ module Lemmings {
                       
 
 
-            pageDisplay.drawFrame(LevelRating, 470-10, 110);
-            if(nbgroup>1)
+           pageDisplay.drawFrame(LevelRating, 470 - 10, 110);
+           console.log("NB group=" + nbgroup);
+           if ((nbgroup > 1)&& (nbgroup <=4))
             {
                 if(DifficultyLevel==0)
                     pageDisplay.drawFrame(funSign, 470-10+25+8, 110+25);
@@ -243,9 +278,20 @@ module Lemmings {
                     pageDisplay.drawFrame(taxingSign, 470-10+25+8, 110+25);
                 if(DifficultyLevel==3)
                     pageDisplay.drawFrame(mayhemSign, 470-10+25+8, 110+25);
-                if(DifficultyLevel==4)
-                    pageDisplay.drawFrame(funSign2, 470-10+25+8, 110+25);
-            }
+                
+           }
+           if (nbgroup == 5) {
+               if (DifficultyLevel == 0)
+                   pageDisplay.drawFrame(funSign2, 470 - 10 + 25 + 8, 110 + 25);
+               if (DifficultyLevel == 1)
+                   pageDisplay.drawFrame(funSign, 470 - 10 + 25 + 8, 110 + 25);
+               if (DifficultyLevel == 2)
+                   pageDisplay.drawFrame(trickySign, 470 - 10 + 25 + 8, 110 + 25);
+               if (DifficultyLevel == 3)
+                   pageDisplay.drawFrame(taxingSign, 470 - 10 + 25 + 8, 110 + 25);
+               if (DifficultyLevel == 4)
+                   pageDisplay.drawFrame(mayhemSign, 470 - 10 + 25 + 8, 110 + 25);
+           }
 
             pageDisplay.drawFrame(ExitDos, 210-10, 220);
             pageDisplay.drawFrame(F4, 340-10, 220);
@@ -254,12 +300,13 @@ module Lemmings {
             this.drawString(pageDisplay, "(c) MCMXCI, Psygnosis Ltd", 120,  300, sprites);
             this.drawString(pageDisplay, "    A DMA Design Game", 120,  320, sprites);
 
-            pageDisplay.drawFrame(LeftLemmingWorkingScroller[0], 0, 382);
-            pageDisplay.drawFrame(RighttLemmingWorkingScroller[0], 600, 382);
+           
             for(let i=0; i<35;i++)
             {
                 pageDisplay.drawFrame(Reel, 48+ (i*16), 382);
             }
+            pageDisplay.drawFrame(LeftLemmingWorkingScroller[0], 0, 382);
+            pageDisplay.drawFrame(RighttLemmingWorkingScroller[0], 600, 382);
 
 
         }
