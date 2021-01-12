@@ -109,7 +109,7 @@ constructor() {
 	
 	public reverseCodeSub(codeString:string, codeBase: string, model: {levelValue: number; persentValue: number; supriseValue: number; failValue: number;gameID: number })
 	{
-		if (codeString.length != 10) return null;
+		if (codeString.length != 10) return -1;
 
 		//var codeBase = this.codeBase[gameVersion];
 

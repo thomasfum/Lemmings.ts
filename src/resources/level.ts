@@ -180,10 +180,9 @@ module Lemmings {
             }
          
         }
-        public RenderEnterCodePage(pageDisplay: DisplayImage, sprites: pagesSprites, AccesscodeEntered: string, message: string ) {
+        public RenderEnterCodePage(pageDisplay: DisplayImage, sprites: pagesSprites, AccesscodeEntered: string, message1: string, message2: string ) {
             let brownFrame = sprites.getPanelSprite();
             pageDisplay.clear();
-
 
             pageDisplay.drawFrame(brownFrame, 0, 0);
             pageDisplay.drawFrame(brownFrame, 0, 104);
@@ -194,12 +193,20 @@ module Lemmings {
             pageDisplay.drawFrame(brownFrame, 320, 208);
             pageDisplay.drawFrame(brownFrame, 320, 312);
 
-            this.drawString(pageDisplay, "Enter access code", 120, 100, sprites);
-            this.drawString(pageDisplay, AccesscodeEntered, 120, 120, sprites);
-            if(message!="")
-                this.drawString(pageDisplay, message, 120, 140, sprites);
-            
-
+            for (let x = 258; x < 258 + (10*16); x++) 
+                for (let y = 171; y < 171+16; y++) 
+                    pageDisplay.setPixel(x,y,0,0,0);
+            this.drawString(pageDisplay, "Enter Code", 258, 135, sprites);
+            if(AccesscodeEntered.length<10)
+            AccesscodeEntered+="_";
+            this.drawString(pageDisplay, AccesscodeEntered.padEnd(10, '.'), 258, 171, sprites);
+            if((message1!="")&&(message2!=""))//good
+            {
+                this.drawString(pageDisplay, message1, 187+8, 203, sprites);
+                this.drawString(pageDisplay, message2, 222+8, 239, sprites);
+            }
+            if((message1!="")&&(message2==""))//bad
+            this.drawString(pageDisplay, message1, 226, 205, sprites);
         }
 
         public RenderWelcomeDyn(pageDisplay: DisplayImage, sprites: pagesSprites) {
@@ -354,8 +361,8 @@ module Lemmings {
                 pageDisplay.clear();
                 this.drawString(pageDisplay, "All lemmings accounted for.", 113, 20, sprites);
 
-                this.drawString(pageDisplay, "You rescued " + Math.round(this.needCount * 100 / this.releaseCount) + "%", 224, 57, sprites);
-                this.drawString(pageDisplay, "You needed  " + survivorPercent + "%", 224, 77, sprites);
+                this.drawString(pageDisplay, "You rescued " + survivorPercent + "%", 224, 57, sprites);
+                this.drawString(pageDisplay, "You needed  " + Math.round(this.needCount * 100 / this.releaseCount) + "%", 224, 77, sprites);
 
                 //0%
                 let line1 = "";

@@ -2903,7 +2903,7 @@ var Lemmings;
                 this.drawString(pageDisplay, (i + 1) + " : " + GC[i].name, 100, 26 + (30 * (i + 1)), sprites);
             }
         }
-        RenderEnterCodePage(pageDisplay, sprites, AccesscodeEntered, message) {
+        RenderEnterCodePage(pageDisplay, sprites, AccesscodeEntered, message1, message2) {
             let brownFrame = sprites.getPanelSprite();
             pageDisplay.clear();
             pageDisplay.drawFrame(brownFrame, 0, 0);
@@ -2914,10 +2914,30 @@ var Lemmings;
             pageDisplay.drawFrame(brownFrame, 0, 312);
             pageDisplay.drawFrame(brownFrame, 320, 208);
             pageDisplay.drawFrame(brownFrame, 320, 312);
-            this.drawString(pageDisplay, "Enter access code", 120, 100, sprites);
-            this.drawString(pageDisplay, AccesscodeEntered, 120, 120, sprites);
-            if (message != "")
-                this.drawString(pageDisplay, message, 120, 140, sprites);
+            for (let x = 258; x < 258 + (10 * 16); x++)
+                for (let y = 171; y < 171 + 16; y++)
+                    pageDisplay.setPixel(x, y, 0, 0, 0);
+            this.drawString(pageDisplay, "Enter Code", 258, 135, sprites);
+            if (AccesscodeEntered.length < 10)
+                AccesscodeEntered += "_";
+            this.drawString(pageDisplay, AccesscodeEntered.padEnd(10, '.'), 258, 171, sprites);
+            if ((message1 != "") && (message2 != "")) //good
+             {
+                this.drawString(pageDisplay, message1, 187 + 8, 203, sprites);
+                this.drawString(pageDisplay, message2, 222 + 8, 239, sprites);
+            }
+            if ((message1 != "") && (message2 == "")) //bad
+                this.drawString(pageDisplay, message1, 226, 205, sprites);
+        }
+        RenderWelcomeDyn(pageDisplay, sprites) {
+            let LeftLemmingWorkingScroller = sprites.getLeftLemmingWorkingScroller();
+            let RighttLemmingWorkingScroller = sprites.getRightLemmingWorkingScroller();
+            let Reel = sprites.getReel();
+            for (let i = 0; i < 35; i++) {
+                pageDisplay.drawFrame(Reel, 48 + (i * 16), 382 - 20);
+            }
+            pageDisplay.drawFrame(LeftLemmingWorkingScroller[0], 0, 382 - 20);
+            pageDisplay.drawFrame(RighttLemmingWorkingScroller[0], 600, 382 - 20);
         }
         RenderWelcome(pageDisplay, sprites, MusicLevel, DifficultyLevel, nbgroup) {
             let brownFrame = sprites.getPanelSprite();
@@ -3024,8 +3044,8 @@ var Lemmings;
              {
                 pageDisplay.clear();
                 this.drawString(pageDisplay, "All lemmings accounted for.", 113, 20, sprites);
-                this.drawString(pageDisplay, "You rescued " + Math.round(this.needCount * 100 / this.releaseCount) + "%", 224, 57, sprites);
-                this.drawString(pageDisplay, "You needed  " + survivorPercent + "%", 224, 77, sprites);
+                this.drawString(pageDisplay, "You rescued " + survivorPercent + "%", 224, 57, sprites);
+                this.drawString(pageDisplay, "You needed  " + Math.round(this.needCount * 100 / this.releaseCount) + "%", 224, 77, sprites);
                 //0%
                 let line1 = "";
                 let line2 = "";
@@ -8558,7 +8578,7 @@ var Lemmings;
     */
         reverseCodeSub(codeString, codeBase, model) {
             if (codeString.length != 10)
-                return null;
+                return -1;
             //var codeBase = this.codeBase[gameVersion];
             //- CodeBase Offsets
             var Ofc = new Array(codeBase.length);
@@ -9667,7 +9687,7 @@ var Lemmings;
             this.nbgroup = 4;
             this.gameSpeedFactor = 1;
             this.gameState = GameState.GameSelect;
-            this.AccesscodeEntered = "";
+            this.AccesscodeEntered = "GAJJMDMJIW";
             /// split the hash of the url in parts + reverse
             let hashParts = window.location.hash.substr(1).split(",", 3).reverse();
             this.levelIndex = this.strToNum(hashParts[0]);
@@ -9737,11 +9757,11 @@ var Lemmings;
                     */
                     if ((e.keyCode >= 65) && (e.keyCode <= 90)) {
                         this.AccesscodeEntered += e.key.toUpperCase();
-                        this.RenderEnterCodePage(""); //ici
+                        this.RenderEnterCodePage("", ""); //ici
                     }
                     if (e.key == "Backspace") {
                         this.AccesscodeEntered = this.AccesscodeEntered.substring(0, this.AccesscodeEntered.length - 1);
-                        this.RenderEnterCodePage(""); //ici
+                        this.RenderEnterCodePage("", ""); //ici
                     }
                     if (e.key == "Enter") {
                         const bar = { levelValue: 0, persentValue: 0, supriseValue: 0, failValue: 0, gameID: 0 };
@@ -9749,22 +9769,34 @@ var Lemmings;
                         //CAJJLDLBCS  =fun1=>0  LCANNMFPDM=tricky1  => 30 GAJJMDMJIW=mayen 15  =>104 3*30+15
                         this.gameFactory.getConfig(this.gameID).then((config) => {
                             let codeGen = new Lemmings.CodeGenerator();
-                            codeGen.reverseCodeSub(this.AccesscodeEntered, "AJHLDHBBCJ", bar);
-                            console.log("Result: ");
+                            let ret = codeGen.reverseCodeSub(this.AccesscodeEntered, "AJHLDHBBCJ", bar);
+                            console.log("Result: " + ret);
                             console.dir(bar);
-                            let total = 0;
-                            let targetGroup = 0;
-                            let targetLevel = 0;
-                            for (var i = 0; i < this.nbgroup; i++) {
-                                let currentGroupLevelNumber = config.level.getGroupLength(i);
-                                total += currentGroupLevelNumber;
-                                if (total > bar.levelValue) {
-                                    targetGroup = i;
-                                    targetLevel = total - bar.levelValue;
-                                    break;
+                            if (ret == 0) {
+                                let total = 0;
+                                let targetGroup = 0;
+                                let targetLevel = 0;
+                                for (var i = 0; i < this.nbgroup; i++) {
+                                    let currentGroupLevelNumber = config.level.getGroupLength(i);
+                                    total += currentGroupLevelNumber;
+                                    if (total > bar.levelValue + 1) {
+                                        targetGroup = i;
+                                        targetLevel = bar.levelValue - (total - currentGroupLevelNumber);
+                                        break;
+                                    }
                                 }
+                                this.levelGroupIndex = targetGroup;
+                                this.levelIndex = targetLevel;
+                                //this.RenderEnterCodePage("OK " + bar.levelValue + "=" + config.level.groups[targetGroup] + "." + (targetLevel+1));//ici
+                                this.RenderEnterCodePage("Code for Level " + (targetLevel + 1), "Rating  " + config.level.groups[targetGroup]); //ici
                             }
-                            this.RenderEnterCodePage("OK " + bar.levelValue + "=" + targetGroup + "." + targetLevel); //ici
+                            else {
+                                this.RenderEnterCodePage("Incorrect Code", ""); //ici
+                            }
+                            window.setTimeout(() => {
+                                this.gameState = GameState.Welcome;
+                                this.RenderWelcomePage();
+                            }, 2500);
                         });
                     }
                     //
@@ -9790,14 +9822,16 @@ var Lemmings;
                 else if (this.gameState == GameState.Welcome) {
                     if (e.code == "F1") //play
                      {
+                        this.StopDynamicRenderWelcomePage();
                         this.gameState = GameState.Objective;
                         this.loadLevel();
                     }
                     if (e.code == "F2") //EnterCode
                      {
+                        this.StopDynamicRenderWelcomePage();
                         this.gameState = GameState.EnterCode;
                         this.AccesscodeEntered = "";
-                        this.RenderEnterCodePage("");
+                        this.RenderEnterCodePage("", "");
                     }
                     if (e.code == "F3") //music
                      {
@@ -9823,6 +9857,7 @@ var Lemmings;
                     if (e.code == "Escape") //
                      {
                         this.gameState = GameState.GameSelect;
+                        this.StopDynamicRenderWelcomePage();
                         this.RenderSelectpage();
                     }
                 }
@@ -9842,6 +9877,7 @@ var Lemmings;
                     this.RenderWelcomePage();
                 }
                 else if (this.gameState == GameState.Welcome) {
+                    this.StopDynamicRenderWelcomePage();
                     console.log(" Welcome -> Objective");
                     this.gameState = GameState.Objective;
                     this.loadLevel();
@@ -10081,7 +10117,7 @@ var Lemmings;
                 this.RenderWelcomePage();
             });
         }
-        RenderEnterCodePage(message) {
+        RenderEnterCodePage(message1, message2) {
             //ici charger les ressources pour les fontes
             let PagesPromis = this.gameResources.getPagesSprite(this.GamePalette, this.nbgroup).then((pagspr) => {
                 if (this.stage != null) {
@@ -10094,7 +10130,7 @@ var Lemmings;
                     this.stage.redrawFullpage();
                     this.stage.resetFade();
                     let level = new Lemmings.Level(0, 0);
-                    level.RenderEnterCodePage(FullPage, pagspr, this.AccesscodeEntered, message);
+                    level.RenderEnterCodePage(FullPage, pagspr, this.AccesscodeEntered, message1, message2);
                     this.stage.redrawFullpage();
                 }
             });
@@ -10103,6 +10139,7 @@ var Lemmings;
             //ici charger les ressources pour les fontes
             let PagesPromis = this.gameResources.getPagesSprite(this.GamePalette, this.nbgroup).then((pagspr) => {
                 if (this.stage != null) {
+                    this.WelcomePageSprire = pagspr;
                     let gameDisplay = this.stage.getGameDisplay();
                     gameDisplay.clear();
                     gameDisplay.redraw();
@@ -10114,8 +10151,21 @@ var Lemmings;
                     let level = new Lemmings.Level(0, 0);
                     level.RenderWelcome(FullPage, pagspr, this.MusicLevel, this.levelGroupIndex, this.nbgroup);
                     this.stage.redrawFullpage();
+                    clearInterval(this.WelcomePageTimer);
+                    this.WelcomePageTimer = setInterval(this.DynamicRenderWelcomePage, 2000);
                 }
             });
+        }
+        StopDynamicRenderWelcomePage() {
+            clearInterval(this.WelcomePageTimer);
+        }
+        DynamicRenderWelcomePage() {
+            console.log("timer");
+            /*
+            let FullPage = this.stage.getFullPageDisplay();
+            let level = new Level(0, 0);
+            level.RenderWelcomeDyn(FullPage, this.WelcomePageSprire);
+            */
         }
         RenderSelectpage() {
             this.gameFactory.getConfigs().then((GameConfigs) => {
