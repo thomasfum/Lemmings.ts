@@ -20,21 +20,20 @@ The goal is to finish it and extand it to custom levels like the ones present he
 
 ## Improvements since fork
 * Map added on game page
-* Mouse cursor added
+* Mouse cursor added with color palette
 * Long touch support
 * No need to change code to add new levels, use only config.json
 * Level presentation page added (objective)
 * Result page added
+* Original mouse navigation adde
+* Welcome page of each game added with mouse and touch pad support
+* Game selection page added with mouse and touch pad support
 
 ## ToDo
-* add the original mouse navigation
-* add welcome page of each game
-* add game selection page
-* change mouse cursor according to palette
+* finish welcome page (Reel)
 * On level presentation page add level map
-* manage touch pad on objective and result page
 * automate music and sound
-* fix some game issues
+* fix some game issues (some killing leming ojects are not triggered (hanging, rolling...))
 
 ## How to run
 * download the *Lemmings.ts.zip* from ![releases](https://github.com/thomasfum/Lemmings.ts/releases)
