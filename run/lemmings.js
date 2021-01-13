@@ -3057,32 +3057,18 @@ var Lemmings;
         RenderStart(pageDisplay, gameState, sprites, survivorPercent, g) {
             let brownFrame = sprites.getPanelSprite();
             pageDisplay.clear();
-            pageDisplay.drawFrame(brownFrame, 0, 0);
+            if (g != null) {
+                pageDisplay.drawFrame(brownFrame, 0, 0);
+                pageDisplay.drawFrame(brownFrame, 320, 0);
+            }
             pageDisplay.drawFrame(brownFrame, 0, 104);
-            pageDisplay.drawFrame(brownFrame, 320, 0);
             pageDisplay.drawFrame(brownFrame, 320, 104);
             pageDisplay.drawFrame(brownFrame, 0, 208);
             pageDisplay.drawFrame(brownFrame, 0, 312);
             pageDisplay.drawFrame(brownFrame, 320, 208);
             pageDisplay.drawFrame(brownFrame, 320, 312);
-            //let i = g.getImageData();
-            pageDisplay.setSubground(g);
-            //let map = new DisplayImage();
-            //this.render(pageDisplay);
-            // if(g!=null)
-            //      g.renderSub(pageDisplay);
-            /*
-                    pageDisplay.initSize(this.width, this.height);
-                    pageDisplay.setBackground(this.groundImage, null);
-        
-                    //pageDisplay.setBackground(this.groundImage, this.groundMask);
-                    pageDisplay.setBackground(this.groundImage, null);
-        
-                   // this.render(pageDisplay);
-                    //this.objectManager.render(this.dispaly);
-        
-                    //this.GetGroundImage();//ici
-                    */
+            if (g != null)
+                pageDisplay.setSubground(g);
             if (gameState == Lemmings.GameState.Objective) //target
              {
                 console.log("Level " + this.levelIndex + 1);
@@ -3180,6 +3166,7 @@ var Lemmings;
             gameDisplay.initSize(this.width, this.height);
             //console.log("level.render=" + this.width + "," + this.height);
             gameDisplay.setBackground(this.groundImage, this.groundMask);
+            // console.dir(this.groundImage);
         }
     }
     Lemmings.Level = Level;
@@ -9210,14 +9197,23 @@ var Lemmings;
         }
         /** render the level-background to an image */
         setSubground(groundImage) {
-            let s = groundImage.getWidth() * groundImage.getHeight();
-            let data = groundImage.getImageData();
-            console.log("!!!!!!!!!!!!!s=" + s);
-            let destData = new Uint32Array(this.imgData.data.buffer);
-            for (let i = 0; i < s / 2; i++)
-                destData[i] = 0xFFFFFF00; // data[i*2];
-            /// set pixels
-            //this.imgData.data.set(groundImage);
+            let srcWidth = groundImage.getWidth();
+            let srcHeight = groundImage.getHeight();
+            let dstWidth = this.getWidth();
+            let dstHeight = this.getHeight();
+            let data = groundImage.getImageData().data;
+            //            let s = groundImage.getWidth() * groundImage.getHeight();
+            //            console.log("!!!!!!!!!!!!!s=" + s);
+            //            console.log("!!!!!!!!!!!!!s=" + data[642300]+"."+data[642301]);
+            for (let x = 0; x < srcWidth / 3; x = x + 1)
+                for (let y = 0; y < srcHeight / 3; y = y + 1) {
+                    let pointIndexSrc = (srcWidth * (y * 3) + x * 3) * 4;
+                    let pointIndexDst = (dstWidth * (y + 20) + x + 30) * 4;
+                    this.imgData.data[pointIndexDst + 0] = data[pointIndexSrc + 0];
+                    this.imgData.data[pointIndexDst + 1] = data[pointIndexSrc + 1];
+                    this.imgData.data[pointIndexDst + 2] = data[pointIndexSrc + 2];
+                    //   this.imgData.data[pointIndexDst +3] = data[pointIndexSrc+3]
+                }
         }
         uint8ClampedColor(colorValue) {
             return colorValue & 0xFF;
@@ -10345,6 +10341,7 @@ var Lemmings;
                             //                                    game.start();
                             game.onGameEnd.on((state) => this.onGameEnd(state));
                             this.game = game;
+                            this.stage.redrawSub();
                             //let map = new DisplayImage(this.stage);
                             //console.log(map);
                             this.game.renderSub(null);
@@ -10698,6 +10695,10 @@ var Lemmings;
                 this.draw(this.FullPageProps, FullPageImg);
             }
             ;
+        }
+        redrawSub() {
+            let gameImg = this.gameImgProps.display.getImageData();
+            this.draw(this.gameImgProps, gameImg);
         }
         /** redraw everything */
         redraw() {

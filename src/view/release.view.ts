@@ -739,7 +739,7 @@ module Lemmings {
                                     game.onGameEnd.on((state) => this.onGameEnd(state));
 
                                     this.game = game;
-
+                                    this.stage.redrawSub();
                                     //let map = new DisplayImage(this.stage);
                                     //console.log(map);
                                     this.game.renderSub(null);

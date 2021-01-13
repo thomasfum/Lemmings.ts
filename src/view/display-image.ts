@@ -57,18 +57,28 @@ module Lemmings {
         /** render the level-background to an image */
         public setSubground(groundImage: DisplayImage) {
 
-            let s = groundImage.getWidth() * groundImage.getHeight();
-            let data=groundImage.getImageData();
-            console.log("!!!!!!!!!!!!!s=" + s);
 
-            let destData = new Uint32Array(this.imgData.data.buffer);
+          let srcWidth=groundImage.getWidth();
+            let srcHeight=groundImage.getHeight();
+            let dstWidth=this.getWidth();
+            let dstHeight=this.getHeight();
 
-            for (let i = 0; i < s/2; i++)
-                destData[i] = 0xFFFFFF00;// data[i*2];
-            
-            /// set pixels
-            //this.imgData.data.set(groundImage);
-            
+            let data=groundImage.getImageData().data;
+//            let s = groundImage.getWidth() * groundImage.getHeight();
+//            console.log("!!!!!!!!!!!!!s=" + s);
+//            console.log("!!!!!!!!!!!!!s=" + data[642300]+"."+data[642301]);
+
+            for (let x = 0; x < srcWidth/3; x=x+1)
+                for (let y = 0; y < srcHeight/3; y=y+1)
+                {
+                    let pointIndexSrc = (srcWidth * (y*3) + x*3) * 4;
+                    let pointIndexDst = (dstWidth * (y+20) + x +30) * 4;
+                    this.imgData.data[pointIndexDst +0] = data[pointIndexSrc+0];
+                    this.imgData.data[pointIndexDst +1] = data[pointIndexSrc+1];
+                    this.imgData.data[pointIndexDst +2] = data[pointIndexSrc+2];
+                 //   this.imgData.data[pointIndexDst +3] = data[pointIndexSrc+3]
+
+                }
         }
 
         private uint8ClampedColor(colorValue: number): number {
