@@ -150,6 +150,8 @@ module Lemmings {
             this.groundImage = new Uint8ClampedArray(img);
         }
 
+      
+
         /** set the color palettes for this level */
         public setPalettes(colorPalette: ColorPalette, groundPalette: ColorPalette) {
             this.colorPalette = colorPalette;
@@ -209,21 +211,62 @@ module Lemmings {
             this.drawString(pageDisplay, message1, 226, 205, sprites);
         }
 
-        public RenderWelcomeDyn(pageDisplay: DisplayImage, sprites: pagesSprites) {
+        public RenderWelcomeDyn(pageDisplay: DisplayImage, sprites: pagesSprites, tick:number) {
             let LeftLemmingWorkingScroller = sprites.getLeftLemmingWorkingScroller();
             let RighttLemmingWorkingScroller = sprites.getRightLemmingWorkingScroller();
             let Reel = sprites.getReel();
 
+            let TickReel = (tick % 16);
+            let TickBlink = (tick % 8);
 
             for (let i = 0; i < 35; i++) {
-                pageDisplay.drawFrame(Reel, 48 + (i * 16), 382 -20);
+                pageDisplay.drawFrame(Reel, 48 + (i * 16) - TickReel, 382);
             }
-            pageDisplay.drawFrame(LeftLemmingWorkingScroller[0], 0, 382 -20);
-            pageDisplay.drawFrame(RighttLemmingWorkingScroller[0], 600, 382 -20);
+            this.drawString(pageDisplay, "Message", 600 - tick, 382, sprites);
+
+            pageDisplay.drawFrame(LeftLemmingWorkingScroller[TickReel], 0, 382);
+            pageDisplay.drawFrame(RighttLemmingWorkingScroller[TickReel], 600, 382);
+            let step = 96;
+            let tickB = Math.round(tick / step);
+            let tickC = tickB%6;
+
+            if ((tick >= tickB * step) && (tick < (tickB * step)+8))
+            {
+               // console.log("blink:" + TickBlink);
+                if (tickC == 0) {
+                    let CurrentBlink0 = sprites.getBlink(0);
+                    pageDisplay.drawFrame(CurrentBlink0[TickBlink], 34 + 1 + 1, 40 - 2);//top left
+                }
+                if (tickC == 3) {
+                    let CurrentBlink1 = sprites.getBlink(1);
+                    pageDisplay.drawFrame(CurrentBlink1[TickBlink], 260 - 2, 40 - 2);//top center
+                }
+                if (tickC == 5) {
+                    let CurrentBlink2 = sprites.getBlink(2);
+                    pageDisplay.drawFrame(CurrentBlink2[TickBlink], 495 + 3, 30);//top right =>OK
+                }
+                if (tickC == 1) {
+                    let CurrentBlink3 = sprites.getBlink(3);
+                    pageDisplay.drawFrame(CurrentBlink3[TickBlink], 107 + 1, 120 + 2);//F1 =>OK
+                }
+
+                //---------------------
+                //let CurrentBlink4 = sprites.getBlink(4);
+                //pageDisplay.drawFrame(CurrentBlink4[TickReel], 365, 230);//F4 ?
+                if (tickC == 4) {
+                    let CurrentBlink5 = sprites.getBlink(5);
+                    pageDisplay.drawFrame(CurrentBlink5[TickBlink], 240 - 1, 120 + 2);//F2
+                }
+                if (tickC == 2) {
+                    let CurrentBlink6 = sprites.getBlink(6);
+                    pageDisplay.drawFrame(CurrentBlink6[TickBlink], 370 + 2, 120 - 1);// f3
+                }
+            }
+            //console.log("timer: done " + tick + "; " + TickReel);
 
         }
        
-       public RenderWelcome(pageDisplay: DisplayImage, sprites: pagesSprites,MusicLevel:number, DifficultyLevel: number, nbgroup: number)
+        public RenderWelcome(pageDisplay: DisplayImage, sprites: pagesSprites, MusicLevel: number, DifficultyLevel: number, nbgroup: number, tick: number)
         {
     
             let brownFrame=sprites.getPanelSprite();
@@ -307,14 +350,15 @@ module Lemmings {
             this.drawString(pageDisplay, "(c) MCMXCI, Psygnosis Ltd", 120,  300, sprites);
             this.drawString(pageDisplay, "    A DMA Design Game", 120,  320, sprites);
 
-           
+           this.RenderWelcomeDyn(pageDisplay, sprites, tick);
+           /*
             for(let i=0; i<35;i++)
             {
                 pageDisplay.drawFrame(Reel, 48+ (i*16), 382);
             }
             pageDisplay.drawFrame(LeftLemmingWorkingScroller[0], 0, 382);
             pageDisplay.drawFrame(RighttLemmingWorkingScroller[0], 600, 382);
-
+            */
 
         }
      
@@ -334,6 +378,18 @@ module Lemmings {
             pageDisplay.drawFrame(brownFrame, 320, 312);
 
 
+    /*
+            pageDisplay.initSize(this.width, this.height);
+            pageDisplay.setBackground(this.groundImage, null);
+
+            //pageDisplay.setBackground(this.groundImage, this.groundMask);
+            pageDisplay.setBackground(this.groundImage, null);
+
+           // this.render(pageDisplay);
+            //this.objectManager.render(this.dispaly);
+
+            //this.GetGroundImage();//ici
+            */
             if(gameState==GameState.Objective)//target
             {
                 console.log("Level "+this.levelIndex+1);

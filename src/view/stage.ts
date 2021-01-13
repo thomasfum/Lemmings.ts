@@ -14,7 +14,8 @@ module Lemmings {
         private lastMousePos: Position2D = null;
         private level:Level;
         private CurrentLemmingState: string ="";
-        private GamePalette: ColorPalette=null;
+        private GamePalette: ColorPalette = null;
+        private MoveStageDirection: number = 0;
 
                 
         constructor(canvasForOutput: HTMLCanvasElement,GamePalette: ColorPalette ) {
@@ -42,9 +43,16 @@ module Lemmings {
             this.updateStageSize();
 
             this.clear();
-         
-
         }
+
+        public showCursor(show: boolean) {
+
+            if (show==false)
+                this.stageCav.style.cursor = 'none';
+            else
+                this.stageCav.style.cursor = 'auto';
+        }
+
         public setGamePalette(GamePalette: ColorPalette )
         {
             this.GamePalette= GamePalette;
@@ -97,7 +105,7 @@ module Lemmings {
 
         private DrawCursor(gameImg: StageImageProperties,cross: boolean, pos: Position2D)
         {
-            let cursorsize=10;
+            //let cursorsize=10;
             if(cross==true)
             {
 
@@ -249,11 +257,31 @@ module Lemmings {
                         stageImage.display.onMouseMove.trigger(this.calcPosition2D(stageImage, e));
                        
                     }
+                    if (stageImage == this.guiImgProps) {
+                        //console.log("draging in GUI:" + e.x + ", " + e.y);
+                        if ((e.x >= 410) && (e.x <= 630) && (e.y >= 350) && (e.y <= 480))// to be set dynamically
+                        {
+                            this.updateViewPoint(this.gameImgProps, (0-e.deltaX)*16, 0, 0);
+                            console.log("draging game:" + e.x + ", " + e.y);
+                        }
+                        
+                    }
                 }
                 else {
                     let stageImage = this.getStageImageAt(e.x, e.y);
                     if (stageImage == null) return;
                     if (stageImage.display == null) return;
+
+                    if (stageImage == this.gameImgProps) {
+                        if (e.x > stageImage.width - 10)
+                            this.MoveStageDirection = 1;
+                        else if (e.x < 10)
+                            this.MoveStageDirection = -1;
+                        else
+                            this.MoveStageDirection = 0;
+                    }
+                    else
+                        this.MoveStageDirection = 0;
 
                     let x = e.x - stageImage.x;
                     let y = e.y - stageImage.y;    
@@ -305,7 +333,13 @@ module Lemmings {
             this.redraw();
     
         }
-
+        public UpdateAutoScroll() {
+            
+            if (this.MoveStageDirection == 0)
+                return;
+            //console.log(" this.MoveStageDirection=" + this.MoveStageDirection);
+            this.updateViewPoint(this.gameImgProps, this.MoveStageDirection*10, 0, 0);
+        }
      
 
         private limitValue(minLimit:number, value:number, maxLimit:number) :number {

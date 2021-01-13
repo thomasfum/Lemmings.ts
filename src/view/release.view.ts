@@ -7,10 +7,10 @@ module Lemmings {
         Playing,
         ResultGood,
         ResultBad
-      }
+    }
 
     export class ReleaseView {
-        private log : LogHandler = new LogHandler("ReleaseView");
+        private log: LogHandler = new LogHandler("ReleaseView");
 
         private levelIndex: number = 0;
         private levelGroupIndex: number = 0;
@@ -20,42 +20,42 @@ module Lemmings {
         private gameResources: GameResources = null;
         private musicPlayer: AudioPlayer = null;
         private soundPlayer: AudioPlayer = null;
-        private game : Game = null;
+        private game: Game = null;
         private gameFactory = new GameFactory("./");
-        private currentLevel:Level;
-        private MusicLevel: number=2;
+        private currentLevel: Level;
+        private MusicLevel: number = 2;
 
         private stage: Stage = null;
-        private GamePalette: ColorPalette=null;
-        private nbgroup: number=4;
+        private GamePalette: ColorPalette = null;
+        private nbgroup: number = 4;
 
         private gameSpeedFactor = 1;
-        private gameState: GameState =GameState.GameSelect;
-        private AccesscodeEntered: string = "GAJJMDMJIW";
+        private gameState: GameState = GameState.GameSelect;
+        private AccesscodeEntered: string = "";
 
         private WelcomePageTimer: number;
+        private WelcomePageTick: number;
         private WelcomePageSprire: pagesSprites;
 
         public constructor() {
             /// split the hash of the url in parts + reverse
             let hashParts = window.location.hash.substr(1).split(",", 3).reverse();
-      
+
             this.levelIndex = this.strToNum(hashParts[0]);
             this.levelGroupIndex = this.strToNum(hashParts[1]);
-            this.gameID= this.strToNum(hashParts[2]) ;
-            this.gameState=GameState.GameSelect;
+            this.gameID = this.strToNum(hashParts[2]);
+            this.gameState = GameState.GameSelect;
 
             this.SelectPalette(0);
 
-            this.log.log("selected level: "+this.gameID +" : "+ this.levelIndex + " / "+ this.levelGroupIndex);
+            this.log.log("selected level: " + this.gameID + " : " + this.levelIndex + " / " + this.levelGroupIndex);
         }
 
 
-        private SelectPalette(ID:number)
-        {
-            
+        private SelectPalette(ID: number) {
+
             this.GamePalette = new ColorPalette();
-            if(ID==0)//standard
+            if (ID == 0)//standard
             {
                 this.GamePalette.setColorRGB(0, 0, 0, 0);//  Black 
                 this.GamePalette.setColorRGB(1, 128, 64, 32);//  Browns 
@@ -93,21 +93,21 @@ module Lemmings {
                 this.GamePalette.setColorRGB(14, 203, 16, 16);//  Red    <---------
                 this.GamePalette.setColorRGB(15, 224, 128, 144);//  Pink 
             }
-            if(this.stage!=null)
+            if (this.stage != null)
                 this.stage.setGamePalette(this.GamePalette);
         }
 
-        public set gameCanvas(el:HTMLCanvasElement){
-            this.stage = new Stage(el,  this.GamePalette);
-             
+        public set gameCanvas(el: HTMLCanvasElement) {
+            this.stage = new Stage(el, this.GamePalette);
+
             window.addEventListener("onContextMenu", (e: KeyboardEvent) => {
                 return false;
             });
 
-            
-          
+
+
             window.addEventListener("keydown", (e: KeyboardEvent) => {
-                console.log(" Key down: " + e.code + ", " + e.key + ", " + e.keyCode + ", " + this.gameState);
+                //console.log(" Key down: " + e.code + ", " + e.key + ", " + e.keyCode + ", " + this.gameState);
 
 
                 if (this.gameState == GameState.EnterCode) {
@@ -120,11 +120,11 @@ module Lemmings {
                     */
                     if ((e.keyCode >= 65) && (e.keyCode <= 90)) {
                         this.AccesscodeEntered += e.key.toUpperCase();
-                        this.RenderEnterCodePage("","");//ici
+                        this.RenderEnterCodePage("", "");//ici
                     }
                     if (e.key == "Backspace") {
                         this.AccesscodeEntered = this.AccesscodeEntered.substring(0, this.AccesscodeEntered.length - 1);
-                        this.RenderEnterCodePage("","");//ici
+                        this.RenderEnterCodePage("", "");//ici
                     }
                     if (e.key == "Enter") {
 
@@ -133,69 +133,61 @@ module Lemmings {
                         //CAJJLDLBCS  =fun1=>0  LCANNMFPDM=tricky1  => 30 GAJJMDMJIW=mayen 15  =>104 3*30+15
                         this.gameFactory.getConfig(this.gameID).then((config) => {
                             let codeGen = new CodeGenerator();
-                            let ret=codeGen.reverseCodeSub(this.AccesscodeEntered, "AJHLDHBBCJ", bar);
-                            console.log("Result: "+ret);
-                            console.dir(bar);
-                            if(ret==0)
-                            {
+                            let ret = codeGen.reverseCodeSub(this.AccesscodeEntered, config.accessCodeKey, bar);
+                            //console.log("Result: "+ret);
+                            //console.dir(bar);
+                            if (ret == 0) {
                                 let total = 0;
                                 let targetGroup = 0;
                                 let targetLevel = 0;
                                 for (var i = 0; i < this.nbgroup; i++) {
                                     let currentGroupLevelNumber = config.level.getGroupLength(i);
                                     total += currentGroupLevelNumber;
-                                    if (total >bar.levelValue+1) {
+                                    if (total > bar.levelValue + 1) {
                                         targetGroup = i;
                                         targetLevel = bar.levelValue - (total - currentGroupLevelNumber);
                                         break;
                                     }
                                 }
-                                this.levelGroupIndex=targetGroup;
-                                this.levelIndex=targetLevel;
-
-                                //this.RenderEnterCodePage("OK " + bar.levelValue + "=" + config.level.groups[targetGroup] + "." + (targetLevel+1));//ici
-                                this.RenderEnterCodePage("Code for Level "+ (targetLevel+1),"Rating  "+config.level.groups[targetGroup]);//ici
+                                this.levelGroupIndex = targetGroup;
+                                this.levelIndex = targetLevel;
+                                this.RenderEnterCodePage("Code for Level " + (targetLevel + 1), "Rating  " + config.level.groups[targetGroup]);
                             }
-                            else
-                            {
-                                this.RenderEnterCodePage("Incorrect Code","");//ici
+                            else {
+                                this.RenderEnterCodePage("Incorrect Code", "");
                             }
                             window.setTimeout(() => {
                                 this.gameState = GameState.Welcome;
                                 this.RenderWelcomePage();
-                            },2500);
+                            }, 2500);
 
 
                         });
                     }
                     //
-                } else if( this.gameState==GameState.GameSelect)
-                {
-                    let noStr: string ="-1";
-                    if(e.code.startsWith("Digit"))
-                    {
-                        noStr= e.code.substring(5,6);
-                        console.log("NO:"+noStr);
+                } else if (this.gameState == GameState.GameSelect) {
+                    let noStr: string = "-1";
+                    if (e.code.startsWith("Digit")) {
+                        noStr = e.code.substring(5, 6);
+                        console.log("NO:" + noStr);
                     }
-                    if(e.code.startsWith("Numpad"))
-                    {
-                        noStr= e.code.substring(6,7);
-                        console.log("NO:"+noStr);
+                    if (e.code.startsWith("Numpad")) {
+                        noStr = e.code.substring(6, 7);
+                        console.log("NO:" + noStr);
                     }
-                    let no=parseInt(noStr);
-                    this.gameFactory.getConfigs( ).then((GameConfigs) => { 
-                        let ID=GameConfigs[no-1].gameID;
-                        this.nbgroup=GameConfigs[no-1].level.groups.length;
-                        this.selectGameType(ID,GameConfigs[no-1].gamePaletteID);
-                        this.gameState=GameState.Welcome;
+                    let no = parseInt(noStr);
+                    this.gameFactory.getConfigs().then((GameConfigs) => {
+                        let ID = GameConfigs[no - 1].gameID;
+                        this.nbgroup = GameConfigs[no - 1].level.groups.length;
+                        this.selectGameType(ID, GameConfigs[no - 1].gamePaletteID);
+                        this.gameState = GameState.Welcome;
                     });
 
-                }else if( this.gameState==GameState.Welcome)
-                {
-                    if(e.code=="F1")//play
+                } else if (this.gameState == GameState.Welcome) {
+                    if (e.code == "F1")//play
                     {
                         this.StopDynamicRenderWelcomePage();
-                        this.gameState=GameState.Objective;
+                        this.gameState = GameState.Objective;
                         this.loadLevel();
                     }
                     if (e.code == "F2")//EnterCode
@@ -203,37 +195,37 @@ module Lemmings {
                         this.StopDynamicRenderWelcomePage();
                         this.gameState = GameState.EnterCode;
                         this.AccesscodeEntered = "";
-                        this.RenderEnterCodePage("","");
+                        this.RenderEnterCodePage("", "");
                     }
-                    
-                    if(e.code=="F3")//music
+
+                    if (e.code == "F3")//music
                     {
                         this.MusicLevel++;
-                        if(this.MusicLevel>2)
-                            this.MusicLevel=0;
+                        if (this.MusicLevel > 2)
+                            this.MusicLevel = 0;
                         this.RenderWelcomePage();
                     }
-                    if(e.code=="ArrowDown")//
+                    if (e.code == "ArrowDown")//
                     {
                         this.levelGroupIndex--;
-                        if (this.levelGroupIndex<0)
-                            this.levelGroupIndex=this.nbgroup-1;
+                        if (this.levelGroupIndex < 0)
+                            this.levelGroupIndex = this.nbgroup - 1;
                         this.RenderWelcomePage();
-                       
+
                     }
-                    if(e.code=="ArrowUp")//
+                    if (e.code == "ArrowUp")//
                     {
                         this.levelGroupIndex++;
-                        if (this.levelGroupIndex>=this.nbgroup)
-                            this.levelGroupIndex=0;
+                        if (this.levelGroupIndex >= this.nbgroup)
+                            this.levelGroupIndex = 0;
                         this.RenderWelcomePage();
                     }
-                    if(e.code=="Escape")//
+                    if (e.code == "Escape")//
                     {
-                        this.gameState=GameState.GameSelect;
+                        this.gameState = GameState.GameSelect;
                         this.StopDynamicRenderWelcomePage();
                         this.RenderSelectpage();
-                        
+
                     }
                 }
 
@@ -241,74 +233,121 @@ module Lemmings {
                 e.preventDefault();
                 return false;
             });
-            
+
+
+            el.addEventListener("touchstart", (e: TouchEvent) => {
+                console.log("touchstart");
+                
+                this.Managemouse(e.touches[0].clientX, e.touches[0].clientY, 0);//left by default, to be managed (2==right click)
+                e.stopPropagation();
+                e.preventDefault();
+                return false;
+            });
+
             el.addEventListener("mouseup", (e: MouseEvent) => {
 
-                if (this.gameState == GameState.EnterCode) {
-                    console.log(" EnterCode -> Welcome");
-                    this.gameState = GameState.Welcome;
-                    this.RenderWelcomePage();
-                }
-                else if( this.gameState==GameState.GameSelect)
-                {
-                    console.log(" GameSelect -> Welcome");
-                    this.gameState=GameState.Welcome;
-                    this.RenderWelcomePage();
-                } else if( this.gameState==GameState.Welcome)
-                {
-                    this.StopDynamicRenderWelcomePage();
-                    console.log(" Welcome -> Objective");
-                    this.gameState=GameState.Objective;
-                    this.loadLevel();
-                } else if( this.gameState==GameState.Objective)
-                {
-                    if (e.button == 0)//left
-                    {
-                        console.log(" Objective ->playing ");
-                        this.StartActualGame();
-                    }
-                }
-                else if (this.gameState == GameState.ResultGood) {//good
-
-                    if (e.button == 0)//left
-                    {
-                        /// move to next level
-                        console.log("good => next");
-                        this.gameState = GameState.Objective;
-                        this.continue();
-                        this.moveToLevel(1);
-                    }
-                    if (e.button == 2)//right
-                    {
-                        console.log("back to menu");
-                        this.gameState=GameState.Welcome;
-                        this.RenderWelcomePage();//back to menu
-                    }
-                } else if (this.gameState == GameState.ResultBad) {//bad
-                    /// redo this level
-                    if (e.button == 0)//left
-                    {
-                        console.log("bad => redo");
-                        this.gameState = GameState.Objective;
-                        this.continue();
-                        this.moveToLevel(0);
-                    }
-                    if (e.button == 2)//right
-                    {
-                        console.log("back to menu");
-                        this.gameState=GameState.Welcome;
-                        this.RenderWelcomePage();//back to menu
-                    }
-                }
-                  
+                this.Managemouse(e.clientX, e.clientY, e.button);
 
                 e.stopPropagation();
                 e.preventDefault();
                 return false;
             });
         }
-        
-        
+
+        private Managemouse(clientX: number, clientY: number, Button: number ){
+            if(this.gameState == GameState.EnterCode) {
+                console.log(" EnterCode -> Welcome");
+                this.gameState = GameState.Welcome;
+                this.RenderWelcomePage();
+            }
+            else if (this.gameState == GameState.GameSelect) {
+                console.log("y=" + clientY);
+                let no = Math.trunc((clientY - 26) / 30);
+                console.log("no=" + no);
+
+                this.gameFactory.getConfigs().then((GameConfigs) => {
+                    let ID = GameConfigs[no - 1].gameID;
+                    this.nbgroup = GameConfigs[no - 1].level.groups.length;
+                    this.selectGameType(ID, GameConfigs[no - 1].gamePaletteID);
+                    this.gameState = GameState.Welcome;
+                });
+            } else if (this.gameState == GameState.Welcome) {
+                //F1
+                if ((clientX >= 70) && (clientX <= 70 + 120) && (clientY >= 110) && (clientY <= 110 + 61)) {
+                    this.StopDynamicRenderWelcomePage();
+                    console.log(" Welcome -> Objective");
+                    this.gameState = GameState.Objective;
+                    this.loadLevel();
+                }
+                //F2
+                if ((clientX >= 200) && (clientX <= 200 + 120) && (clientY >= 110) && (clientY <= 110 + 61)) {
+                    this.StopDynamicRenderWelcomePage();
+                    this.gameState = GameState.EnterCode;
+                    this.AccesscodeEntered = "";
+                    this.RenderEnterCodePage("", "");
+                }
+                //F3 Music
+                if ((clientX >= 330) && (clientX <= 330 + 120) && (clientY >= 110) && (clientY <= 110 + 61)) {
+                    this.MusicLevel++;
+                    if (this.MusicLevel > 2)
+                        this.MusicLevel = 0;
+                    this.RenderWelcomePage();
+                }
+                // level group
+                if ((clientX >= 460) && (clientX <= 460 + 120) && (clientY >= 110) && (clientY <= 110 + 61)) {
+                    this.levelGroupIndex++;
+                    if (this.levelGroupIndex >= this.nbgroup)
+                        this.levelGroupIndex = 0;
+                    this.RenderWelcomePage();
+                }
+                // exit to dos
+                if ((clientX >= 200) && (clientX <= 200 + 120) && (clientY >= 220) && (clientY <= 220 + 61)) {
+                    this.gameState = GameState.GameSelect;
+                    this.StopDynamicRenderWelcomePage();
+                    this.RenderSelectpage();
+                }
+            } else if (this.gameState == GameState.Objective) {
+                if (Button == 0)//left
+                {
+                    this.stage.showCursor(false);
+                    console.log(" Objective ->playing ");
+                    this.StartActualGame();
+                }
+            }
+            else if (this.gameState == GameState.ResultGood) {//good
+
+                if (Button == 0)//left
+                {
+                    /// move to next level
+                    console.log("good => next");
+                    this.gameState = GameState.Objective;
+                    this.continue();
+                    this.moveToLevel(1);
+                }
+                if (Button == 2)//right
+                {
+                    console.log("back to menu");
+                    this.gameState = GameState.Welcome;
+                    this.RenderWelcomePage();//back to menu
+                }
+            } else if (this.gameState == GameState.ResultBad) {//bad
+                /// redo this level
+                if (Button == 0)//left
+                {
+                    console.log("bad => redo");
+                    this.gameState = GameState.Objective;
+                    this.continue();
+                    this.moveToLevel(0);
+                }
+                if (Button == 2)//right
+                {
+                    console.log("back to menu");
+                    this.gameState = GameState.Welcome;
+                    this.RenderWelcomePage();//back to menu
+                }
+            }
+        }
+        //---
         /** start or continue the game */
         public start(replayString?:string) {
             if (!this.gameFactory) return;
@@ -552,6 +591,7 @@ module Lemmings {
                 this.SelectPalette(gamePaletteId);
                 this.gameResources = newGameResources;
                 this.levelGroupIndex = 0;
+                this.WelcomePageTick = 0;
                 this.RenderWelcomePage();
             });
         }
@@ -584,7 +624,7 @@ module Lemmings {
             //ici charger les ressources pour les fontes
             let PagesPromis = this.gameResources.getPagesSprite(this.GamePalette, this.nbgroup).then((pagspr) => {//or this.GamePalette or level.colorPalette
                 if (this.stage != null){
-
+                    this.stage.showCursor(true);
                     this.WelcomePageSprire = pagspr;
                     let gameDisplay = this.stage.getGameDisplay();
                     gameDisplay.clear();
@@ -596,24 +636,24 @@ module Lemmings {
                     this.stage.redrawFullpage();
                     this.stage.resetFade();
                     let level= new Level(0,0);
-                    level.RenderWelcome(FullPage, pagspr, this.MusicLevel, this.levelGroupIndex, this.nbgroup);
+                    level.RenderWelcome(FullPage, pagspr, this.MusicLevel, this.levelGroupIndex, this.nbgroup, this.WelcomePageTick);
                     this.stage.redrawFullpage();
                     clearInterval(this.WelcomePageTimer);
-                    this.WelcomePageTimer = setInterval(this.DynamicRenderWelcomePage, 2000);
+                    this.WelcomePageTimer = setInterval(() =>{
+                        let FullPage = this.stage.getFullPageDisplay();
+                        let level = new Level(0, 0);
+                        this.WelcomePageTick++;
+                        level.RenderWelcomeDyn(FullPage, this.WelcomePageSprire, this.WelcomePageTick);
+                        this.stage.redrawFullpage();
+                    }, 50);
                 }
             });
         }
         private StopDynamicRenderWelcomePage() {
             clearInterval(this.WelcomePageTimer);
+            console.log("timer: Stopped");
         }
-        private DynamicRenderWelcomePage() {
-            console.log("timer");
-            /*
-            let FullPage = this.stage.getFullPageDisplay();
-            let level = new Level(0, 0);
-            level.RenderWelcomeDyn(FullPage, this.WelcomePageSprire);
-            */
-        }
+   
 
 
         private RenderSelectpage()

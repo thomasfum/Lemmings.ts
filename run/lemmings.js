@@ -2929,17 +2929,54 @@ var Lemmings;
             if ((message1 != "") && (message2 == "")) //bad
                 this.drawString(pageDisplay, message1, 226, 205, sprites);
         }
-        RenderWelcomeDyn(pageDisplay, sprites) {
+        RenderWelcomeDyn(pageDisplay, sprites, tick) {
             let LeftLemmingWorkingScroller = sprites.getLeftLemmingWorkingScroller();
             let RighttLemmingWorkingScroller = sprites.getRightLemmingWorkingScroller();
             let Reel = sprites.getReel();
+            let TickReel = (tick % 16);
+            let TickBlink = (tick % 8);
             for (let i = 0; i < 35; i++) {
-                pageDisplay.drawFrame(Reel, 48 + (i * 16), 382 - 20);
+                pageDisplay.drawFrame(Reel, 48 + (i * 16) - TickReel, 382);
             }
-            pageDisplay.drawFrame(LeftLemmingWorkingScroller[0], 0, 382 - 20);
-            pageDisplay.drawFrame(RighttLemmingWorkingScroller[0], 600, 382 - 20);
+            this.drawString(pageDisplay, "Message", 600 - tick, 382, sprites);
+            pageDisplay.drawFrame(LeftLemmingWorkingScroller[TickReel], 0, 382);
+            pageDisplay.drawFrame(RighttLemmingWorkingScroller[TickReel], 600, 382);
+            let step = 96;
+            let tickB = Math.round(tick / step);
+            let tickC = tickB % 6;
+            if ((tick >= tickB * step) && (tick < (tickB * step) + 8)) {
+                // console.log("blink:" + TickBlink);
+                if (tickC == 0) {
+                    let CurrentBlink0 = sprites.getBlink(0);
+                    pageDisplay.drawFrame(CurrentBlink0[TickBlink], 34 + 1 + 1, 40 - 2); //top left
+                }
+                if (tickC == 3) {
+                    let CurrentBlink1 = sprites.getBlink(1);
+                    pageDisplay.drawFrame(CurrentBlink1[TickBlink], 260 - 2, 40 - 2); //top center
+                }
+                if (tickC == 5) {
+                    let CurrentBlink2 = sprites.getBlink(2);
+                    pageDisplay.drawFrame(CurrentBlink2[TickBlink], 495 + 3, 30); //top right =>OK
+                }
+                if (tickC == 1) {
+                    let CurrentBlink3 = sprites.getBlink(3);
+                    pageDisplay.drawFrame(CurrentBlink3[TickBlink], 107 + 1, 120 + 2); //F1 =>OK
+                }
+                //---------------------
+                //let CurrentBlink4 = sprites.getBlink(4);
+                //pageDisplay.drawFrame(CurrentBlink4[TickReel], 365, 230);//F4 ?
+                if (tickC == 4) {
+                    let CurrentBlink5 = sprites.getBlink(5);
+                    pageDisplay.drawFrame(CurrentBlink5[TickBlink], 240 - 1, 120 + 2); //F2
+                }
+                if (tickC == 2) {
+                    let CurrentBlink6 = sprites.getBlink(6);
+                    pageDisplay.drawFrame(CurrentBlink6[TickBlink], 370 + 2, 120 - 1); // f3
+                }
+            }
+            //console.log("timer: done " + tick + "; " + TickReel);
         }
-        RenderWelcome(pageDisplay, sprites, MusicLevel, DifficultyLevel, nbgroup) {
+        RenderWelcome(pageDisplay, sprites, MusicLevel, DifficultyLevel, nbgroup, tick) {
             let brownFrame = sprites.getPanelSprite();
             let logo = sprites.getLogo();
             let F1 = sprites.getF1();
@@ -3003,11 +3040,15 @@ var Lemmings;
             pageDisplay.drawFrame(F4, 340 - 10, 220);
             this.drawString(pageDisplay, "(c) MCMXCI, Psygnosis Ltd", 120, 300, sprites);
             this.drawString(pageDisplay, "    A DMA Design Game", 120, 320, sprites);
-            for (let i = 0; i < 35; i++) {
-                pageDisplay.drawFrame(Reel, 48 + (i * 16), 382);
-            }
-            pageDisplay.drawFrame(LeftLemmingWorkingScroller[0], 0, 382);
-            pageDisplay.drawFrame(RighttLemmingWorkingScroller[0], 600, 382);
+            this.RenderWelcomeDyn(pageDisplay, sprites, tick);
+            /*
+             for(let i=0; i<35;i++)
+             {
+                 pageDisplay.drawFrame(Reel, 48+ (i*16), 382);
+             }
+             pageDisplay.drawFrame(LeftLemmingWorkingScroller[0], 0, 382);
+             pageDisplay.drawFrame(RighttLemmingWorkingScroller[0], 600, 382);
+             */
         }
         RenderStart(pageDisplay, gameState, sprites, survivorPercent) {
             let brownFrame = sprites.getPanelSprite();
@@ -3020,6 +3061,12 @@ var Lemmings;
             pageDisplay.drawFrame(brownFrame, 0, 312);
             pageDisplay.drawFrame(brownFrame, 320, 208);
             pageDisplay.drawFrame(brownFrame, 320, 312);
+            pageDisplay.initSize(this.width, this.height);
+            //pageDisplay.setBackground(this.groundImage, this.groundMask);
+            pageDisplay.setBackground(this.groundImage, null);
+            // this.render(pageDisplay);
+            //this.objectManager.render(this.dispaly);
+            //this.GetGroundImage();//ici
             if (gameState == Lemmings.GameState.Objective) //target
              {
                 console.log("Level " + this.levelIndex + 1);
@@ -3221,14 +3268,10 @@ var Lemmings;
     /** manage the sprites need for the game skill panel */
     class pagesSprites {
         constructor(fr3, fr4, colorPalette, nbGroup) {
-            this.letterSprite = {};
-            this.blink = [];
-            this.leftLemmingWorkingScroller = [];
-            this.rightLemmingWorkingScroller = [];
-            let cinq = false;
-            if (nbGroup == 5)
-                cinq = true;
             /*
+                ----------------------------------------------------------------------------
+                fr3
+                ----------------------------------------------------------------------------
                 offset (hex)  description              # of frames  width x height  bpp
                 ------------  -----------------------  -----------  --------------  ---
                 [0x0000]     brown background              1          320x104       2
@@ -3242,6 +3285,10 @@ var Lemmings;
                 [0xEA50]     music note icon               1           64x31        4
                 [0xEE30]     "FX" icon                     1           64x31        4
             */
+            this.letterSprite = {};
+            this.blink = [];
+            this.leftLemmingWorkingScroller = [];
+            this.rightLemmingWorkingScroller = [];
             /// read  brown background
             let paletteImg = new Lemmings.PaletteImage(320, 104);
             paletteImg.processImage(fr3, 2);
@@ -3292,6 +3339,9 @@ var Lemmings;
             //FXIconImg.processTransparentByColorIndex(0);
             this.FX = FXIconImg.createFrame(colorPalette);
             /*
+            ----------------------------------------------------------------------------
+            fr4
+            ----------------------------------------------------------------------------
             offset (hex)  description                   # of frames  width x height  bpp
             ------------  -----------------------       -----------  --------------  ---
             [0x0000]     blink1                               8           32x12        4
@@ -3313,10 +3363,9 @@ var Lemmings;
             for (let i = 0; i < 7; i++) {
                 this.blink[i] = [];
                 for (let j = 0; j < 8; j++) {
-                    //read "blink1" icon
                     let blinkImg = new Lemmings.PaletteImage(32, 12);
                     blinkImg.processImage(fr4, 4);
-                    //blink1Img.processTransparentByColorIndex(0);
+                    //blinkImg.processTransparentByColorIndex(0);
                     this.blink[i].push(blinkImg.createFrame(colorPalette));
                 }
             }
@@ -3357,17 +3406,18 @@ var Lemmings;
             funImg.processImage(fr4, 4);
             //funImg.processTransparentByColorIndex(0);
             this.funSign = funImg.createFrame(colorPalette);
-            if (cinq) {
+            if (nbGroup == 5) //for No more lem
+             {
                 //read "fun sign" 
                 let funImg2 = new Lemmings.PaletteImage(72, 27);
                 funImg2.processImage(fr4, 4);
                 //funImg.processTransparentByColorIndex(0);
                 this.funSign2 = funImg2.createFrame(colorPalette);
             }
-            /// read green panel letters
+            /// read purple letters
             let letters = ["!", "\"", "#", "$", "%", "&", "'", "(", ")", "*", "+", ",", "-", ".", "/", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "<", "=", ">", "?", "@", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "[", "\\", "]", "^", "_", "`", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "{", "|", "}", "~"];
-            if (cinq)
-                fr4.setOffset(0x6D7C); //72x*72=5184 = 0x1440
+            if (nbGroup == 5) //for No more lem
+                fr4.setOffset(0x6D7C);
             else
                 fr4.setOffset(0x69B0);
             for (let l = 0; l < letters.length; l++) {
@@ -3376,35 +3426,6 @@ var Lemmings;
                 paletteImg.processTransparentByColorIndex(0);
                 this.letterSprite[letters[l]] = paletteImg.createFrame(colorPalette);
             }
-            /*
-            /// add space
-            let emptyFrame = new Frame(16, 16);
-            emptyFrame.fill(0, 0, 0);
-            emptyFrame.processTransparentByColorIndex(0);
-            this.letterSprite[" "] = emptyFrame;
-            */
-            /*
-                        let blackAndWithPalette = new ColorPalette();
-                        blackAndWithPalette.setColorRGB(1, 255, 255, 255);
-            
-                        /// read panel skill-count number letters
-                        fr2.setOffset(0x1900);
-                        for (let i = 0; i < 10; i++) {
-                            let paletteImgRight = new PaletteImage(8, 8);
-                            paletteImgRight.processImage(fr2, 1);
-                            paletteImgRight.processTransparentByColorIndex(0);
-                            this.numberSpriteRight.push(paletteImgRight.createFrame(blackAndWithPalette));
-            
-                            let paletteImgLeft = new PaletteImage(8, 8);
-                            paletteImgLeft.processImage(fr2, 1);
-                            paletteImgLeft.processTransparentByColorIndex(0);
-                            this.numberSpriteLeft.push(paletteImgLeft.createFrame(blackAndWithPalette));
-                        }
-            
-                        /// add space
-                        this.emptyNumberSprite = new Frame(9, 8);
-                        this.emptyNumberSprite.fill(255, 255, 255);
-                        */
         }
         // return the sprite for the skill panel 
         getPanelSprite() {
@@ -9416,6 +9437,7 @@ var Lemmings;
         render() {
             if (this.dispaly == null)
                 return;
+            this.stage.UpdateAutoScroll();
             this.level.render(this.dispaly);
             this.objectManager.render(this.dispaly);
             this.lemmingManager.render(this.dispaly);
@@ -9687,7 +9709,7 @@ var Lemmings;
             this.nbgroup = 4;
             this.gameSpeedFactor = 1;
             this.gameState = GameState.GameSelect;
-            this.AccesscodeEntered = "GAJJMDMJIW";
+            this.AccesscodeEntered = "";
             /// split the hash of the url in parts + reverse
             let hashParts = window.location.hash.substr(1).split(",", 3).reverse();
             this.levelIndex = this.strToNum(hashParts[0]);
@@ -9746,7 +9768,7 @@ var Lemmings;
                 return false;
             });
             window.addEventListener("keydown", (e) => {
-                console.log(" Key down: " + e.code + ", " + e.key + ", " + e.keyCode + ", " + this.gameState);
+                //console.log(" Key down: " + e.code + ", " + e.key + ", " + e.keyCode + ", " + this.gameState);
                 if (this.gameState == GameState.EnterCode) {
                     //Backspace
                     /*
@@ -9769,9 +9791,9 @@ var Lemmings;
                         //CAJJLDLBCS  =fun1=>0  LCANNMFPDM=tricky1  => 30 GAJJMDMJIW=mayen 15  =>104 3*30+15
                         this.gameFactory.getConfig(this.gameID).then((config) => {
                             let codeGen = new Lemmings.CodeGenerator();
-                            let ret = codeGen.reverseCodeSub(this.AccesscodeEntered, "AJHLDHBBCJ", bar);
-                            console.log("Result: " + ret);
-                            console.dir(bar);
+                            let ret = codeGen.reverseCodeSub(this.AccesscodeEntered, config.accessCodeKey, bar);
+                            //console.log("Result: "+ret);
+                            //console.dir(bar);
                             if (ret == 0) {
                                 let total = 0;
                                 let targetGroup = 0;
@@ -9787,11 +9809,10 @@ var Lemmings;
                                 }
                                 this.levelGroupIndex = targetGroup;
                                 this.levelIndex = targetLevel;
-                                //this.RenderEnterCodePage("OK " + bar.levelValue + "=" + config.level.groups[targetGroup] + "." + (targetLevel+1));//ici
-                                this.RenderEnterCodePage("Code for Level " + (targetLevel + 1), "Rating  " + config.level.groups[targetGroup]); //ici
+                                this.RenderEnterCodePage("Code for Level " + (targetLevel + 1), "Rating  " + config.level.groups[targetGroup]);
                             }
                             else {
-                                this.RenderEnterCodePage("Incorrect Code", ""); //ici
+                                this.RenderEnterCodePage("Incorrect Code", "");
                             }
                             window.setTimeout(() => {
                                 this.gameState = GameState.Welcome;
@@ -9865,67 +9886,115 @@ var Lemmings;
                 e.preventDefault();
                 return false;
             });
+            el.addEventListener("touchstart", (e) => {
+                console.log("touchstart");
+                this.Managemouse(e.touches[0].clientX, e.touches[0].clientY, 0); //left by default, to be managed (2==right click)
+                e.stopPropagation();
+                e.preventDefault();
+                return false;
+            });
             el.addEventListener("mouseup", (e) => {
-                if (this.gameState == GameState.EnterCode) {
-                    console.log(" EnterCode -> Welcome");
-                    this.gameState = GameState.Welcome;
-                    this.RenderWelcomePage();
-                }
-                else if (this.gameState == GameState.GameSelect) {
-                    console.log(" GameSelect -> Welcome");
-                    this.gameState = GameState.Welcome;
-                    this.RenderWelcomePage();
-                }
-                else if (this.gameState == GameState.Welcome) {
-                    this.StopDynamicRenderWelcomePage();
-                    console.log(" Welcome -> Objective");
-                    this.gameState = GameState.Objective;
-                    this.loadLevel();
-                }
-                else if (this.gameState == GameState.Objective) {
-                    if (e.button == 0) //left
-                     {
-                        console.log(" Objective ->playing ");
-                        this.StartActualGame();
-                    }
-                }
-                else if (this.gameState == GameState.ResultGood) { //good
-                    if (e.button == 0) //left
-                     {
-                        /// move to next level
-                        console.log("good => next");
-                        this.gameState = GameState.Objective;
-                        this.continue();
-                        this.moveToLevel(1);
-                    }
-                    if (e.button == 2) //right
-                     {
-                        console.log("back to menu");
-                        this.gameState = GameState.Welcome;
-                        this.RenderWelcomePage(); //back to menu
-                    }
-                }
-                else if (this.gameState == GameState.ResultBad) { //bad
-                    /// redo this level
-                    if (e.button == 0) //left
-                     {
-                        console.log("bad => redo");
-                        this.gameState = GameState.Objective;
-                        this.continue();
-                        this.moveToLevel(0);
-                    }
-                    if (e.button == 2) //right
-                     {
-                        console.log("back to menu");
-                        this.gameState = GameState.Welcome;
-                        this.RenderWelcomePage(); //back to menu
-                    }
-                }
+                this.Managemouse(e.clientX, e.clientY, e.button);
                 e.stopPropagation();
                 e.preventDefault();
                 return false;
             });
         }
+        Managemouse(clientX, clientY, Button) {
+            if (this.gameState == GameState.EnterCode) {
+                console.log(" EnterCode -> Welcome");
+                this.gameState = GameState.Welcome;
+                this.RenderWelcomePage();
+            }
+            else if (this.gameState == GameState.GameSelect) {
+                console.log("y=" + clientY);
+                let no = Math.trunc((clientY - 26) / 30);
+                console.log("no=" + no);
+                this.gameFactory.getConfigs().then((GameConfigs) => {
+                    let ID = GameConfigs[no - 1].gameID;
+                    this.nbgroup = GameConfigs[no - 1].level.groups.length;
+                    this.selectGameType(ID, GameConfigs[no - 1].gamePaletteID);
+                    this.gameState = GameState.Welcome;
+                });
+            }
+            else if (this.gameState == GameState.Welcome) {
+                //F1
+                if ((clientX >= 70) && (clientX <= 70 + 120) && (clientY >= 110) && (clientY <= 110 + 61)) {
+                    this.StopDynamicRenderWelcomePage();
+                    console.log(" Welcome -> Objective");
+                    this.gameState = GameState.Objective;
+                    this.loadLevel();
+                }
+                //F2
+                if ((clientX >= 200) && (clientX <= 200 + 120) && (clientY >= 110) && (clientY <= 110 + 61)) {
+                    this.StopDynamicRenderWelcomePage();
+                    this.gameState = GameState.EnterCode;
+                    this.AccesscodeEntered = "";
+                    this.RenderEnterCodePage("", "");
+                }
+                //F3 Music
+                if ((clientX >= 330) && (clientX <= 330 + 120) && (clientY >= 110) && (clientY <= 110 + 61)) {
+                    this.MusicLevel++;
+                    if (this.MusicLevel > 2)
+                        this.MusicLevel = 0;
+                    this.RenderWelcomePage();
+                }
+                // level group
+                if ((clientX >= 460) && (clientX <= 460 + 120) && (clientY >= 110) && (clientY <= 110 + 61)) {
+                    this.levelGroupIndex++;
+                    if (this.levelGroupIndex >= this.nbgroup)
+                        this.levelGroupIndex = 0;
+                    this.RenderWelcomePage();
+                }
+                // exit to dos
+                if ((clientX >= 200) && (clientX <= 200 + 120) && (clientY >= 220) && (clientY <= 220 + 61)) {
+                    this.gameState = GameState.GameSelect;
+                    this.StopDynamicRenderWelcomePage();
+                    this.RenderSelectpage();
+                }
+            }
+            else if (this.gameState == GameState.Objective) {
+                if (Button == 0) //left
+                 {
+                    this.stage.showCursor(false);
+                    console.log(" Objective ->playing ");
+                    this.StartActualGame();
+                }
+            }
+            else if (this.gameState == GameState.ResultGood) { //good
+                if (Button == 0) //left
+                 {
+                    /// move to next level
+                    console.log("good => next");
+                    this.gameState = GameState.Objective;
+                    this.continue();
+                    this.moveToLevel(1);
+                }
+                if (Button == 2) //right
+                 {
+                    console.log("back to menu");
+                    this.gameState = GameState.Welcome;
+                    this.RenderWelcomePage(); //back to menu
+                }
+            }
+            else if (this.gameState == GameState.ResultBad) { //bad
+                /// redo this level
+                if (Button == 0) //left
+                 {
+                    console.log("bad => redo");
+                    this.gameState = GameState.Objective;
+                    this.continue();
+                    this.moveToLevel(0);
+                }
+                if (Button == 2) //right
+                 {
+                    console.log("back to menu");
+                    this.gameState = GameState.Welcome;
+                    this.RenderWelcomePage(); //back to menu
+                }
+            }
+        }
+        //---
         /** start or continue the game */
         start(replayString) {
             if (!this.gameFactory)
@@ -10114,6 +10183,7 @@ var Lemmings;
                 this.SelectPalette(gamePaletteId);
                 this.gameResources = newGameResources;
                 this.levelGroupIndex = 0;
+                this.WelcomePageTick = 0;
                 this.RenderWelcomePage();
             });
         }
@@ -10139,6 +10209,7 @@ var Lemmings;
             //ici charger les ressources pour les fontes
             let PagesPromis = this.gameResources.getPagesSprite(this.GamePalette, this.nbgroup).then((pagspr) => {
                 if (this.stage != null) {
+                    this.stage.showCursor(true);
                     this.WelcomePageSprire = pagspr;
                     let gameDisplay = this.stage.getGameDisplay();
                     gameDisplay.clear();
@@ -10149,23 +10220,22 @@ var Lemmings;
                     this.stage.redrawFullpage();
                     this.stage.resetFade();
                     let level = new Lemmings.Level(0, 0);
-                    level.RenderWelcome(FullPage, pagspr, this.MusicLevel, this.levelGroupIndex, this.nbgroup);
+                    level.RenderWelcome(FullPage, pagspr, this.MusicLevel, this.levelGroupIndex, this.nbgroup, this.WelcomePageTick);
                     this.stage.redrawFullpage();
                     clearInterval(this.WelcomePageTimer);
-                    this.WelcomePageTimer = setInterval(this.DynamicRenderWelcomePage, 2000);
+                    this.WelcomePageTimer = setInterval(() => {
+                        let FullPage = this.stage.getFullPageDisplay();
+                        let level = new Lemmings.Level(0, 0);
+                        this.WelcomePageTick++;
+                        level.RenderWelcomeDyn(FullPage, this.WelcomePageSprire, this.WelcomePageTick);
+                        this.stage.redrawFullpage();
+                    }, 50);
                 }
             });
         }
         StopDynamicRenderWelcomePage() {
             clearInterval(this.WelcomePageTimer);
-        }
-        DynamicRenderWelcomePage() {
-            console.log("timer");
-            /*
-            let FullPage = this.stage.getFullPageDisplay();
-            let level = new Level(0, 0);
-            level.RenderWelcomeDyn(FullPage, this.WelcomePageSprire);
-            */
+            console.log("timer: Stopped");
         }
         RenderSelectpage() {
             this.gameFactory.getConfigs().then((GameConfigs) => {
@@ -10270,6 +10340,7 @@ var Lemmings;
             this.lastMousePos = null;
             this.CurrentLemmingState = "";
             this.GamePalette = null;
+            this.MoveStageDirection = 0;
             this.fadeTimer = 0;
             this.fadeAlpha = 0;
             this.controller = new Lemmings.UserInputManager(canvasForOutput);
@@ -10288,6 +10359,12 @@ var Lemmings;
             this.FullPageProps.viewPoint.scale = 1;
             this.updateStageSize();
             this.clear();
+        }
+        showCursor(show) {
+            if (show == false)
+                this.stageCav.style.cursor = 'none';
+            else
+                this.stageCav.style.cursor = 'auto';
         }
         setGamePalette(GamePalette) {
             this.GamePalette = GamePalette;
@@ -10323,7 +10400,7 @@ var Lemmings;
             });
         }
         DrawCursor(gameImg, cross, pos) {
-            let cursorsize = 10;
+            //let cursorsize=10;
             if (cross == true) {
                 //gameImg.display.drawVerticalLine(pos.x,pos.y-cursorsize,pos.y+cursorsize,200,100,100);
                 //gameImg.display.drawHorizontalLine(pos.x-cursorsize,pos.y,pos.x+cursorsize,200,100,100);
@@ -10439,6 +10516,14 @@ var Lemmings;
                         this.updateViewPoint(stageImage, e.deltaX, e.deltaY, 0);
                         stageImage.display.onMouseMove.trigger(this.calcPosition2D(stageImage, e));
                     }
+                    if (stageImage == this.guiImgProps) {
+                        //console.log("draging in GUI:" + e.x + ", " + e.y);
+                        if ((e.x >= 410) && (e.x <= 630) && (e.y >= 350) && (e.y <= 480)) // to be set dynamically
+                         {
+                            this.updateViewPoint(this.gameImgProps, (0 - e.deltaX) * 16, 0, 0);
+                            console.log("draging game:" + e.x + ", " + e.y);
+                        }
+                    }
                 }
                 else {
                     let stageImage = this.getStageImageAt(e.x, e.y);
@@ -10446,6 +10531,16 @@ var Lemmings;
                         return;
                     if (stageImage.display == null)
                         return;
+                    if (stageImage == this.gameImgProps) {
+                        if (e.x > stageImage.width - 10)
+                            this.MoveStageDirection = 1;
+                        else if (e.x < 10)
+                            this.MoveStageDirection = -1;
+                        else
+                            this.MoveStageDirection = 0;
+                    }
+                    else
+                        this.MoveStageDirection = 0;
                     let x = e.x - stageImage.x;
                     let y = e.y - stageImage.y;
                     stageImage.display.onMouseMove.trigger(new Lemmings.Position2D(stageImage.viewPoint.getSceneX(x), stageImage.viewPoint.getSceneY(y)));
@@ -10483,6 +10578,12 @@ var Lemmings;
             if (this.guiImgProps.display != null)
                 this.guiImgProps.display.drawFrame(this.level.getGroundMaskLayer().getMiniMap(stageImage.viewPoint.x, this.level.width), 209, 18);
             this.redraw();
+        }
+        UpdateAutoScroll() {
+            if (this.MoveStageDirection == 0)
+                return;
+            //console.log(" this.MoveStageDirection=" + this.MoveStageDirection);
+            this.updateViewPoint(this.gameImgProps, this.MoveStageDirection * 10, 0, 0);
         }
         limitValue(minLimit, value, maxLimit) {
             let useMax = Math.max(minLimit, maxLimit);
