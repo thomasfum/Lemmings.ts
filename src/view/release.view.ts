@@ -357,7 +357,7 @@ module Lemmings {
                 this.continue();
                 return;
             }
-
+            /*
             /// create new game
             this.gameFactory.getGame(this.gameID)
                 .then(game => game.loadLevel(this.levelGroupIndex, this.levelIndex))
@@ -377,6 +377,7 @@ module Lemmings {
 
                     this.game = game;
                 });
+                */
         }
 
 
@@ -395,14 +396,14 @@ module Lemmings {
                 let gameDisplay = this.stage.getGameDisplay();
                 gameDisplay.clear();
                 gameDisplay.redraw();
+                
                 this.stage.resetFade();
               
                 let PagesPromis = this.gameResources.getPagesSprite(this.GamePalette, this.nbgroup).then((pagspr) => {
                     let FullPage = this.stage.getFullPageDisplay();
                     FullPage.clear();
                     this.stage.clear();
-                    
-                    this.currentLevel.RenderStart(FullPage, this.gameState, pagspr, this.game.getVictoryCondition().getSurvivorPercentage());
+                    this.currentLevel.RenderStart(FullPage, this.gameState, pagspr, this.game.getVictoryCondition().getSurvivorPercentage(),null);
                     this.stage.redrawFullpage();
                 });
        
@@ -722,9 +723,36 @@ module Lemmings {
                             FullPage.clear();
                             this.stage.redrawFullpage();
                             this.stage.resetFade();
-                            level.RenderStart(FullPage, this.gameState, pagspr,0);
+
+
+                            /// create new game
+                            this.gameFactory.getGame(this.gameID)
+                                .then(game => game.loadLevel(this.levelGroupIndex, this.levelIndex))
+                                .then(game => {
+
+                                    game.setGameDispaly(this.stage.getGameDisplay(), this.stage);
+                                    game.setGuiDisplay(this.stage.getGuiDisplay(), this.stage);
+
+                                    game.getGameTimer().speedFactor = this.gameSpeedFactor;
+
+//                                    game.start();
+                                    game.onGameEnd.on((state) => this.onGameEnd(state));
+
+                                    this.game = game;
+
+                                    //let map = new DisplayImage(this.stage);
+                                    //console.log(map);
+                                    this.game.renderSub(null);
+                                    level.RenderStart(FullPage, this.gameState, pagspr, 0, this.stage.getGameDisplay());
+                                    
+
+
+                                    this.stage.redrawFullpage();
+                                });
+
+
+
                             
-                            this.stage.redrawFullpage();
                    
                         }
 

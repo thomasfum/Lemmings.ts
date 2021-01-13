@@ -244,7 +244,10 @@ module Lemmings {
             this.lemmingManager.tick();
         }
 
-
+        public renderSub(display: DisplayImage) {
+            //this.gameDispaly.renderSub(display);
+            this.render();
+        }
         /** refresh display */
         private render() {
             if (this.gameDispaly) {

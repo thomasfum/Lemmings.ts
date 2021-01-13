@@ -54,6 +54,22 @@ module Lemmings {
             this.groundMask = groundMask;
         }
 
+        /** render the level-background to an image */
+        public setSubground(groundImage: DisplayImage) {
+
+            let s = groundImage.getWidth() * groundImage.getHeight();
+            let data=groundImage.getImageData();
+            console.log("!!!!!!!!!!!!!s=" + s);
+
+            let destData = new Uint32Array(this.imgData.data.buffer);
+
+            for (let i = 0; i < s/2; i++)
+                destData[i] = 0xFFFFFF00;// data[i*2];
+            
+            /// set pixels
+            //this.imgData.data.set(groundImage);
+            
+        }
 
         private uint8ClampedColor(colorValue: number): number {
             return colorValue & 0xFF;

@@ -394,6 +394,10 @@ var Lemmings;
             }
             this.lemmingManager.tick();
         }
+        renderSub(display) {
+            //this.gameDispaly.renderSub(display);
+            this.render();
+        }
         /** refresh display */
         render() {
             if (this.gameDispaly) {
@@ -3050,7 +3054,7 @@ var Lemmings;
              pageDisplay.drawFrame(RighttLemmingWorkingScroller[0], 600, 382);
              */
         }
-        RenderStart(pageDisplay, gameState, sprites, survivorPercent) {
+        RenderStart(pageDisplay, gameState, sprites, survivorPercent, g) {
             let brownFrame = sprites.getPanelSprite();
             pageDisplay.clear();
             pageDisplay.drawFrame(brownFrame, 0, 0);
@@ -3061,12 +3065,24 @@ var Lemmings;
             pageDisplay.drawFrame(brownFrame, 0, 312);
             pageDisplay.drawFrame(brownFrame, 320, 208);
             pageDisplay.drawFrame(brownFrame, 320, 312);
-            pageDisplay.initSize(this.width, this.height);
-            //pageDisplay.setBackground(this.groundImage, this.groundMask);
-            pageDisplay.setBackground(this.groundImage, null);
-            // this.render(pageDisplay);
-            //this.objectManager.render(this.dispaly);
-            //this.GetGroundImage();//ici
+            //let i = g.getImageData();
+            pageDisplay.setSubground(g);
+            //let map = new DisplayImage();
+            //this.render(pageDisplay);
+            // if(g!=null)
+            //      g.renderSub(pageDisplay);
+            /*
+                    pageDisplay.initSize(this.width, this.height);
+                    pageDisplay.setBackground(this.groundImage, null);
+        
+                    //pageDisplay.setBackground(this.groundImage, this.groundMask);
+                    pageDisplay.setBackground(this.groundImage, null);
+        
+                   // this.render(pageDisplay);
+                    //this.objectManager.render(this.dispaly);
+        
+                    //this.GetGroundImage();//ici
+                    */
             if (gameState == Lemmings.GameState.Objective) //target
              {
                 console.log("Level " + this.levelIndex + 1);
@@ -3162,6 +3178,7 @@ var Lemmings;
         /** render ground to display */
         render(gameDisplay) {
             gameDisplay.initSize(this.width, this.height);
+            //console.log("level.render=" + this.width + "," + this.height);
             gameDisplay.setBackground(this.groundImage, this.groundMask);
         }
     }
@@ -9191,6 +9208,17 @@ var Lemmings;
             this.imgData.data.set(groundImage);
             this.groundMask = groundMask;
         }
+        /** render the level-background to an image */
+        setSubground(groundImage) {
+            let s = groundImage.getWidth() * groundImage.getHeight();
+            let data = groundImage.getImageData();
+            console.log("!!!!!!!!!!!!!s=" + s);
+            let destData = new Uint32Array(this.imgData.data.buffer);
+            for (let i = 0; i < s / 2; i++)
+                destData[i] = 0xFFFFFF00; // data[i*2];
+            /// set pixels
+            //this.imgData.data.set(groundImage);
+        }
         uint8ClampedColor(colorValue) {
             return colorValue & 0xFF;
         }
@@ -9433,6 +9461,10 @@ var Lemmings;
                     return;
                 this.game.queueCmmand(new Lemmings.CommandLemmingsAction(lem.id));
             });
+        }
+        renderSub(dispaly) {
+            this.level.render(dispaly);
+            this.objectManager.render(dispaly);
         }
         render() {
             if (this.dispaly == null)
@@ -10004,20 +10036,27 @@ var Lemmings;
                 this.continue();
                 return;
             }
+            /*
             /// create new game
             this.gameFactory.getGame(this.gameID)
                 .then(game => game.loadLevel(this.levelGroupIndex, this.levelIndex))
                 .then(game => {
-                if (replayString != null) {
-                    game.getCommandManager().loadReplay(replayString);
-                }
-                game.setGameDispaly(this.stage.getGameDisplay(), this.stage);
-                game.setGuiDisplay(this.stage.getGuiDisplay(), this.stage);
-                game.getGameTimer().speedFactor = this.gameSpeedFactor;
-                game.start();
-                game.onGameEnd.on((state) => this.onGameEnd(state));
-                this.game = game;
-            });
+
+                    if (replayString != null) {
+                        game.getCommandManager().loadReplay(replayString);
+                    }
+
+                    game.setGameDispaly(this.stage.getGameDisplay(),this.stage);
+                    game.setGuiDisplay(this.stage.getGuiDisplay(),this.stage);
+
+                    game.getGameTimer().speedFactor = this.gameSpeedFactor;
+
+                    game.start();
+                    game.onGameEnd.on((state) => this.onGameEnd(state));
+
+                    this.game = game;
+                });
+                */
         }
         onGameEnd(gameResult) {
             this.stage.startFadeOut();
@@ -10039,7 +10078,7 @@ var Lemmings;
                     let FullPage = this.stage.getFullPageDisplay();
                     FullPage.clear();
                     this.stage.clear();
-                    this.currentLevel.RenderStart(FullPage, this.gameState, pagspr, this.game.getVictoryCondition().getSurvivorPercentage());
+                    this.currentLevel.RenderStart(FullPage, this.gameState, pagspr, this.game.getVictoryCondition().getSurvivorPercentage(), null);
                     this.stage.redrawFullpage();
                 });
             }, 2500);
@@ -10296,8 +10335,22 @@ var Lemmings;
                         FullPage.clear();
                         this.stage.redrawFullpage();
                         this.stage.resetFade();
-                        level.RenderStart(FullPage, this.gameState, pagspr, 0);
-                        this.stage.redrawFullpage();
+                        /// create new game
+                        this.gameFactory.getGame(this.gameID)
+                            .then(game => game.loadLevel(this.levelGroupIndex, this.levelIndex))
+                            .then(game => {
+                            game.setGameDispaly(this.stage.getGameDisplay(), this.stage);
+                            game.setGuiDisplay(this.stage.getGuiDisplay(), this.stage);
+                            game.getGameTimer().speedFactor = this.gameSpeedFactor;
+                            //                                    game.start();
+                            game.onGameEnd.on((state) => this.onGameEnd(state));
+                            this.game = game;
+                            //let map = new DisplayImage(this.stage);
+                            //console.log(map);
+                            this.game.renderSub(null);
+                            level.RenderStart(FullPage, this.gameState, pagspr, 0, this.stage.getGameDisplay());
+                            this.stage.redrawFullpage();
+                        });
                     }
                 });
                 window.location.hash = this.buildLevelIndexHash();

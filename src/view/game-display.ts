@@ -29,7 +29,10 @@ module Lemmings {
             });
         }
 
-
+        public renderSub(dispaly:DisplayImage) {
+            this.level.render(dispaly);
+            this.objectManager.render(dispaly);
+        }
         public render() {
             if (this.dispaly == null) return;
 

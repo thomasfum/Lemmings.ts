@@ -363,10 +363,11 @@ module Lemmings {
         }
      
 
-        public RenderStart(pageDisplay: DisplayImage, gameState: GameState, sprites: pagesSprites,survivorPercent:number)
+        public RenderStart(pageDisplay: DisplayImage, gameState: GameState, sprites: pagesSprites, survivorPercent: number, g: DisplayImage)
         {
 
             let brownFrame=sprites.getPanelSprite();
+
             pageDisplay.clear();
             pageDisplay.drawFrame(brownFrame, 0, 0);
             pageDisplay.drawFrame(brownFrame, 0, 104);
@@ -377,6 +378,14 @@ module Lemmings {
             pageDisplay.drawFrame(brownFrame, 320, 208);
             pageDisplay.drawFrame(brownFrame, 320, 312);
 
+
+            //let i = g.getImageData();
+
+            pageDisplay.setSubground(g);
+            //let map = new DisplayImage();
+            //this.render(pageDisplay);
+           // if(g!=null)
+           //      g.renderSub(pageDisplay);
 
     /*
             pageDisplay.initSize(this.width, this.height);
@@ -510,7 +519,7 @@ module Lemmings {
         /** render ground to display */
         public render(gameDisplay: DisplayImage) {
             gameDisplay.initSize(this.width, this.height);
-
+            //console.log("level.render=" + this.width + "," + this.height);
             gameDisplay.setBackground(this.groundImage, this.groundMask);
         }
 
