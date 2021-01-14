@@ -768,3 +768,17 @@ module Lemmings {
 
     }
 }
+
+/*
+click menu 0
+ouvertur porte 2 puis 1
+creuser vers le bas 3
+bloquer: 3
+expolison cuicui 4 puis 11
+
+
+tomner part terre 14
+dans la sortie 15
+tomber dans l'eau:16
+les trois dernieres marches: 17
+*/
