@@ -369,15 +369,9 @@ module Lemmings {
             let brownFrame=sprites.getPanelSprite();
 
             pageDisplay.clear();
-            
-            if(g!=null)
-            {   
-                pageDisplay.drawFrame(brownFrame, 0, 0);
-                pageDisplay.drawFrame(brownFrame, 320, 0);  
-            }
-            
+            pageDisplay.drawFrame(brownFrame, 0, 0);
             pageDisplay.drawFrame(brownFrame, 0, 104);
-            
+            pageDisplay.drawFrame(brownFrame, 320, 0);              
             pageDisplay.drawFrame(brownFrame, 320, 104);
             pageDisplay.drawFrame(brownFrame, 0, 208);
             pageDisplay.drawFrame(brownFrame, 0, 312);
@@ -385,11 +379,10 @@ module Lemmings {
             pageDisplay.drawFrame(brownFrame, 320, 312);
 
 
-            if(g!=null)
-                pageDisplay.setSubground(g);
          
             if(gameState==GameState.Objective)//target
             {
+                
                 console.log("Level "+this.levelIndex+1);
                 console.log("Name "+this.name);
                 console.log("Number of Lemmings "+this.releaseCount);
@@ -397,8 +390,8 @@ module Lemmings {
                 console.log("Release Rate "+this.releaseRate);
                 console.log("Time "+this.timeLimit +" Minutes");
                 console.log("Rating " + this.levelModeText);// +" ( " +this.levelMode+" )");
-                pageDisplay.clear();
 
+                pageDisplay.setColorMinimap(g);
                 let x = 160;
                 let y = 70;
                 this.drawString(pageDisplay, "Level " + (this.levelIndex + 1) + this.name, 0, y + 26, sprites);
@@ -412,9 +405,7 @@ module Lemmings {
             }
             if ((gameState == GameState.ResultGood) || (gameState == GameState.ResultBad))//result ok
             {
-                pageDisplay.clear();
                 this.drawString(pageDisplay, "All lemmings accounted for.", 113, 20, sprites);
-
                 this.drawString(pageDisplay, "You rescued " + survivorPercent + "%", 224, 57, sprites);
                 this.drawString(pageDisplay, "You needed  " + Math.round(this.needCount * 100 / this.releaseCount) + "%", 224, 77, sprites);
 
@@ -461,8 +452,6 @@ module Lemmings {
                                 line1 = "   You totally stormed that level!";
                                 line2 = "Let's see if you can storm the next...";
                             }
-
-                        
                     }
 
                

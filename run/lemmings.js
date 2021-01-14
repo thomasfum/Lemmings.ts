@@ -3057,18 +3057,14 @@ var Lemmings;
         RenderStart(pageDisplay, gameState, sprites, survivorPercent, g) {
             let brownFrame = sprites.getPanelSprite();
             pageDisplay.clear();
-            if (g != null) {
-                pageDisplay.drawFrame(brownFrame, 0, 0);
-                pageDisplay.drawFrame(brownFrame, 320, 0);
-            }
+            pageDisplay.drawFrame(brownFrame, 0, 0);
             pageDisplay.drawFrame(brownFrame, 0, 104);
+            pageDisplay.drawFrame(brownFrame, 320, 0);
             pageDisplay.drawFrame(brownFrame, 320, 104);
             pageDisplay.drawFrame(brownFrame, 0, 208);
             pageDisplay.drawFrame(brownFrame, 0, 312);
             pageDisplay.drawFrame(brownFrame, 320, 208);
             pageDisplay.drawFrame(brownFrame, 320, 312);
-            if (g != null)
-                pageDisplay.setSubground(g);
             if (gameState == Lemmings.GameState.Objective) //target
              {
                 console.log("Level " + this.levelIndex + 1);
@@ -3078,7 +3074,7 @@ var Lemmings;
                 console.log("Release Rate " + this.releaseRate);
                 console.log("Time " + this.timeLimit + " Minutes");
                 console.log("Rating " + this.levelModeText); // +" ( " +this.levelMode+" )");
-                pageDisplay.clear();
+                pageDisplay.setColorMinimap(g);
                 let x = 160;
                 let y = 70;
                 this.drawString(pageDisplay, "Level " + (this.levelIndex + 1) + this.name, 0, y + 26, sprites);
@@ -3091,7 +3087,6 @@ var Lemmings;
             }
             if ((gameState == Lemmings.GameState.ResultGood) || (gameState == Lemmings.GameState.ResultBad)) //result ok
              {
-                pageDisplay.clear();
                 this.drawString(pageDisplay, "All lemmings accounted for.", 113, 20, sprites);
                 this.drawString(pageDisplay, "You rescued " + survivorPercent + "%", 224, 57, sprites);
                 this.drawString(pageDisplay, "You needed  " + Math.round(this.needCount * 100 / this.releaseCount) + "%", 224, 77, sprites);
@@ -9184,9 +9179,17 @@ var Lemmings;
         clear() {
             if (this.imgData == null)
                 return;
+            /*
             let img = new Uint32Array(this.imgData.data);
             for (let i = 0; i < img.length; i++) {
                 img[i] = 0xFF00FF00;
+            }
+            */
+            for (let i = 0; i < this.imgData.height * this.imgData.width * 4; i = i + 4) {
+                this.imgData.data[i] = 0;
+                this.imgData.data[i + 1] = 0;
+                this.imgData.data[i + 2] = 0;
+                //this.imgData.data[i + 3] = 255;
             }
         }
         /** render the level-background to an image */
@@ -9196,19 +9199,23 @@ var Lemmings;
             this.groundMask = groundMask;
         }
         /** render the level-background to an image */
-        setSubground(groundImage) {
+        setColorMinimap(groundImage) {
             let srcWidth = groundImage.getWidth();
             let srcHeight = groundImage.getHeight();
             let dstWidth = this.getWidth();
             let dstHeight = this.getHeight();
             let data = groundImage.getImageData().data;
-            //            let s = groundImage.getWidth() * groundImage.getHeight();
-            //            console.log("!!!!!!!!!!!!!s=" + s);
-            //            console.log("!!!!!!!!!!!!!s=" + data[642300]+"."+data[642301]);
+            for (let x = 0; x < dstWidth; x = x + 1)
+                for (let y = 0; y < 80; y = y + 1) {
+                    let pointIndexDst = (dstWidth * (y) + x) * 4;
+                    this.imgData.data[pointIndexDst + 0] = 0;
+                    this.imgData.data[pointIndexDst + 1] = 0;
+                    this.imgData.data[pointIndexDst + 2] = 0;
+                }
             for (let x = 0; x < srcWidth / 3; x = x + 1)
                 for (let y = 0; y < srcHeight / 3; y = y + 1) {
                     let pointIndexSrc = (srcWidth * (y * 3) + x * 3) * 4;
-                    let pointIndexDst = (dstWidth * (y + 20) + x + 30) * 4;
+                    let pointIndexDst = (dstWidth * (y + 10) + x + 45) * 4;
                     this.imgData.data[pointIndexDst + 0] = data[pointIndexSrc + 0];
                     this.imgData.data[pointIndexDst + 1] = data[pointIndexSrc + 1];
                     this.imgData.data[pointIndexDst + 2] = data[pointIndexSrc + 2];
@@ -10341,7 +10348,8 @@ var Lemmings;
                             //                                    game.start();
                             game.onGameEnd.on((state) => this.onGameEnd(state));
                             this.game = game;
-                            this.stage.redrawSub();
+                            //FullPage.clear();
+                            //this.stage.redrawSub();
                             //let map = new DisplayImage(this.stage);
                             //console.log(map);
                             this.game.renderSub(null);
@@ -10696,10 +10704,12 @@ var Lemmings;
             }
             ;
         }
-        redrawSub() {
-            let gameImg = this.gameImgProps.display.getImageData();
-            this.draw(this.gameImgProps, gameImg);
-        }
+        /*
+            public redrawSub() {
+                let gameImg = this.gameImgProps.display.getImageData();
+                this.draw(this.gameImgProps, gameImg);
+            }
+            */
         /** redraw everything */
         redraw() {
             if (this.gameImgProps.display != null) {

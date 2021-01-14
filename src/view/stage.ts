@@ -421,11 +421,12 @@ module Lemmings {
                 };
     
             }
-
+        /*
             public redrawSub() {
                 let gameImg = this.gameImgProps.display.getImageData();
                 this.draw(this.gameImgProps, gameImg);
             }
+            */
         /** redraw everything */
         public redraw() {
             
