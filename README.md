@@ -31,12 +31,11 @@ The goal is to finish it and extand it to custom levels like the ones present he
 
 ## ToDo
 * finish welcome page (Reel)
-* On level presentation page add level map
 * automate music and sound
 * fix some game issues (some killing leming ojects are not triggered (hanging, rolling...))
 
 ## How to run
-* download the *Lemmings.ts.zip* from ![releases](https://github.com/thomasfum/Lemmings.ts/releases)
+* download the *Lemmings.ts.zip* from <a href=https://github.com/thomasfum/Lemmings.ts/releases">[releases]</a>
 * copy the original *Lemmings*, *OhNo* and *Holiday* binaries into the directory **run/{version}/**
 * start *lemmings.html*
 
