@@ -38,6 +38,7 @@ The goal is to finish it and extand it to custom levels like the ones present he
 * download the *Lemmings.ts.zip* from <a href="https://github.com/thomasfum/Lemmings.ts/releases">[releases]</a>
 * copy the original *Lemmings*, *OhNo* and *Holiday* binaries into the directory **run/{version}/**
 * start *lemmings.html*
+* start *debug.html* for debug version
 
 ## How to compile
 * you need TypeScript to compile the code to JavaScript
@@ -53,10 +54,8 @@ The goal is to finish it and extand it to custom levels like the ones present he
 ![Debug](docu/debug.png "Debug")
 
 
+###From tomsoftware:
 
-
-
-from tomsoftware:
 ![demo1](docu/examples/demo_01.png "Demo 01")
 ![demo2](docu/examples/demo_02.png "Demo 02")
 
