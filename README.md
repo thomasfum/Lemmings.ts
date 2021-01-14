@@ -25,7 +25,7 @@ The goal is to finish it and extand it to custom levels like the ones present he
 * No need to change code to add new levels, use only config.json
 * Level presentation page added (objective)
 * Result page added
-* Original mouse navigation adde
+* Original mouse navigation added
 * Welcome page of each game added with mouse and touch pad support
 * Game selection page added with mouse and touch pad support
 
@@ -44,6 +44,19 @@ The goal is to finish it and extand it to custom levels like the ones present he
 
 
 ## State
+
+![Game](docu/game.png "Level 01")
+![Welcome](docu/Welcome.png "Welcome")
+![Target](docu/target.png "Target")
+![Result](docu/result.png "Result")
+![Select Game](docu/SelectGame.png "Select Game")
+![Debug](docu/debug.png "Debug")
+
+
+
+
+
+from tomsoftware:
 ![demo1](docu/examples/demo_01.png "Demo 01")
 ![demo2](docu/examples/demo_02.png "Demo 02")
 
