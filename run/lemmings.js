@@ -282,18 +282,18 @@ var Lemmings;
                     let lemSprite = results[1];
                     let particleTable = new Lemmings.ParticleTable(this.level.colorPalette);
                     /// setup Lemmings
-                    this.lemmingManager = new Lemmings.LemmingManager(this.level, lemSprite, this.triggerManager, this.gameVictoryCondition, masks, particleTable);
+                    this.lemmingManager = new Lemmings.LemmingManager(this.level, lemSprite, this.triggerManager, this.gameVictoryCondition, masks, particleTable, this.gameResources);
                     return this.gameResources.getSkillPanelSprite(this.level.colorPalette);
                 })
                     .then(skillPanelSprites => {
                     /// setup gui
-                    this.gameGui = new Lemmings.GameGui(this, skillPanelSprites, this.skills, this.gameTimer, this.gameVictoryCondition, this.level);
+                    this.gameGui = new Lemmings.GameGui(this, skillPanelSprites, this.skills, this.gameTimer, this.gameVictoryCondition, this.level, this.gameResources);
                     if (this.guiDispaly != null) {
                         this.gameGui.setGuiDisplay(this.guiDispaly, null);
                     }
                     this.objectManager = new Lemmings.ObjectManager(this.gameTimer);
                     this.objectManager.addRange(this.level.objects);
-                    this.gameDispaly = new Lemmings.GameDisplay(this, this.level, this.lemmingManager, this.objectManager, this.triggerManager);
+                    this.gameDispaly = new Lemmings.GameDisplay(this, this.level, this.lemmingManager, this.objectManager, this.triggerManager, this.gameResources);
                     if (this.dispaly != null) {
                         this.gameDispaly.setGuiDisplay(this.dispaly, null);
                     }
@@ -746,10 +746,11 @@ var Lemmings;
 var Lemmings;
 (function (Lemmings) {
     class LemmingManager {
-        constructor(level, lemmingsSprite, triggerManager, gameVictoryCondition, masks, particleTable) {
+        constructor(level, lemmingsSprite, triggerManager, gameVictoryCondition, masks, particleTable, Resources) {
             this.level = level;
             this.triggerManager = triggerManager;
             this.gameVictoryCondition = gameVictoryCondition;
+            this.Resources = Resources;
             /** list of all Lemming in the game */
             this.lemmings = [];
             /** list of all Actions a Lemming can do */
@@ -921,7 +922,7 @@ var Lemmings;
                 return;
             }
             else {
-                this.logging.debug(lem.id + " Action: " + actionSystem.getActionName());
+                // this.logging.debug(lem.id + " Action: " + actionSystem.getActionName());
             }
             lem.setAction(actionSystem);
         }
@@ -1254,11 +1255,82 @@ var Lemmings;
 /// <reference path="../resources/lemmings-sprite.ts"/>
 var Lemmings;
 (function (Lemmings) {
+    function BufferLoader(context, urlList, callback) {
+        this.context = context;
+        this.urlList = urlList;
+        this.onload = callback;
+        this.bufferList = new Array();
+        this.loadCount = 0;
+    }
+    BufferLoader.prototype.loadBuffer = function (url, index, self) {
+        // Load buffer asynchronously
+        var request = new XMLHttpRequest();
+        request.open("GET", url, true);
+        request.responseType = "arraybuffer";
+        var loader = this;
+        request.onload = function () {
+            // Asynchronously decode the audio file data in request.response
+            loader.context.decodeAudioData(request.response, function (buffer) {
+                if (!buffer) {
+                    alert('error decoding file data: ' + url);
+                    return;
+                }
+                loader.bufferList[index] = buffer;
+                if (++loader.loadCount == loader.urlList.length)
+                    loader.onload(loader.bufferList, self);
+            }, function (error) {
+                console.error('decodeAudioData error', error);
+            });
+        };
+        request.onerror = function () {
+            alert('BufferLoader: XHR error');
+        };
+        request.send();
+    };
+    BufferLoader.prototype.load = function (self) {
+        for (var i = 0; i < this.urlList.length; ++i)
+            this.loadBuffer(this.urlList[i], i, self);
+    };
     class SoundSystem {
         constructor() {
+            this.context = null;
+            this.myBufferList = null;
         }
         playSound(lem, soundId) {
             console.log("Play sound " + soundId);
+        }
+        init() {
+            //window.AudioContext = window.AudioContext || window.webkitAudioContext;
+            this.context = new AudioContext();
+            this.bufferLoader = new BufferLoader(this.context, [
+                '/sounds/ACTION.WAV',
+                '/sounds/AGFALL.WAV',
+            ], this.finishedLoading);
+            var self = this;
+            this.bufferLoader.load(self);
+        }
+        finishedLoading(bufferList, self) {
+            console.log("finishedLoading");
+            self.myBufferList = bufferList;
+            /*
+            // Create two sources and play them both together.
+            self.source1 = this.context.createBufferSource();
+            this.source2 = this.context.createBufferSource();
+            self.source1.buffer = bufferList[0];
+            this.source2.buffer = bufferList[1];
+        
+            self.source1.connect(this.context.destination);
+            this.source2.connect(this.context.destination);
+            console.log("source1I="+self.source1);
+            //this.source1.start(0);
+            //this.source2.start(0);
+            */
+        }
+        play() {
+            let source1 = this.context.createBufferSource();
+            source1.buffer = this.myBufferList[0];
+            source1.connect(this.context.destination);
+            source1.start(0);
         }
     }
     Lemmings.SoundSystem = SoundSystem;
@@ -1340,6 +1412,8 @@ var Lemmings;
             if (this.disabledUntilTick <= tick) {
                 if ((x >= this.x1) && (y >= this.y1) && (x <= this.x2) && (y <= this.y2)) {
                     this.disabledUntilTick = tick + this.disableTicksCount;
+                    //TF Sound:
+                    console.log("Sound from trigger:" + this.soundIndex);
                     return this.type;
                 }
             }
@@ -9442,14 +9516,28 @@ var Lemmings;
 var Lemmings;
 (function (Lemmings) {
     class GameDisplay {
-        constructor(game, level, lemmingManager, objectManager, triggerManager) {
+        constructor(game, level, lemmingManager, objectManager, triggerManager, Resources) {
             this.game = game;
             this.level = level;
             this.lemmingManager = lemmingManager;
             this.objectManager = objectManager;
             this.triggerManager = triggerManager;
+            this.Resources = Resources;
             this.dispaly = null;
             this.stage = null;
+            //private soundPlayer:AudioPlayer=null;
+            this.soundPlayer = null;
+            this.soundPlayer = new Lemmings.SoundSystem();
+            this.soundPlayer.init();
+            /*
+                     console.log("init sound1");
+                 Resources.getSoundPlayer(3)//TF sound
+                 .then((player) => {
+                     console.log("init sound2");
+                     this.soundPlayer = player;
+                     //this.soundPlayer.play();
+                 });
+              */
         }
         //C EST LA
         setGuiDisplay(dispaly, stage) {
@@ -9462,6 +9550,12 @@ var Lemmings;
                 let lem = this.lemmingManager.getLemmingAt(e.x, e.y);
                 if (!lem)
                     return;
+                //TF sound
+                console.log("play sound");
+                this.soundPlayer.play();
+                //this.soundPlayer.play();
+                //  this.Resources.getSoundPlayer(3);
+                // this.soundPlayer.play();
                 this.game.queueCmmand(new Lemmings.CommandLemmingsAction(lem.id));
             });
         }
@@ -9490,13 +9584,14 @@ var Lemmings;
 (function (Lemmings) {
     /** handles the in-game-gui. e.g. the panel on the bottom of the game */
     class GameGui {
-        constructor(game, skillPanelSprites, skills, gameTimer, gameVictoryCondition, level) {
+        constructor(game, skillPanelSprites, skills, gameTimer, gameVictoryCondition, level, Resources) {
             this.game = game;
             this.skillPanelSprites = skillPanelSprites;
             this.skills = skills;
             this.gameTimer = gameTimer;
             this.gameVictoryCondition = gameVictoryCondition;
             this.level = level;
+            this.Resources = Resources;
             this.gameTimeChanged = true;
             this.skillsCountChangd = true;
             this.skillSelectionChanged = true;
@@ -9531,6 +9626,7 @@ var Lemmings;
         /// handel click on the skills panel
         handleSkillMouseDown(x) {
             let panelIndex = Math.trunc(x / 16);
+            //TF sound
             if (panelIndex == 0) {
                 this.deltaReleaseRate = -3;
                 this.doReleaseRateChanges();
@@ -9745,6 +9841,9 @@ var Lemmings;
             this.gameSpeedFactor = 1;
             this.gameState = GameState.GameSelect;
             this.AccesscodeEntered = "";
+            //touch
+            this.longtouch = false;
+            this.timeOutEvent = 0;
             /// split the hash of the url in parts + reverse
             let hashParts = window.location.hash.substr(1).split(",", 3).reverse();
             this.levelIndex = this.strToNum(hashParts[0]);
@@ -9923,7 +10022,27 @@ var Lemmings;
             });
             el.addEventListener("touchstart", (e) => {
                 console.log("touchstart");
-                this.Managemouse(e.touches[0].clientX, e.touches[0].clientY, 0); //left by default, to be managed (2==right click)
+                // Long press event trigger
+                var self = this;
+                this.timeOutEvent = setTimeout(function () {
+                    this.timeOutEvent = 0;
+                    console.log("long touch timeout");
+                    self.longtouch = true;
+                    this.Managemouse(e.touches[0].clientX, e.touches[0].clientY, 2); //left by default, to be managed (2==right click)
+                }, 500); //Long press 500 milliseconds
+                e.stopPropagation();
+                e.preventDefault();
+                return false;
+            });
+            el.addEventListener("touchend", (e) => {
+                console.log("touchEnd");
+                if (this.longtouch === false) {
+                    // double click event
+                    // this.handleMouseDoubleClick(relativePos);
+                    this.Managemouse(e.touches[0].clientX, e.touches[0].clientY, 0); //left by default, to be managed (2==right click)
+                }
+                clearTimeout(this.timeOutEvent);
+                this.timeOutEvent = 0;
                 e.stopPropagation();
                 e.preventDefault();
                 return false;
@@ -10039,27 +10158,6 @@ var Lemmings;
                 this.continue();
                 return;
             }
-            /*
-            /// create new game
-            this.gameFactory.getGame(this.gameID)
-                .then(game => game.loadLevel(this.levelGroupIndex, this.levelIndex))
-                .then(game => {
-
-                    if (replayString != null) {
-                        game.getCommandManager().loadReplay(replayString);
-                    }
-
-                    game.setGameDispaly(this.stage.getGameDisplay(),this.stage);
-                    game.setGuiDisplay(this.stage.getGuiDisplay(),this.stage);
-
-                    game.getGameTimer().speedFactor = this.gameSpeedFactor;
-
-                    game.start();
-                    game.onGameEnd.on((state) => this.onGameEnd(state));
-
-                    this.game = game;
-                });
-                */
         }
         onGameEnd(gameResult) {
             this.stage.startFadeOut();
@@ -10377,6 +10475,14 @@ tomner part terre 14
 dans la sortie 15
 tomber dans l'eau:16
 les trois dernieres marches: 17
+
+//TF sound
+objets: trap_sound_effect_id
+https://www.html5rocks.com/en/tutorials/webaudio/intro/
+
+soundsystem
+
+
 */ 
 var Lemmings;
 (function (Lemmings) {
@@ -10885,6 +10991,7 @@ var Lemmings;
                     this.timeOutEvent = 0;
                     console.log("long touch timeout");
                     self.longtouch = true;
+                    this.handleMouseDoubleClick(relativePos); //here
                 }, 500); //Long press 500 milliseconds
                 e.stopPropagation();
                 e.preventDefault();
@@ -10911,7 +11018,7 @@ var Lemmings;
                 let relativePos = this.getRelativePosition(listenElement, e.changedTouches[0].pageX, e.changedTouches[0].pageY);
                 if (this.longtouch === true) {
                     // double click event
-                    this.handleMouseDoubleClick(relativePos);
+                    // this.handleMouseDoubleClick(relativePos);
                     console.log("long touch");
                 }
                 else {

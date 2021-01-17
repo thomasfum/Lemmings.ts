@@ -37,6 +37,11 @@ module Lemmings {
         private WelcomePageTick: number;
         private WelcomePageSprire: pagesSprites;
 
+
+        //touch
+        public  longtouch:boolean= false ;
+        private timeOutEvent  = 0;
+
         public constructor() {
             /// split the hash of the url in parts + reverse
             let hashParts = window.location.hash.substr(1).split(",", 3).reverse();
@@ -238,11 +243,37 @@ module Lemmings {
             el.addEventListener("touchstart", (e: TouchEvent) => {
                 console.log("touchstart");
                 
-                this.Managemouse(e.touches[0].clientX, e.touches[0].clientY, 0);//left by default, to be managed (2==right click)
+                
+                // Long press event trigger
+                var self = this;
+                this.timeOutEvent = setTimeout(function() {
+                    this.timeOutEvent = 0;
+                    console.log("long touch timeout");
+                    self.longtouch=true;
+                    this.Managemouse(e.touches[0].clientX, e.touches[0].clientY, 2);//left by default, to be managed (2==right click)
+                }, 500); //Long press 500 milliseconds
+
+
                 e.stopPropagation();
                 e.preventDefault();
                 return false;
             });
+            el.addEventListener("touchend", (e: TouchEvent) => {
+                console.log("touchEnd");
+                if (this.longtouch=== false) {
+                    // double click event
+                   // this.handleMouseDoubleClick(relativePos);
+                   this.Managemouse(e.touches[0].clientX, e.touches[0].clientY, 0);//left by default, to be managed (2==right click)
+                } 
+                clearTimeout(this.timeOutEvent);
+                this.timeOutEvent = 0;
+                e.stopPropagation();
+                e.preventDefault();
+                return false;
+            });
+
+            
+
 
             el.addEventListener("mouseup", (e: MouseEvent) => {
 
@@ -357,27 +388,7 @@ module Lemmings {
                 this.continue();
                 return;
             }
-            /*
-            /// create new game
-            this.gameFactory.getGame(this.gameID)
-                .then(game => game.loadLevel(this.levelGroupIndex, this.levelIndex))
-                .then(game => {
-
-                    if (replayString != null) {
-                        game.getCommandManager().loadReplay(replayString);
-                    }
-
-                    game.setGameDispaly(this.stage.getGameDisplay(),this.stage);
-                    game.setGuiDisplay(this.stage.getGuiDisplay(),this.stage);
-
-                    game.getGameTimer().speedFactor = this.gameSpeedFactor;
-
-                    game.start();
-                    game.onGameEnd.on((state) => this.onGameEnd(state));
-
-                    this.game = game;
-                });
-                */
+       
         }
 
 
@@ -781,4 +792,12 @@ tomner part terre 14
 dans la sortie 15
 tomber dans l'eau:16
 les trois dernieres marches: 17
+
+//TF sound
+objets: trap_sound_effect_id
+https://www.html5rocks.com/en/tutorials/webaudio/intro/
+
+soundsystem
+
+
 */

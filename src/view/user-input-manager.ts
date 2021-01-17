@@ -81,6 +81,7 @@ module Lemmings {
                     this.timeOutEvent = 0;
                     console.log("long touch timeout");
                     self.longtouch=true;
+                    this.handleMouseDoubleClick(relativePos);//here
                 }, 500); //Long press 500 milliseconds
                 e.stopPropagation();
                 e.preventDefault();
@@ -114,7 +115,7 @@ module Lemmings {
                 
                 if (this.longtouch=== true) {
                          // double click event
-                         this.handleMouseDoubleClick(relativePos);
+                        // this.handleMouseDoubleClick(relativePos);
                          console.log("long touch");
                         
                 }else

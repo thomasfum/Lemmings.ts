@@ -4,13 +4,29 @@ module Lemmings {
 
         private dispaly: DisplayImage = null;
         private stage: Stage=null;
+        //private soundPlayer:AudioPlayer=null;
+        private soundPlayer:SoundSystem=null;
+        
 
         constructor(
             private game: Game,
             private level: Level,
             private lemmingManager: LemmingManager,
             private objectManager: ObjectManager,
-            private triggerManager: TriggerManager) {
+            private triggerManager: TriggerManager,
+            private Resources:GameResources) {
+            this.soundPlayer = new SoundSystem();
+            this.soundPlayer.init();
+
+       /*        
+                console.log("init sound1");
+            Resources.getSoundPlayer(3)//TF sound
+            .then((player) => {
+                console.log("init sound2");
+                this.soundPlayer = player;
+                //this.soundPlayer.play();
+            });
+         */   
         }
 
         //C EST LA
@@ -24,6 +40,18 @@ module Lemmings {
                 //console.log(e.x +" "+ e.y);
                 let lem = this.lemmingManager.getLemmingAt(e.x, e.y);
                 if (!lem) return;
+                
+                
+
+                
+                //TF sound
+                 console.log("play sound");
+                 this.soundPlayer.play();
+                //this.soundPlayer.play();
+              //  this.Resources.getSoundPlayer(3);
+               // this.soundPlayer.play();
+               
+    
 
                 this.game.queueCmmand(new CommandLemmingsAction(lem.id));
             });

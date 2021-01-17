@@ -23,7 +23,8 @@ module Lemmings {
             private triggerManager: TriggerManager,
             private gameVictoryCondition: GameVictoryCondition,
             masks: MaskProvider,
-            particleTable: ParticleTable) {
+            particleTable: ParticleTable,
+            private Resources:GameResources) {
 
             this.actions[LemmingStateType.WALKING] = new ActionWalkSystem(lemmingsSprite);
             this.actions[LemmingStateType.FALLING] = new ActionFallSystem(lemmingsSprite);
@@ -238,7 +239,7 @@ module Lemmings {
                 return;
             }
             else {
-                this.logging.debug(lem.id + " Action: " + actionSystem.getActionName());
+               // this.logging.debug(lem.id + " Action: " + actionSystem.getActionName());
             }
 
             lem.setAction(actionSystem);

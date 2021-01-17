@@ -18,7 +18,8 @@ module Lemmings {
             private skills: GameSkills,
             private gameTimer: GameTimer,
             private gameVictoryCondition: GameVictoryCondition,
-            private level: Level ) {
+            private level: Level,
+            private Resources:GameResources ) {
 
             gameTimer.onGameTick.on(() => {
                 this.gameTimeChanged = true;
@@ -53,7 +54,7 @@ module Lemmings {
         /// handel click on the skills panel
         private handleSkillMouseDown(x: number) {
             let panelIndex = Math.trunc(x / 16);
-
+            //TF sound
             if (panelIndex == 0) {
                 this.deltaReleaseRate = -3;
                 this.doReleaseRateChanges();

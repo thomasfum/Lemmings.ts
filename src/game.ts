@@ -85,12 +85,13 @@ module Lemmings {
                         return Promise.all([maskPromis, lemPromis]);
                     })
                     .then(results => {
+                        
                         let masks = results[0];
                         let lemSprite = results[1];
                         let particleTable = new ParticleTable(this.level.colorPalette);
-
+                        
                         /// setup Lemmings
-                        this.lemmingManager = new LemmingManager(this.level, lemSprite, this.triggerManager, this.gameVictoryCondition, masks, particleTable);
+                        this.lemmingManager = new LemmingManager(this.level, lemSprite, this.triggerManager, this.gameVictoryCondition, masks, particleTable,this.gameResources);
 
                         return this.gameResources.getSkillPanelSprite(this.level.colorPalette);
 
@@ -98,7 +99,7 @@ module Lemmings {
                     .then(skillPanelSprites => {
                         /// setup gui
                         
-                        this.gameGui = new GameGui(this, skillPanelSprites, this.skills, this.gameTimer, this.gameVictoryCondition,this.level);
+                        this.gameGui = new GameGui(this, skillPanelSprites, this.skills, this.gameTimer, this.gameVictoryCondition,this.level, this.gameResources);
 
                         if (this.guiDispaly != null) {
                             this.gameGui.setGuiDisplay(this.guiDispaly,null);
@@ -107,7 +108,7 @@ module Lemmings {
                         this.objectManager = new ObjectManager(this.gameTimer);
                         this.objectManager.addRange(this.level.objects);
 
-                        this.gameDispaly = new GameDisplay(this, this.level, this.lemmingManager, this.objectManager, this.triggerManager);
+                        this.gameDispaly = new GameDisplay(this, this.level, this.lemmingManager, this.objectManager, this.triggerManager, this.gameResources);
                         if (this.dispaly != null) {
                             this.gameDispaly.setGuiDisplay(this.dispaly,null);
                         }

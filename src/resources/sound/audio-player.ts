@@ -62,11 +62,13 @@ module Lemmings {
             
              /// setup Web-Audio
              this.processor.onaudioprocess = (e: AudioProcessingEvent) => this.audioScriptProcessor(e);
+
+
              this.processor.connect(this.audioCtx.destination);
              this.source.connect(this.processor);
              this.source.start();
-
              this.play();
+
         }
 
 

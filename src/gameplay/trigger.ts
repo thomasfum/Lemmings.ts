@@ -29,6 +29,8 @@ module Lemmings {
             if (this.disabledUntilTick <= tick) {
                 if ((x >= this.x1) && (y >= this.y1) && (x <= this.x2) && (y <= this.y2)) {
                     this.disabledUntilTick = tick + this.disableTicksCount;
+                    //TF Sound:
+                    console.log("Sound from trigger:"+this.soundIndex);
                     return this.type;
                 }
             }
