@@ -28,6 +28,9 @@ module Lemmings {
 
         public onGameEnd = new EventHandler<GameResult>();
 
+        private soundPlayer1: AudioPlayer = null;
+        private soundPlayer2: AudioPlayer = null;
+
         private finalGameState:GameStateTypes = GameStateTypes.UNKNOWN;
 
         constructor(gameResources: GameResources) {
@@ -51,10 +54,16 @@ module Lemmings {
         }
 
         /** load a new game/level */
-        public loadLevel(levelGroupIndex: number, levelIndex: number): Promise<Game> {
+        public loadLevel(levelGroupIndex: number, levelIndex: number, musicLevel:number): Promise<Game> {
 
             this.levelGroupIndex = levelGroupIndex;
             this.levelIndex = levelIndex;
+            
+            if (musicLevel > 0)
+                this.gameResources.soundEnable = true;
+            else
+                this.gameResources.soundEnable = false;
+            //console.log("this.MusicLevel=" + this.gameResources.soundEnable);
 
             return new Promise<Game>((resolve, reject) => {
 
@@ -97,8 +106,28 @@ module Lemmings {
 
                     })
                     .then(skillPanelSprites => {
+
+
+                        if (this.gameResources.soundEnable == true) {
+                            this.gameResources.getSoundPlayer(1)//TF sound
+                                .then((player) => {
+                                    this.soundPlayer1 = player;
+                                });
+                        }
+                        else
+                            this.soundPlayer1 = null;
+
+
+                        if (this.gameResources.soundEnable == true) {
+                            this.gameResources.getSoundPlayer(2)//TF sound
+                                .then((player) => {
+                                    this.soundPlayer2 = player;
+                                });
+                        }
+                        else
+                            this.soundPlayer2 = null;
+
                         /// setup gui
-                        
                         this.gameGui = new GameGui(this, skillPanelSprites, this.skills, this.gameTimer, this.gameVictoryCondition,this.level, this.gameResources);
 
                         if (this.guiDispaly != null) {
@@ -115,11 +144,7 @@ module Lemmings {
 
                         /// let's start!
                         resolve(this);
-                    })
-                    
-                   
-                    
-                    ;
+                    });
 
             });
         }
@@ -177,6 +202,19 @@ module Lemmings {
 
         /** run one step in game time and render the result */
         private onGameTimerTick() {
+
+            let tick = this.gameTimer.getGameTicks();
+            if (tick == 1) {
+                console.log("open door" + tick);//TF sound
+                if (this.soundPlayer2 != null)
+                    this.soundPlayer2.play();
+            }
+
+            if (tick == 5) {
+                console.log("open door" + tick);//TF sound
+                if (this.soundPlayer1 != null)
+                    this.soundPlayer1.play();
+            }
 
             /// run game logic
             this.runGameLogic();

@@ -2,7 +2,6 @@ module Lemmings {
 
     export class ActionMineSystem implements IActionSystem {
 
-        public soundSystem = new SoundSystem();
         private sprite: Animation[] = [];
         private masks: MaskList[] = [];
 

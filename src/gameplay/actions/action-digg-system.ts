@@ -2,7 +2,6 @@ module Lemmings {
 
     export class ActionDiggSystem implements IActionSystem {
 
-        public soundSystem = new SoundSystem();
         private sprite: Animation[] = [];
 
         constructor(sprites: LemmingsSprite) {

@@ -2,8 +2,6 @@ module Lemmings {
 
     export class ActionBlockerSystem implements IActionSystem {
 
-        public soundSystem = new SoundSystem();
-
         private sprite: Animation;
 
         constructor(sprites: LemmingsSprite, private triggerManager: TriggerManager) {

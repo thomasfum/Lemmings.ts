@@ -2,12 +2,22 @@ module Lemmings {
 
     export class ActionDrowningSystem implements IActionSystem {
 
-        public soundSystem = new SoundSystem();
+        private soundPlayer: AudioPlayer = null;
 
         private sprite: Animation;
 
-        constructor(sprites: LemmingsSprite) {
+        constructor(sprites: LemmingsSprite, Resources: GameResources) {
             this.sprite = sprites.getAnimation(SpriteTypes.DROWNING, false);
+
+            if (Resources.soundEnable == true) {
+                Resources.getSoundPlayer(16)//TF sound
+                    .then((player) => {
+                        this.soundPlayer = player;
+                    });
+            }
+            else
+                this.soundPlayer = null;
+
         }
 
         public getActionName(): string {
@@ -31,7 +41,14 @@ module Lemmings {
 
         public process(level: Level, lem: Lemming): LemmingStateType {
             lem.disable();
-            
+
+
+            if (lem.frameIndex == 0) {
+                //TF sound
+                if (this.soundPlayer != null)
+                    this.soundPlayer.play();
+            }
+
             lem.frameIndex++;
 
             if (lem.frameIndex >= 16) {

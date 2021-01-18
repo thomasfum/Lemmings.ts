@@ -5,8 +5,6 @@ module Lemmings {
         private static floatSpeed: number[] = [3, 3, 3, 3, -1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2];
         private static floatFrame: number[] = [0, 1, 3, 5, 5, 5, 5, 5, 5, 6, 7, 7, 6, 5, 4, 4];
 
-        public soundSystem = new SoundSystem();
-
         private sprite: Animation[] = [];
 
         constructor(sprites: LemmingsSprite) {

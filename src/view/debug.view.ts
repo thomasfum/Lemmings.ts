@@ -76,7 +76,7 @@ module Lemmings {
 
             /// create new game
             this.gameFactory.getGame(this.gameID)
-                .then(game => game.loadLevel(this.levelGroupIndex, this.levelIndex))
+                .then(game => game.loadLevel(this.levelGroupIndex, this.levelIndex,0))
                 .then(game => {
 
                     if (replayString != null) {
@@ -213,11 +213,10 @@ module Lemmings {
 
             this.changeHtmlText(this.elementSoundNumber, this.soundIndex.toString());
 
-
             this.gameResources.getSoundPlayer(this.soundIndex)
                 .then((player) => {
                     this.soundPlayer = player;
-                    this.soundPlayer.play();
+                   this.soundPlayer.play();
                 });
         }
 

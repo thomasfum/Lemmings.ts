@@ -2,7 +2,6 @@ module Lemmings {
 
     export class ActionWalkSystem implements IActionSystem {
 
-        public soundSystem;
         private sprite: Animation[] = [];
 
         constructor(sprites: LemmingsSprite) {

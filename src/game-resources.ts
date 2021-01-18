@@ -9,6 +9,7 @@ module Lemmings {
         private soundPlayer: AudioPlayer;
         private soundImage: Promise<SoundImageManager>;
         private mainDat: Promise<FileContainer> = null;
+        public soundEnable = false;
 
         constructor(private fileProvider: FileProvider, private config: GameConfig) {
 
@@ -145,7 +146,7 @@ module Lemmings {
                     var adlibSrc: SoundImagePlayer = soundImage.getMusicTrack(songIndex);
 
                     /// play
-                    this.musicPlayer = new AudioPlayer(adlibSrc, OplEmulatorType.Dosbox);
+                    this.musicPlayer = new AudioPlayer(adlibSrc, OplEmulatorType.Dosbox,false);
 
                     /// return
                     resolve(this.musicPlayer);
@@ -175,7 +176,7 @@ module Lemmings {
                     var adlibSrc: SoundImagePlayer = soundImage.getSoundTrack(sondIndex);
 
                     /// play
-                    this.soundPlayer = new AudioPlayer(adlibSrc, OplEmulatorType.Dosbox);
+                    this.soundPlayer = new AudioPlayer(adlibSrc, OplEmulatorType.Dosbox,true);
 
                     /// return
                     resolve(this.soundPlayer);

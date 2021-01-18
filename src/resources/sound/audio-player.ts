@@ -7,6 +7,9 @@ module Lemmings {
         public source: AudioBufferSourceNode;
         public processor: ScriptProcessorNode;
 
+        private SoundBuffer = null;
+        private isSound: boolean = false;
+
         private opl: IOpl3;
         
         private soundImagePlayer: SoundImagePlayer;
@@ -29,55 +32,79 @@ module Lemmings {
             }
         }
 
-        constructor(src: SoundImagePlayer, emulatorType: OplEmulatorType) {
+        constructor(src: SoundImagePlayer, emulatorType: OplEmulatorType, isSound: boolean) {
             /// setup audio context
             this.audioCtx = new AudioContext();
             if (!this.audioCtx) {
                 this.log.debug('Uanbel to create AudioContext!');
                 return;
             }
-
             this.soundImagePlayer = src;
+            this.isSound = isSound;
 
             this.log.debug("debug: " + this.soundImagePlayer.sampleRateFactor.toString(16));
-
             this.log.debug("Sound image sample rate factor: "+ this.soundImagePlayer.sampleRateFactor + " --> "+ this.soundImagePlayer.getSamplingInterval());
             this.log.debug('Audio sample rate ' + this.audioCtx.sampleRate);
-
             this.samplesPerTick = Math.round(this.audioCtx.sampleRate / (this.soundImagePlayer.getSamplingInterval()));
-            this.source = this.audioCtx.createBufferSource();
-            this.processor = this.audioCtx.createScriptProcessor(8192, 2, 2);
+            if (this.isSound == false)//music
+            {
+                this.source = this.audioCtx.createBufferSource();
+                this.processor = this.audioCtx.createScriptProcessor(8192, 2, 2);
+                // When the buffer source stops playing, disconnect everything
+                this.source.onended = () => {
+                    console.log('source.onended()');
+                    this.source.disconnect(this.processor);
+                    this.processor.disconnect(this.audioCtx.destination);
+                    this.processor = null;
+                    this.source = null;
+                }
+            }
+            this.setEmulatorType(emulatorType);
 
-            // When the buffer source stops playing, disconnect everything
-            this.source.onended = () => {
-                console.log('source.onended()');
-                this.source.disconnect(this.processor);
-                this.processor.disconnect(this.audioCtx.destination);
-                this.processor = null;
-                this.source = null;
+
+            if (this.isSound == true)//sound
+            {
+                //for sound store in a buffer what to play
+                let a: AudioProcessingEvent;
+                let time = null;
+                let input: AudioBuffer;
+                let output: AudioBuffer;
+                input = new AudioBuffer({ length: 8192, numberOfChannels: 2, sampleRate: this.audioCtx.sampleRate });
+                output = new AudioBuffer({ length: 8192, numberOfChannels: 2, sampleRate: this.audioCtx.sampleRate});
+                a = new AudioProcessingEvent('proc', {
+                    inputBuffer: input,
+                    outputBuffer: output,
+                    playbackTime: time
+                });
+                this.audioScriptProcessor(a);
+                this.SoundBuffer = a.outputBuffer;
+                //this.log.debug("myBuff:" + this.SoundBuffer.length);
+            }
+            else {
+
+                /// setup Web-Audio
+                this.processor.onaudioprocess = (e: AudioProcessingEvent) => this.audioScriptProcessor(e);
+                this.processor.connect(this.audioCtx.destination);
+                this.source.connect(this.processor);
+
+                this.source.start();
+                this.play();
             }
 
-            this.setEmulatorType(emulatorType);
-           
-            
-             /// setup Web-Audio
-             this.processor.onaudioprocess = (e: AudioProcessingEvent) => this.audioScriptProcessor(e);
-
-
-             this.processor.connect(this.audioCtx.destination);
-             this.source.connect(this.processor);
-             this.source.start();
-             this.play();
-
         }
-
-
         /** Start playback of the song/sound */
         public play() {
-
-            this.audioCtx.resume();
-
-            this.isPlaying = true;
+            if (this.isSound == false) {//music
+                this.audioCtx.resume();
+                this.isPlaying = true;
+            }
+            else {//sound
+                this.log.debug("play new");
+                let source1 = this.audioCtx.createBufferSource();
+                source1.buffer = this.SoundBuffer;
+                source1.connect(this.audioCtx.destination);
+                source1.start(0);
+            }
         }
 
 
@@ -124,6 +151,7 @@ module Lemmings {
 
                 this.lenGen += this.samplesPerTick;
             }
+            e.outputBuffer
         }
 
         /** pause palying */

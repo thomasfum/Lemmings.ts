@@ -2,8 +2,6 @@ module Lemmings {
 
     export class ActionCountdownSystem implements IActionSystem {
 
-        public soundSystem = new SoundSystem();
-
         private numberMasks: MaskList;
 
         constructor(masks: MaskProvider) {

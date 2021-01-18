@@ -30,19 +30,19 @@ module Lemmings {
             this.actions[LemmingStateType.FALLING] = new ActionFallSystem(lemmingsSprite);
             this.actions[LemmingStateType.JUMPING] = new ActionJumpSystem(lemmingsSprite);
             this.actions[LemmingStateType.DIGGING] = new ActionDiggSystem(lemmingsSprite);
-            this.actions[LemmingStateType.EXITING] = new ActionExitingSystem(lemmingsSprite, gameVictoryCondition);
+            this.actions[LemmingStateType.EXITING] = new ActionExitingSystem(lemmingsSprite, gameVictoryCondition, Resources);
             this.actions[LemmingStateType.FLOATING] = new ActionFloatingSystem(lemmingsSprite);
             this.actions[LemmingStateType.BLOCKING] = new ActionBlockerSystem(lemmingsSprite, triggerManager);
             this.actions[LemmingStateType.MINEING] = new ActionMineSystem(lemmingsSprite, masks);
             this.actions[LemmingStateType.CLIMBING] = new ActionClimbSystem(lemmingsSprite);
             this.actions[LemmingStateType.HOISTING] = new ActionHoistSystem(lemmingsSprite);
             this.actions[LemmingStateType.BASHING] = new ActionBashSystem(lemmingsSprite, masks);
-            this.actions[LemmingStateType.BUILDING] = new ActionBuildSystem(lemmingsSprite);
+            this.actions[LemmingStateType.BUILDING] = new ActionBuildSystem(lemmingsSprite, Resources);
             this.actions[LemmingStateType.SHRUG] = new ActionShrugSystem(lemmingsSprite);
-            this.actions[LemmingStateType.EXPLODING] = new ActionExplodingSystem(lemmingsSprite, masks, triggerManager, particleTable);
+            this.actions[LemmingStateType.EXPLODING] = new ActionExplodingSystem(lemmingsSprite, masks, triggerManager, particleTable, Resources);
             this.actions[LemmingStateType.OHNO] = new ActionOhNoSystem(lemmingsSprite);
-            this.actions[LemmingStateType.SPLATTING] = new ActionSplatterSystem(lemmingsSprite);
-            this.actions[LemmingStateType.DROWNING] = new ActionDrowningSystem(lemmingsSprite);
+            this.actions[LemmingStateType.SPLATTING] = new ActionSplatterSystem(lemmingsSprite, Resources);//splash
+            this.actions[LemmingStateType.DROWNING] = new ActionDrowningSystem(lemmingsSprite, Resources);//noyade
 
 
             this.skillActions[SkillTypes.DIGGER] = this.actions[LemmingStateType.DIGGING];
@@ -119,11 +119,13 @@ module Lemmings {
             if (this.releaseTickIndex >= (104 - this.gameVictoryCondition.getCurrentReleaseRate())) {
                 this.releaseTickIndex = 0;
 
-                let entrance = this.level.entrances[0];
+                for (let i = 0; i < this.level.entrances.length; i++) {
+                    let entrance = this.level.entrances[i];
 
-                this.addLemming(entrance.x + 24, entrance.y + 14);
+                    this.addLemming(entrance.x + 24, entrance.y + 14);//TF better to take middle size ?
 
-                this.gameVictoryCondition.releaseOne();
+                    this.gameVictoryCondition.releaseOne();
+                }
             }
         }
 

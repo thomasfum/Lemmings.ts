@@ -511,12 +511,14 @@ module Lemmings {
             this.soundIndex += moveInterval;
 
             this.soundIndex = (this.soundIndex < 0) ? 0 : this.soundIndex;
-
+            
             this.gameResources.getSoundPlayer(this.soundIndex)
                 .then((player) => {
                     this.soundPlayer = player;
                     this.soundPlayer.play();
                 });
+            
+            
         }
 
 
@@ -697,6 +699,7 @@ module Lemmings {
             FullPage.clear();
             FullPage.redraw();
             console.log("start actual game");
+            
             let gameDisplay = this.stage.getGameDisplay();
             gameDisplay.clear();
             this.stage.resetFade();
@@ -715,6 +718,7 @@ module Lemmings {
                 this.game.stop();
                 this.game = null;
             }
+          
             this.gameResources.getLevel(this.levelGroupIndex, this.levelIndex)
                 .then((level) => {
                     if (level == null) return;
@@ -738,8 +742,9 @@ module Lemmings {
 
                             /// create new game
                             this.gameFactory.getGame(this.gameID)
-                                .then(game => game.loadLevel(this.levelGroupIndex, this.levelIndex))
+                                .then(game => game.loadLevel(this.levelGroupIndex, this.levelIndex, this.MusicLevel))
                                 .then(game => {
+
 
                                     game.setGameDispaly(this.stage.getGameDisplay(), this.stage);
                                     game.setGuiDisplay(this.stage.getGuiDisplay(), this.stage);
@@ -750,6 +755,8 @@ module Lemmings {
                                     game.onGameEnd.on((state) => this.onGameEnd(state));
 
                                     this.game = game;
+
+                          
 
                                     //FullPage.clear();
 
@@ -781,23 +788,25 @@ module Lemmings {
 }
 
 /*
-click menu 0
+click menu: 0                   =>OK    
 ouvertur porte 2 puis 1
-creuser vers le bas 3
-bloquer: 3
-expolison cuicui 4 puis 11
+new action on lem: 3            =>OK
+expolison cuicui 4 puis 11      =>OK
 
 
-tomner part terre 14
-dans la sortie 15
-tomber dans l'eau:16
-les trois dernieres marches: 17
+tomner part terre 14            =>OK
+dans la sortie 15               =>OK
+tomber dans l'eau:16            =>OK
+les trois dernieres marches: 17 =>OK
 
 //TF sound
 objets: trap_sound_effect_id
 https://www.html5rocks.com/en/tutorials/webaudio/intro/
 
 soundsystem
+
+
+remove sound-system.ts et le repertoir Sounds
 
 
 */

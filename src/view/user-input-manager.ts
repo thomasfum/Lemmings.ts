@@ -51,7 +51,6 @@ module Lemmings {
         public onZoom = new EventHandler<ZoomEventArguemnts>();
 
         constructor(listenElement: HTMLElement) {
-
             listenElement.addEventListener("mousemove", (e: MouseEvent) => {
                 let relativePos = this.getRelativePosition(listenElement, e.clientX, e.clientY);
                 this.handelMouseMove(relativePos);

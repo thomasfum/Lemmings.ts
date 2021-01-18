@@ -10,6 +10,7 @@ module Lemmings {
 
         private dispaly: DisplayImage = null;
         private deltaReleaseRate: number = 0;
+        private soundPlayer0: AudioPlayer = null;
 
         private stage: Stage=null;
 
@@ -20,6 +21,16 @@ module Lemmings {
             private gameVictoryCondition: GameVictoryCondition,
             private level: Level,
             private Resources:GameResources ) {
+            if (Resources.soundEnable == true) {
+                Resources.getSoundPlayer(0)//TF sound
+                    .then((player) => {
+                        this.soundPlayer0 = player;
+                    });
+            }
+            else {
+
+                this.soundPlayer0 = null;
+            }
 
             gameTimer.onGameTick.on(() => {
                 this.gameTimeChanged = true;
@@ -54,7 +65,8 @@ module Lemmings {
         /// handel click on the skills panel
         private handleSkillMouseDown(x: number) {
             let panelIndex = Math.trunc(x / 16);
-            //TF sound
+          
+
             if (panelIndex == 0) {
                 this.deltaReleaseRate = -3;
                 this.doReleaseRateChanges();
@@ -74,6 +86,11 @@ module Lemmings {
 
             let newSkill = this.getSkillByPanelIndex(panelIndex);
             if (newSkill == SkillTypes.UNKNOWN) return;
+
+
+            //TF sound
+            if (this.soundPlayer0 != null)
+                this.soundPlayer0.play();
 
             this.game.queueCmmand(new CommandSelectSkill(newSkill));
 
@@ -98,6 +115,11 @@ module Lemmings {
                 this.stage=stage;
                 this.stage.setLevel(this.level, this.game.getLemmingManager());
             }
+            //console.log("**************************");
+            this.dispaly.onMouseDown.dispose();
+            this.dispaly.onMouseUp.dispose();
+            this.dispaly.onDoubleClick.dispose();
+
             /// handle user input in gui
             this.dispaly.onMouseDown.on((e) => {
                 this.deltaReleaseRate = 0;
