@@ -1862,7 +1862,7 @@ var Lemmings;
             lem.disable();
             lem.frameIndex++;
             //TF sound
-            if (lem.frameIndex == 8) {
+            if (lem.frameIndex == 1) {
                 if (this.soundPlayer != null)
                     this.soundPlayer.play();
             }
@@ -5074,8 +5074,8 @@ var Lemmings;
                 let time = null;
                 let input;
                 let output;
-                input = new AudioBuffer({ length: 8192, numberOfChannels: 2, sampleRate: this.audioCtx.sampleRate });
-                output = new AudioBuffer({ length: 8192, numberOfChannels: 2, sampleRate: this.audioCtx.sampleRate });
+                input = new AudioBuffer({ length: 8192 * 2, numberOfChannels: 2, sampleRate: this.audioCtx.sampleRate });
+                output = new AudioBuffer({ length: 8192 * 2, numberOfChannels: 2, sampleRate: this.audioCtx.sampleRate });
                 a = new AudioProcessingEvent('proc', {
                     inputBuffer: input,
                     outputBuffer: output,

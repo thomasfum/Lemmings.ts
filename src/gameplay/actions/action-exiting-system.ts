@@ -46,7 +46,7 @@ module Lemmings {
 
 
             //TF sound
-            if (lem.frameIndex == 8) {
+            if (lem.frameIndex == 1) {
                 if (this.soundPlayer != null)
                     this.soundPlayer.play();
             }
