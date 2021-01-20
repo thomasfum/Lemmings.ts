@@ -19,7 +19,23 @@ module Lemmings {
 
             for (let i = 0; i < objs.length; i++) {
                 let obj = objs[i];
-                gameDisplay.drawFrameFlags(obj.animation.getFrame(tick), obj.x, obj.y, obj.drawProperties);
+                if (obj.animation.isRepeat == true)
+                    gameDisplay.drawFrameFlags(obj.animation.getFrame(tick), obj.x, obj.y, obj.drawProperties);
+                else {
+                    if (obj.isTrigerred == true) {
+                        console.log("Istriggered=true:" + i)
+                        obj.animation.reStart();
+                        gameDisplay.drawFrameFlags(obj.animation.getFrame(tick), obj.x, obj.y, obj.drawProperties);
+                        if (obj.animation.isDone == true) {//prepare nest trigger action
+                            obj.isTrigerred = false;
+                           // obj.animation.reset();
+                        }
+                        
+                    }
+                    else
+                        gameDisplay.drawFrameFlags(obj.animation.getLastFrame(), obj.x, obj.y, obj.drawProperties);
+                    //then test trigger
+                }
             }
         }
 

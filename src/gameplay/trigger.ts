@@ -12,8 +12,9 @@ module Lemmings {
         private disableTicksCount: number = 0;
         private disabledUntilTick: number = 0;
         private soundIndex: number;
+        private objectIndex: number;
 
-        constructor(type: TriggerTypes, x1: number, y1: number, x2: number, y2: number, disableTicksCount: number = 0, soundIndex: number = -1, owner: any = null) {
+        constructor(type: TriggerTypes, x1: number, y1: number, x2: number, y2: number, disableTicksCount: number = 0, soundIndex: number = -1, owner: any = null, objectIndex=-1) {
             this.owner = owner;
             this.type = type;
             this.x1 = Math.min(x1, x2);
@@ -22,6 +23,7 @@ module Lemmings {
             this.y2 = Math.max(y1, y2);
             this.disableTicksCount = disableTicksCount;
             this.soundIndex = soundIndex;
+            this.objectIndex = objectIndex;
         }
 
 

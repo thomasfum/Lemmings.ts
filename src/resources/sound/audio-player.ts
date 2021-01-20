@@ -69,8 +69,8 @@ module Lemmings {
                 let time = null;
                 let input: AudioBuffer;
                 let output: AudioBuffer;
-                input = new AudioBuffer({ length: 8192*2, numberOfChannels: 2, sampleRate: this.audioCtx.sampleRate });
-                output = new AudioBuffer({ length: 8192*2, numberOfChannels: 2, sampleRate: this.audioCtx.sampleRate});
+                input = new AudioBuffer({ length: 8192*3, numberOfChannels: 2, sampleRate: this.audioCtx.sampleRate });
+                output = new AudioBuffer({ length: 8192*3, numberOfChannels: 2, sampleRate: this.audioCtx.sampleRate});
                 a = new AudioProcessingEvent('proc', {
                     inputBuffer: input,
                     outputBuffer: output,
@@ -99,7 +99,7 @@ module Lemmings {
                 this.isPlaying = true;
             }
             else {//sound
-                this.log.debug("play new");
+               // this.log.debug("play new");
                 let source1 = this.audioCtx.createBufferSource();
                 source1.buffer = this.SoundBuffer;
                 source1.connect(this.audioCtx.destination);

@@ -151,6 +151,15 @@ module Lemmings {
 
 
         /** run the game */
+        public prestart() {
+            this.render();
+            console.log("pre-start");//TF sound
+            if (this.soundPlayer2 != null)
+                this.soundPlayer2.play();
+        }
+
+
+        /** run the game */
         public start() {
             this.gameTimer.continue();
         }
@@ -204,11 +213,13 @@ module Lemmings {
         private onGameTimerTick() {
 
             let tick = this.gameTimer.getGameTicks();
+            /*
             if (tick == 1) {
                 console.log("open door" + tick);//TF sound
                 if (this.soundPlayer2 != null)
                     this.soundPlayer2.play();
             }
+            */
 
             if (tick == 5) {
                 console.log("open door" + tick);//TF sound

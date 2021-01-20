@@ -3,8 +3,23 @@ module Lemmings {
     export class Animation {
         public frames:Frame[] = [];
         public isRepeat :boolean = true;
-        public firstFrameIndex:number = 0;
+        public firstFrameIndex: number = 0;
+        public isDone: boolean = false;
+        private frameInc: number = 0;
+        public reset() {
+            this.frameInc = 0;
+            this.isDone = false;
+        }
+        public reStart() {
+            if (this.isDone == true) {
+                this.frameInc = 0;
+                this.isDone = false;
+            }
+        }
 
+        public getLastFrame(): Frame {
+            return this.frames[0];
+        }
         public getFrame(frameIndex:number):Frame {
             
             frameIndex = frameIndex + this.firstFrameIndex;
@@ -15,7 +30,19 @@ module Lemmings {
                 frame = frameIndex % this.frames.length;
             }
             else {
-                if (frameIndex < this.frames.length) frame = frameIndex;
+                if (this.frameInc < this.frames.length) {
+                    frame = this.frameInc;
+                    this.frameInc++;
+                }
+                /*
+                if (frameIndex < this.frames.length) {
+                    frame = frameIndex;
+                }
+                */
+                else {
+                    this.isDone = true;
+                    frame = 0;//the last one
+                }
             }
 
             return this.frames[frame];

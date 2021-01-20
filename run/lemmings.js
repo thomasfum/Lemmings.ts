@@ -327,6 +327,13 @@ var Lemmings;
             });
         }
         /** run the game */
+        prestart() {
+            this.render();
+            console.log("pre-start"); //TF sound
+            if (this.soundPlayer2 != null)
+                this.soundPlayer2.play();
+        }
+        /** run the game */
         start() {
             this.gameTimer.continue();
         }
@@ -367,11 +374,13 @@ var Lemmings;
         /** run one step in game time and render the result */
         onGameTimerTick() {
             let tick = this.gameTimer.getGameTicks();
+            /*
             if (tick == 1) {
-                console.log("open door" + tick); //TF sound
+                console.log("open door" + tick);//TF sound
                 if (this.soundPlayer2 != null)
                     this.soundPlayer2.play();
             }
+            */
             if (tick == 5) {
                 console.log("open door" + tick); //TF sound
                 if (this.soundPlayer1 != null)
@@ -874,6 +883,8 @@ var Lemmings;
                 return Lemmings.LemmingStateType.NO_STATE_TYPE;
             }
             let triggerType = this.triggerManager.trigger(lem.x, lem.y);
+            if (triggerType != Lemmings.TriggerTypes.NO_TRIGGER)
+                this.logging.log("trigger type: " + triggerType);
             switch (triggerType) {
                 case Lemmings.TriggerTypes.NO_TRIGGER:
                     return Lemmings.LemmingStateType.NO_STATE_TYPE;
@@ -1155,9 +1166,13 @@ var Lemmings;
     /** represent a object (e.g. Exit, Entry, Trap, ...) */
     class MapObject {
         constructor(ob, objectImg) {
+            this.isTrigerred = false;
             this.x = ob.x;
             this.y = ob.y;
+            this.trigger_effect_id = objectImg.trigger_effect_id;
             this.drawProperties = ob.drawProperties;
+            if (ob.id == 1) //entrance
+                this.isTrigerred = true;
             this.animation = new Lemmings.Animation();
             this.animation.isRepeat = objectImg.animationLoop;
             this.animation.firstFrameIndex = objectImg.firstFrameIndex;
@@ -1185,7 +1200,22 @@ var Lemmings;
             let tick = this.gameTimer.getGameTicks();
             for (let i = 0; i < objs.length; i++) {
                 let obj = objs[i];
-                gameDisplay.drawFrameFlags(obj.animation.getFrame(tick), obj.x, obj.y, obj.drawProperties);
+                if (obj.animation.isRepeat == true)
+                    gameDisplay.drawFrameFlags(obj.animation.getFrame(tick), obj.x, obj.y, obj.drawProperties);
+                else {
+                    if (obj.isTrigerred == true) {
+                        console.log("Istriggered=true:" + i);
+                        obj.animation.reStart();
+                        gameDisplay.drawFrameFlags(obj.animation.getFrame(tick), obj.x, obj.y, obj.drawProperties);
+                        if (obj.animation.isDone == true) { //prepare nest trigger action
+                            obj.isTrigerred = false;
+                            // obj.animation.reset();
+                        }
+                    }
+                    else
+                        gameDisplay.drawFrameFlags(obj.animation.getLastFrame(), obj.x, obj.y, obj.drawProperties);
+                    //then test trigger
+                }
             }
         }
         /** add map objects to manager */
@@ -1414,7 +1444,7 @@ var Lemmings;
 (function (Lemmings) {
     /** A trigger that can be hit by a lemming */
     class Trigger {
-        constructor(type, x1, y1, x2, y2, disableTicksCount = 0, soundIndex = -1, owner = null) {
+        constructor(type, x1, y1, x2, y2, disableTicksCount = 0, soundIndex = -1, owner = null, objectIndex = -1) {
             this.owner = null;
             this.x1 = 0;
             this.y1 = 0;
@@ -1431,6 +1461,7 @@ var Lemmings;
             this.y2 = Math.max(y1, y2);
             this.disableTicksCount = disableTicksCount;
             this.soundIndex = soundIndex;
+            this.objectIndex = objectIndex;
         }
         trigger(x, y, tick) {
             if (this.disabledUntilTick <= tick) {
@@ -2619,6 +2650,21 @@ var Lemmings;
             this.frames = [];
             this.isRepeat = true;
             this.firstFrameIndex = 0;
+            this.isDone = false;
+            this.frameInc = 0;
+        }
+        reset() {
+            this.frameInc = 0;
+            this.isDone = false;
+        }
+        reStart() {
+            if (this.isDone == true) {
+                this.frameInc = 0;
+                this.isDone = false;
+            }
+        }
+        getLastFrame() {
+            return this.frames[0];
         }
         getFrame(frameIndex) {
             frameIndex = frameIndex + this.firstFrameIndex;
@@ -2627,8 +2673,19 @@ var Lemmings;
                 frame = frameIndex % this.frames.length;
             }
             else {
-                if (frameIndex < this.frames.length)
+                if (this.frameInc < this.frames.length) {
+                    frame = this.frameInc;
+                    this.frameInc++;
+                }
+                /*
+                if (frameIndex < this.frames.length) {
                     frame = frameIndex;
+                }
+                */
+                else {
+                    this.isDone = true;
+                    frame = 0; //the last one
+                }
             }
             return this.frames[frame];
         }
@@ -2985,16 +3042,19 @@ var Lemmings;
                 /// add object
                 let newMapObject = new Lemmings.MapObject(ob, objectInfo);
                 this.objects.push(newMapObject);
+                console.log("Object:" + ob.id + ", x=" + ob.x + ", T=" + objectInfo.trigger_effect_id + ", S=" + objectInfo.trap_sound_effect_id + ", R=" + objectInfo.animationLoop); //+ objectInfo.unknown + ", " + objectInfo.unknown1 + ", " + objectInfo.unknown2);
                 /// add entrances
-                if (ob.id == 1)
+                if (ob.id == 1) {
                     this.entrances.push(ob);
+                }
                 /// add triggers
                 if (objectInfo.trigger_effect_id != 0) {
                     let x1 = ob.x + objectInfo.trigger_left;
                     let y1 = ob.y + objectInfo.trigger_top;
                     let x2 = x1 + objectInfo.trigger_width;
                     let y2 = y1 + objectInfo.trigger_height;
-                    let newTrigger = new Lemmings.Trigger(objectInfo.trigger_effect_id, x1, y1, x2, y2, 0, objectInfo.trap_sound_effect_id);
+                    //console.log("adding trigger: " + objectInfo.trigger_effect_id + ", " + x1 + ", " + y1 + ", " + x2 + ", " + y2 + ", " + objectInfo.trap_sound_effect_id);
+                    let newTrigger = new Lemmings.Trigger(objectInfo.trigger_effect_id, x1, y1, x2, y2, 0, objectInfo.trap_sound_effect_id, null, i);
                     this.triggers.push(newTrigger);
                 }
             }
@@ -5074,8 +5134,8 @@ var Lemmings;
                 let time = null;
                 let input;
                 let output;
-                input = new AudioBuffer({ length: 8192 * 2, numberOfChannels: 2, sampleRate: this.audioCtx.sampleRate });
-                output = new AudioBuffer({ length: 8192 * 2, numberOfChannels: 2, sampleRate: this.audioCtx.sampleRate });
+                input = new AudioBuffer({ length: 8192 * 3, numberOfChannels: 2, sampleRate: this.audioCtx.sampleRate });
+                output = new AudioBuffer({ length: 8192 * 3, numberOfChannels: 2, sampleRate: this.audioCtx.sampleRate });
                 a = new AudioProcessingEvent('proc', {
                     inputBuffer: input,
                     outputBuffer: output,
@@ -5111,7 +5171,7 @@ var Lemmings;
                 this.isPlaying = true;
             }
             else { //sound
-                this.log.debug("play new");
+                // this.log.debug("play new");
                 let source1 = this.audioCtx.createBufferSource();
                 source1.buffer = this.SoundBuffer;
                 source1.connect(this.audioCtx.destination);
@@ -10544,7 +10604,8 @@ var Lemmings;
             gameDisplay.setScreenPosition(this.currentLevel.screenPositionX, 0);
             gameDisplay.redraw();
             this.gameState = GameState.Playing; //palying
-            this.start();
+            this.game.prestart();
+            setTimeout(() => { this.start(); }, 2000);
         }
         /** load a level and render it to the display */
         loadLevel() {

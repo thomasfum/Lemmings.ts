@@ -61,9 +61,11 @@ module Lemmings {
                 /// add object
                 let newMapObject = new MapObject(ob, objectInfo);
                 this.objects.push(newMapObject);
-
+                console.log("Object:" + ob.id + ", x=" + ob.x + ", T=" + objectInfo.trigger_effect_id + ", S=" + objectInfo.trap_sound_effect_id + ", R=" + objectInfo.animationLoop);//+ objectInfo.unknown + ", " + objectInfo.unknown1 + ", " + objectInfo.unknown2);
                 /// add entrances
-                if (ob.id == 1) this.entrances.push(ob);
+                if (ob.id == 1) {
+                    this.entrances.push(ob);
+                }
 
                 /// add triggers
                 if (objectInfo.trigger_effect_id != 0) {
@@ -73,7 +75,8 @@ module Lemmings {
                     let x2 = x1 + objectInfo.trigger_width;
                     let y2 = y1 + objectInfo.trigger_height;
 
-                    let newTrigger = new Trigger(objectInfo.trigger_effect_id, x1, y1, x2, y2, 0, objectInfo.trap_sound_effect_id);
+                    //console.log("adding trigger: " + objectInfo.trigger_effect_id + ", " + x1 + ", " + y1 + ", " + x2 + ", " + y2 + ", " + objectInfo.trap_sound_effect_id);
+                    let newTrigger = new Trigger(objectInfo.trigger_effect_id, x1, y1, x2, y2, 0, objectInfo.trap_sound_effect_id, null,i);
 
                     this.triggers.push(newTrigger);
                 }

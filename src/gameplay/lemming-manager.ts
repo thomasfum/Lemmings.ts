@@ -137,7 +137,8 @@ module Lemmings {
             }
 
             let triggerType = this.triggerManager.trigger(lem.x, lem.y);
-
+            if (triggerType!=TriggerTypes.NO_TRIGGER)
+                this.logging.log("trigger type: " + triggerType);
             switch (triggerType) {
                 case TriggerTypes.NO_TRIGGER:
                     return LemmingStateType.NO_STATE_TYPE;
