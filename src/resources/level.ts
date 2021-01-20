@@ -76,7 +76,7 @@ module Lemmings {
                     let y2 = y1 + objectInfo.trigger_height;
 
                     //console.log("adding trigger: " + objectInfo.trigger_effect_id + ", " + x1 + ", " + y1 + ", " + x2 + ", " + y2 + ", " + objectInfo.trap_sound_effect_id);
-                    let newTrigger = new Trigger(objectInfo.trigger_effect_id, x1, y1, x2, y2, 0, objectInfo.trap_sound_effect_id, null,i);
+                    let newTrigger = new Trigger(objectInfo.trigger_effect_id, x1, y1, x2, y2, 0, objectInfo.trap_sound_effect_id, null,newMapObject);
 
                     this.triggers.push(newTrigger);
                 }

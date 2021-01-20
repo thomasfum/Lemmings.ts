@@ -327,13 +327,6 @@ var Lemmings;
             });
         }
         /** run the game */
-        prestart() {
-            this.render();
-            console.log("pre-start"); //TF sound
-            if (this.soundPlayer2 != null)
-                this.soundPlayer2.play();
-        }
-        /** run the game */
         start() {
             this.gameTimer.continue();
         }
@@ -374,20 +367,20 @@ var Lemmings;
         /** run one step in game time and render the result */
         onGameTimerTick() {
             let tick = this.gameTimer.getGameTicks();
-            /*
             if (tick == 1) {
-                console.log("open door" + tick);//TF sound
+                console.log("strat sound" + tick); //TF sound
                 if (this.soundPlayer2 != null)
                     this.soundPlayer2.play();
             }
-            */
-            if (tick == 5) {
+            if (tick == 50) {
+                this.objectManager.openDoor();
                 console.log("open door" + tick); //TF sound
                 if (this.soundPlayer1 != null)
                     this.soundPlayer1.play();
             }
             /// run game logic
-            this.runGameLogic();
+            if (tick > 50)
+                this.runGameLogic();
             this.checkForGameOver();
             this.render();
         }
@@ -895,7 +888,8 @@ var Lemmings;
                 case Lemmings.TriggerTypes.KILL:
                     return Lemmings.LemmingStateType.SPLATTING;
                 case Lemmings.TriggerTypes.TRAP:
-                    return Lemmings.LemmingStateType.HOISTING;
+                    return Lemmings.LemmingStateType.OUT_OFF_LEVEL;
+                //return LemmingStateType.HOISTING;
                 case Lemmings.TriggerTypes.BLOCKER_LEFT:
                     if (lem.lookRight)
                         lem.lookRight = false;
@@ -1167,12 +1161,12 @@ var Lemmings;
     class MapObject {
         constructor(ob, objectImg) {
             this.isTrigerred = false;
+            this.id = 0;
             this.x = ob.x;
             this.y = ob.y;
+            this.id = ob.id;
             this.trigger_effect_id = objectImg.trigger_effect_id;
             this.drawProperties = ob.drawProperties;
-            if (ob.id == 1) //entrance
-                this.isTrigerred = true;
             this.animation = new Lemmings.Animation();
             this.animation.isRepeat = objectImg.animationLoop;
             this.animation.firstFrameIndex = objectImg.firstFrameIndex;
@@ -1194,6 +1188,13 @@ var Lemmings;
             this.gameTimer = gameTimer;
             this.objects = [];
         }
+        openDoor() {
+            for (let i = 0; i < this.objects.length; i++) {
+                let obj = this.objects[i];
+                if (obj.id == 1) //entrance
+                    obj.isTrigerred = true;
+            }
+        }
         /** render all Objects to the GameDisplay */
         render(gameDisplay) {
             let objs = this.objects;
@@ -1204,7 +1205,7 @@ var Lemmings;
                     gameDisplay.drawFrameFlags(obj.animation.getFrame(tick), obj.x, obj.y, obj.drawProperties);
                 else {
                     if (obj.isTrigerred == true) {
-                        console.log("Istriggered=true:" + i);
+                        //console.log("Istriggered=true:" + i)
                         obj.animation.reStart();
                         gameDisplay.drawFrameFlags(obj.animation.getFrame(tick), obj.x, obj.y, obj.drawProperties);
                         if (obj.animation.isDone == true) { //prepare nest trigger action
@@ -1444,7 +1445,7 @@ var Lemmings;
 (function (Lemmings) {
     /** A trigger that can be hit by a lemming */
     class Trigger {
-        constructor(type, x1, y1, x2, y2, disableTicksCount = 0, soundIndex = -1, owner = null, objectIndex = -1) {
+        constructor(type, x1, y1, x2, y2, disableTicksCount = 0, soundIndex = -1, owner = null, obj = null) {
             this.owner = null;
             this.x1 = 0;
             this.y1 = 0;
@@ -1453,7 +1454,9 @@ var Lemmings;
             this.type = Lemmings.TriggerTypes.NO_TRIGGER;
             this.disableTicksCount = 0;
             this.disabledUntilTick = 0;
+            this.obj = null;
             this.owner = owner;
+            this.obj = obj;
             this.type = type;
             this.x1 = Math.min(x1, x2);
             this.y1 = Math.min(y1, y2);
@@ -1461,7 +1464,6 @@ var Lemmings;
             this.y2 = Math.max(y1, y2);
             this.disableTicksCount = disableTicksCount;
             this.soundIndex = soundIndex;
-            this.objectIndex = objectIndex;
         }
         trigger(x, y, tick) {
             if (this.disabledUntilTick <= tick) {
@@ -1469,6 +1471,10 @@ var Lemmings;
                     this.disabledUntilTick = tick + this.disableTicksCount;
                     //TF Sound:
                     console.log("Sound from trigger:" + this.soundIndex);
+                    if (this.obj != null) {
+                        this.obj.isTrigerred = true;
+                        console.log("Object from trigger:" + this.obj.isTrigerred);
+                    }
                     return this.type;
                 }
             }
@@ -2652,6 +2658,7 @@ var Lemmings;
             this.firstFrameIndex = 0;
             this.isDone = false;
             this.frameInc = 0;
+            this.alreadyplayed = false;
         }
         reset() {
             this.frameInc = 0;
@@ -2659,22 +2666,29 @@ var Lemmings;
         }
         reStart() {
             if (this.isDone == true) {
-                this.frameInc = 0;
+                this.frameInc = this.firstFrameIndex;
                 this.isDone = false;
             }
         }
         getLastFrame() {
-            return this.frames[0];
+            if (this.alreadyplayed == true)
+                return this.frames[0];
+            else
+                return this.frames[this.firstFrameIndex];
         }
         getFrame(frameIndex) {
             frameIndex = frameIndex + this.firstFrameIndex;
+            this.alreadyplayed = true;
             let frame = 0;
             if (this.isRepeat) {
                 frame = frameIndex % this.frames.length;
             }
             else {
                 if (this.frameInc < this.frames.length) {
-                    frame = this.frameInc;
+                    frame = this.frameInc + this.firstFrameIndex;
+                    if (frame >= this.frames.length)
+                        frame = frame - this.frames.length;
+                    console.log("frame" + this.frameInc + "," + this.firstFrameIndex + "=" + frame);
                     this.frameInc++;
                 }
                 /*
@@ -3054,7 +3068,7 @@ var Lemmings;
                     let x2 = x1 + objectInfo.trigger_width;
                     let y2 = y1 + objectInfo.trigger_height;
                     //console.log("adding trigger: " + objectInfo.trigger_effect_id + ", " + x1 + ", " + y1 + ", " + x2 + ", " + y2 + ", " + objectInfo.trap_sound_effect_id);
-                    let newTrigger = new Lemmings.Trigger(objectInfo.trigger_effect_id, x1, y1, x2, y2, 0, objectInfo.trap_sound_effect_id, null, i);
+                    let newTrigger = new Lemmings.Trigger(objectInfo.trigger_effect_id, x1, y1, x2, y2, 0, objectInfo.trap_sound_effect_id, null, newMapObject);
                     this.triggers.push(newTrigger);
                 }
             }
@@ -10604,8 +10618,7 @@ var Lemmings;
             gameDisplay.setScreenPosition(this.currentLevel.screenPositionX, 0);
             gameDisplay.redraw();
             this.gameState = GameState.Playing; //palying
-            this.game.prestart();
-            setTimeout(() => { this.start(); }, 2000);
+            this.start();
         }
         /** load a level and render it to the display */
         loadLevel() {
@@ -10768,6 +10781,28 @@ var Lemmings;
         handleOnMouseUp() {
             this.controller.onMouseUp.on((e) => {
                 let stageImage = this.getStageImageAt(e.x, e.y);
+                if (stageImage == this.guiImgProps) {
+                    //console.log("draging in GUI:" + e.x + ", " + e.y);
+                    if ((e.x >= 410) && (e.x <= 630) && (e.y >= 350) && (e.y <= 480)) // to be set dynamically
+                     {
+                        // this.updateViewPoint(this.gameImgProps, (0-e.deltaX)*16, 0, 0);
+                        let newposx = Math.round(((e.x - 410 - 20) / (630 - 410)) * 1600);
+                        /*
+                        if(newposx<0)
+                             newposx=0;
+                         if(newposx>this.level.width)
+                             newposx=this.level.width;
+                             */
+                        this.gameImgProps.viewPoint.x = newposx;
+                        this.gameImgProps.viewPoint.x = this.limitValue(0, this.gameImgProps.viewPoint.x, this.gameImgProps.display.getWidth() - this.gameImgProps.width / this.gameImgProps.viewPoint.scale);
+                        console.log("Update game pos:" + e.x + "=> " + newposx + " - " + this.gameImgProps.viewPoint.x);
+                        //this.updateViewPoint(this.gameImgProps, (0-e.deltaX)*16, 0, 0);
+                        //this.setGameViewPointPosition(newposx,0);
+                        if (this.guiImgProps.display != null)
+                            this.guiImgProps.display.drawFrame(this.level.getGroundMaskLayer().getMiniMap(this.gameImgProps.viewPoint.x, this.level.width), 209, 18);
+                        this.redraw();
+                    }
+                }
                 if ((stageImage == null) || (stageImage.display == null))
                     return;
                 let pos = this.calcPosition2D(stageImage, e);
@@ -10896,7 +10931,7 @@ var Lemmings;
                         if ((e.x >= 410) && (e.x <= 630) && (e.y >= 350) && (e.y <= 480)) // to be set dynamically
                          {
                             this.updateViewPoint(this.gameImgProps, (0 - e.deltaX) * 16, 0, 0);
-                            console.log("draging game:" + e.x + ", " + e.y);
+                            //console.log("draging game:" + e.x + ", " + e.y);
                         }
                     }
                 }
@@ -11021,12 +11056,6 @@ var Lemmings;
             }
             ;
         }
-        /*
-            public redrawSub() {
-                let gameImg = this.gameImgProps.display.getImageData();
-                this.draw(this.gameImgProps, gameImg);
-            }
-            */
         /** redraw everything */
         redraw() {
             if (this.gameImgProps.display != null) {
@@ -11041,12 +11070,6 @@ var Lemmings;
                 this.draw(this.guiImgProps, guiImg);
             }
             ;
-            /*
-                        if (this.FullPageProps.display != null) {
-                            let FullPageImg = this.FullPageProps.display.getImageData();
-                            this.draw(this.FullPageProps, FullPageImg);
-                        };
-            */
         }
         createImage(display, width, height) {
             if (display == this.gameImgProps.display) {

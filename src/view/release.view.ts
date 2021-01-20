@@ -707,8 +707,8 @@ module Lemmings {
             gameDisplay.setScreenPosition(this.currentLevel.screenPositionX, 0);
             gameDisplay.redraw();
             this.gameState = GameState.Playing;//palying
-            this.game.prestart();
-            setTimeout(() => { this.start(); }, 2000);
+            this.start();
+         
 
         
         }

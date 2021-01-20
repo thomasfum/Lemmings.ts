@@ -12,10 +12,11 @@ module Lemmings {
         private disableTicksCount: number = 0;
         private disabledUntilTick: number = 0;
         private soundIndex: number;
-        private objectIndex: number;
+        private obj: MapObject=null;
 
-        constructor(type: TriggerTypes, x1: number, y1: number, x2: number, y2: number, disableTicksCount: number = 0, soundIndex: number = -1, owner: any = null, objectIndex=-1) {
+        constructor(type: TriggerTypes, x1: number, y1: number, x2: number, y2: number, disableTicksCount: number = 0, soundIndex: number = -1, owner: any = null, obj:MapObject=null) {
             this.owner = owner;
+            this.obj=obj;
             this.type = type;
             this.x1 = Math.min(x1, x2);
             this.y1 = Math.min(y1, y2);
@@ -23,7 +24,7 @@ module Lemmings {
             this.y2 = Math.max(y1, y2);
             this.disableTicksCount = disableTicksCount;
             this.soundIndex = soundIndex;
-            this.objectIndex = objectIndex;
+            
         }
 
 
@@ -33,6 +34,12 @@ module Lemmings {
                     this.disabledUntilTick = tick + this.disableTicksCount;
                     //TF Sound:
                     console.log("Sound from trigger:"+this.soundIndex);
+                    if(this.obj!=null)
+                    {
+                        this.obj.isTrigerred=true;
+                        console.log("Object from trigger:"+this.obj.isTrigerred);
+                    }
+
                     return this.type;
                 }
             }

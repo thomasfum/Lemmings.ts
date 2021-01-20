@@ -150,15 +150,7 @@ module Lemmings {
         }
 
 
-        /** run the game */
-        public prestart() {
-            this.render();
-            console.log("pre-start");//TF sound
-            if (this.soundPlayer2 != null)
-                this.soundPlayer2.play();
-        }
-
-
+       
         /** run the game */
         public start() {
             this.gameTimer.continue();
@@ -213,22 +205,27 @@ module Lemmings {
         private onGameTimerTick() {
 
             let tick = this.gameTimer.getGameTicks();
-            /*
+            
             if (tick == 1) {
-                console.log("open door" + tick);//TF sound
+                console.log("strat sound" + tick);//TF sound
                 if (this.soundPlayer2 != null)
                     this.soundPlayer2.play();
             }
-            */
+            
 
-            if (tick == 5) {
+            if (tick == 50) {
+                this.objectManager.openDoor()
                 console.log("open door" + tick);//TF sound
                 if (this.soundPlayer1 != null)
                     this.soundPlayer1.play();
             }
 
+
+
             /// run game logic
-            this.runGameLogic();
+            if (tick >50) 
+                this.runGameLogic();
+
             this.checkForGameOver();
             this.render();
         }

@@ -6,24 +6,28 @@ module Lemmings {
         public firstFrameIndex: number = 0;
         public isDone: boolean = false;
         private frameInc: number = 0;
+        private alreadyplayed:boolean=false;
         public reset() {
             this.frameInc = 0;
             this.isDone = false;
         }
         public reStart() {
             if (this.isDone == true) {
-                this.frameInc = 0;
+                this.frameInc =  this.firstFrameIndex;
                 this.isDone = false;
             }
         }
 
         public getLastFrame(): Frame {
-            return this.frames[0];
+            if(this.alreadyplayed==true)
+                return this.frames[0];
+            else
+                return this.frames[this.firstFrameIndex];
         }
         public getFrame(frameIndex:number):Frame {
             
             frameIndex = frameIndex + this.firstFrameIndex;
-
+            this.alreadyplayed=true;
             let frame = 0;
 
             if (this.isRepeat) {
@@ -31,8 +35,15 @@ module Lemmings {
             }
             else {
                 if (this.frameInc < this.frames.length) {
-                    frame = this.frameInc;
+                    
+                    frame = this.frameInc+this.firstFrameIndex;
+                    if(frame>=this.frames.length)
+                        frame=frame-this.frames.length;
+
+                    console.log("frame"+this.frameInc +","+this.firstFrameIndex+"="+frame);
                     this.frameInc++;
+
+
                 }
                 /*
                 if (frameIndex < this.frames.length) {

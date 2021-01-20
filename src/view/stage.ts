@@ -94,6 +94,35 @@ module Lemmings {
 
             this.controller.onMouseUp.on((e) => {
                 let stageImage = this.getStageImageAt(e.x, e.y);
+
+                if (stageImage == this.guiImgProps) {
+                    //console.log("draging in GUI:" + e.x + ", " + e.y);
+                    if ((e.x >= 410) && (e.x <= 630) && (e.y >= 350) && (e.y <= 480))// to be set dynamically
+                    {
+                       // this.updateViewPoint(this.gameImgProps, (0-e.deltaX)*16, 0, 0);
+                       let newposx=Math.round(((e.x-410 -20 )/(630-410))*1600);
+                       /*
+                       if(newposx<0)
+                            newposx=0;
+                        if(newposx>this.level.width)
+                            newposx=this.level.width;
+                            */
+                        this.gameImgProps.viewPoint.x=newposx;
+
+                        this.gameImgProps.viewPoint.x = this.limitValue(0, this.gameImgProps.viewPoint.x, this.gameImgProps.display.getWidth() - this.gameImgProps.width / this.gameImgProps.viewPoint.scale);
+
+                        console.log("Update game pos:" + e.x + "=> " + newposx+" - "+ this.gameImgProps.viewPoint.x);
+                        //this.updateViewPoint(this.gameImgProps, (0-e.deltaX)*16, 0, 0);
+                        //this.setGameViewPointPosition(newposx,0);
+                       
+                        if (this.guiImgProps.display!=null)
+                            this.guiImgProps.display.drawFrame(this.level.getGroundMaskLayer().getMiniMap(this.gameImgProps.viewPoint.x,this.level.width),209,18);
+                   
+                        this.redraw();
+                    }
+                    
+                }
+
                 if ((stageImage == null) || (stageImage.display == null)) return;
 
                 let pos = this.calcPosition2D(stageImage, e);
@@ -262,7 +291,7 @@ module Lemmings {
                         if ((e.x >= 410) && (e.x <= 630) && (e.y >= 350) && (e.y <= 480))// to be set dynamically
                         {
                             this.updateViewPoint(this.gameImgProps, (0-e.deltaX)*16, 0, 0);
-                            console.log("draging game:" + e.x + ", " + e.y);
+                            //console.log("draging game:" + e.x + ", " + e.y);
                         }
                         
                     }
@@ -421,12 +450,8 @@ module Lemmings {
                 };
     
             }
-        /*
-            public redrawSub() {
-                let gameImg = this.gameImgProps.display.getImageData();
-                this.draw(this.gameImgProps, gameImg);
-            }
-            */
+     
+        
         /** redraw everything */
         public redraw() {
             
@@ -441,12 +466,7 @@ module Lemmings {
                 let guiImg = this.guiImgProps.display.getImageData();
                 this.draw(this.guiImgProps, guiImg);
             };
-/*
-            if (this.FullPageProps.display != null) {
-                let FullPageImg = this.FullPageProps.display.getImageData();
-                this.draw(this.FullPageProps, FullPageImg);
-            };
-*/
+
         }
 
 

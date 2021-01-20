@@ -10,6 +10,14 @@ module Lemmings {
 
         }
 
+        public openDoor()
+        {
+            for (let i = 0; i < this.objects.length; i++) {
+                let obj = this.objects[i];
+                if(obj.id==1)//entrance
+                    obj.isTrigerred=true;
+            }
+        }
 
         /** render all Objects to the GameDisplay */
         public render(gameDisplay: DisplayImage) {
@@ -23,7 +31,7 @@ module Lemmings {
                     gameDisplay.drawFrameFlags(obj.animation.getFrame(tick), obj.x, obj.y, obj.drawProperties);
                 else {
                     if (obj.isTrigerred == true) {
-                        console.log("Istriggered=true:" + i)
+                        //console.log("Istriggered=true:" + i)
                         obj.animation.reStart();
                         gameDisplay.drawFrameFlags(obj.animation.getFrame(tick), obj.x, obj.y, obj.drawProperties);
                         if (obj.animation.isDone == true) {//prepare nest trigger action
