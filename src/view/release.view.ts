@@ -250,7 +250,7 @@ module Lemmings {
                     this.timeOutEvent = 0;
                     console.log("long touch timeout");
                     self.longtouch=true;
-                    this.Managemouse(e.touches[0].clientX, e.touches[0].clientY, 2);//left by default, to be managed (2==right click)
+                    self.Managemouse(e.touches[0].clientX, e.touches[0].clientY, 2);//left by default, to be managed (2==right click)
                 }, 500); //Long press 500 milliseconds
 
 
@@ -263,8 +263,9 @@ module Lemmings {
                 if (this.longtouch=== false) {
                     // double click event
                    // this.handleMouseDoubleClick(relativePos);
-                   this.Managemouse(e.touches[0].clientX, e.touches[0].clientY, 0);//left by default, to be managed (2==right click)
+                   this.Managemouse(e.changedTouches[0].pageX, e.changedTouches[0].pageY, 0);//left by default, to be managed (2==right click)
                 } 
+                this.longtouch=false;
                 clearTimeout(this.timeOutEvent);
                 this.timeOutEvent = 0;
                 e.stopPropagation();

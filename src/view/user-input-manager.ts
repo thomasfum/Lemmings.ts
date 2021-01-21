@@ -77,10 +77,10 @@ module Lemmings {
                 // Long press event trigger
                 var self = this;
                 this.timeOutEvent = setTimeout(function() {
-                    this.timeOutEvent = 0;
+                    self.timeOutEvent = 0;
                     console.log("long touch timeout");
                     self.longtouch=true;
-                    this.handleMouseDoubleClick(relativePos);//here
+                    self.handleMouseDoubleClick(relativePos);//here
                 }, 500); //Long press 500 milliseconds
                 e.stopPropagation();
                 e.preventDefault();
