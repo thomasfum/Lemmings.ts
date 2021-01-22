@@ -14,15 +14,7 @@ module Lemmings {
             private triggerManager: TriggerManager,
             private Resources: GameResources) {
             console.log("init sound: " + Resources.soundEnable);
-            if (Resources.soundEnable == true) {
-                Resources.getSoundPlayer(3)//TF sound
-                    .then((player) => {
-                        this.soundPlayer3 = player;
-                    });
-            }
-            else
-                this.soundPlayer3 = null;
-           
+            this.soundPlayer3 = Resources.getSoundPlayerNew(3);//TF sound
         }
 
         //C EST LA
@@ -36,7 +28,6 @@ module Lemmings {
                 //console.log(e.x +" "+ e.y);
                 let lem = this.lemmingManager.getLemmingAt(e.x, e.y);
                 if (!lem) return;
-                //TF sound
                 if (this.soundPlayer3!=null)
                     this.soundPlayer3.play();
                 

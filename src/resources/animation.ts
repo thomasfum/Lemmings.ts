@@ -39,8 +39,7 @@ module Lemmings {
                     frame = this.frameInc+this.firstFrameIndex;
                     if(frame>=this.frames.length)
                         frame=frame-this.frames.length;
-
-                    console.log("frame"+this.frameInc +","+this.firstFrameIndex+"="+frame);
+                    //console.log("frame "+this.frameInc +","+this.firstFrameIndex+"="+frame);
                     this.frameInc++;
 
 

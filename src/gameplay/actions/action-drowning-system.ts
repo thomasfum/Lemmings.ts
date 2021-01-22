@@ -8,16 +8,8 @@ module Lemmings {
 
         constructor(sprites: LemmingsSprite, Resources: GameResources) {
             this.sprite = sprites.getAnimation(SpriteTypes.DROWNING, false);
-
-            if (Resources.soundEnable == true) {
-                Resources.getSoundPlayer(16)//TF sound
-                    .then((player) => {
-                        this.soundPlayer = player;
-                    });
-            }
-            else
-                this.soundPlayer = null;
-
+            this.soundPlayer=Resources.getSoundPlayerNew(16);//TF sound
+         
         }
 
         public getActionName(): string {
@@ -44,7 +36,6 @@ module Lemmings {
 
 
             if (lem.frameIndex == 0) {
-                //TF sound
                 if (this.soundPlayer != null)
                     this.soundPlayer.play();
             }

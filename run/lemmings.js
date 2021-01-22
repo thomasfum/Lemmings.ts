@@ -55,6 +55,7 @@ var Lemmings;
             this.config = config;
             this.mainDat = null;
             this.soundEnable = false;
+            this.soundPlayerArray = [];
         }
         /** free resources */
         dispose() {
@@ -85,6 +86,7 @@ var Lemmings;
                 });
             });
         }
+        //pagesSprites
         getPagesSprite(colorPalette, nbGroup) {
             return new Promise((resolve, reject) => {
                 this.getMainDat().then(container => {
@@ -159,13 +161,37 @@ var Lemmings;
                 this.soundPlayer = null;
             }
         }
+        /** save all sound effects */
+        getAllSounds(nbSound) {
+            this.initSoundImage().then(soundImage => {
+                for (let i = 0; i < nbSound; i++) {
+                    /// get track
+                    var adlibSrc = soundImage.getSoundTrack(i);
+                    this.soundPlayerArray[i] = new Lemmings.AudioPlayer(adlibSrc, Lemmings.OplEmulatorType.Dosbox, true);
+                }
+            });
+        }
+        soundPlay(soundIndex, offeset = 0) {
+            if (this.soundEnable == true) {
+                if (this.soundPlayerArray[soundIndex] != undefined)
+                    if (this.soundPlayerArray[soundIndex] != null)
+                        this.soundPlayerArray[soundIndex].play(offeset);
+            }
+        }
         /** return a palyer to playback a sound effect */
-        getSoundPlayer(sondIndex) {
+        getSoundPlayerNew(soundIndex) {
+            if (this.soundEnable == true)
+                return this.soundPlayerArray[soundIndex];
+            else
+                return null;
+        }
+        /** return a palyer to playback a sound effect */
+        getSoundPlayer(soundIndex) {
             this.stopSound();
             return new Promise((resolve, reject) => {
                 this.initSoundImage().then(soundImage => {
                     /// get track
-                    var adlibSrc = soundImage.getSoundTrack(sondIndex);
+                    var adlibSrc = soundImage.getSoundTrack(soundIndex);
                     /// play
                     this.soundPlayer = new Lemmings.AudioPlayer(adlibSrc, Lemmings.OplEmulatorType.Dosbox, true);
                     /// return
@@ -266,6 +292,7 @@ var Lemmings;
                 this.gameResources.soundEnable = true;
             else
                 this.gameResources.soundEnable = false;
+            this.gameResources.getAllSounds(18);
             //console.log("this.MusicLevel=" + this.gameResources.soundEnable);
             return new Promise((resolve, reject) => {
                 this.gameResources.getLevel(this.levelGroupIndex, this.levelIndex)
@@ -294,22 +321,8 @@ var Lemmings;
                     return this.gameResources.getSkillPanelSprite(this.level.colorPalette);
                 })
                     .then(skillPanelSprites => {
-                    if (this.gameResources.soundEnable == true) {
-                        this.gameResources.getSoundPlayer(1) //TF sound
-                            .then((player) => {
-                            this.soundPlayer1 = player;
-                        });
-                    }
-                    else
-                        this.soundPlayer1 = null;
-                    if (this.gameResources.soundEnable == true) {
-                        this.gameResources.getSoundPlayer(2) //TF sound
-                            .then((player) => {
-                            this.soundPlayer2 = player;
-                        });
-                    }
-                    else
-                        this.soundPlayer2 = null;
+                    this.soundPlayer1 = this.gameResources.getSoundPlayerNew(1); //TF sound
+                    this.soundPlayer2 = this.gameResources.getSoundPlayerNew(2); //TF sound
                     /// setup gui
                     this.gameGui = new Lemmings.GameGui(this, skillPanelSprites, this.skills, this.gameTimer, this.gameVictoryCondition, this.level, this.gameResources);
                     if (this.guiDispaly != null) {
@@ -368,13 +381,11 @@ var Lemmings;
         onGameTimerTick() {
             let tick = this.gameTimer.getGameTicks();
             if (tick == 1) {
-                console.log("strat sound" + tick); //TF sound
                 if (this.soundPlayer2 != null)
                     this.soundPlayer2.play();
             }
             if (tick == 50) {
                 this.objectManager.openDoor();
-                console.log("open door" + tick); //TF sound
                 if (this.soundPlayer1 != null)
                     this.soundPlayer1.play();
             }
@@ -875,7 +886,7 @@ var Lemmings;
             if (lem.isRemoved() || (lem.isDisabled())) {
                 return Lemmings.LemmingStateType.NO_STATE_TYPE;
             }
-            let triggerType = this.triggerManager.trigger(lem.x, lem.y);
+            let triggerType = this.triggerManager.trigger(lem.x, lem.y, this.Resources);
             if (triggerType != Lemmings.TriggerTypes.NO_TRIGGER)
                 this.logging.log("trigger type: " + triggerType);
             switch (triggerType) {
@@ -1428,11 +1439,11 @@ var Lemmings;
             }
         }
         /** test all triggers. Returns the triggered type that matches */
-        trigger(x, y) {
+        trigger(x, y, ressources) {
             let l = this.triggers.length;
             let tick = this.gameTimer.getGameTicks();
             for (var i = 0; i < l; i++) {
-                let type = this.triggers[i].trigger(x, y, tick);
+                let type = this.triggers[i].trigger(x, y, tick, ressources);
                 if (type != Lemmings.TriggerTypes.NO_TRIGGER)
                     return type;
             }
@@ -1465,12 +1476,15 @@ var Lemmings;
             this.disableTicksCount = disableTicksCount;
             this.soundIndex = soundIndex;
         }
-        trigger(x, y, tick) {
+        trigger(x, y, tick, ressources) {
             if (this.disabledUntilTick <= tick) {
                 if ((x >= this.x1) && (y >= this.y1) && (x <= this.x2) && (y <= this.y2)) {
                     this.disabledUntilTick = tick + this.disableTicksCount;
-                    //TF Sound:
                     console.log("Sound from trigger:" + this.soundIndex);
+                    if (this.soundIndex == 9) {
+                        ressources.soundPlay(10); //TF Sound:
+                        ressources.soundPlay(14, 2); //TF Sound:
+                    }
                     if (this.obj != null) {
                         this.obj.isTrigerred = true;
                         console.log("Object from trigger:" + this.obj.isTrigerred);
@@ -1608,14 +1622,7 @@ var Lemmings;
             this.soundPlayer = null;
             this.sprite.push(sprites.getAnimation(Lemmings.SpriteTypes.BUILDING, false));
             this.sprite.push(sprites.getAnimation(Lemmings.SpriteTypes.BUILDING, true));
-            if (Resources.soundEnable == true) {
-                Resources.getSoundPlayer(17) //TF sound
-                    .then((player) => {
-                    this.soundPlayer = player;
-                });
-            }
-            else
-                this.soundPlayer = null;
+            this.soundPlayer = Resources.getSoundPlayerNew(17); //TF sound
         }
         getActionName() {
             return "building";
@@ -1654,7 +1661,6 @@ var Lemmings;
                     }
                 }
                 lem.state++;
-                //TF sound
                 if ((lem.state >= 10) && (lem.state <= 12)) {
                     if (this.soundPlayer != null)
                         this.soundPlayer.play();
@@ -1822,14 +1828,7 @@ var Lemmings;
         constructor(sprites, Resources) {
             this.soundPlayer = null;
             this.sprite = sprites.getAnimation(Lemmings.SpriteTypes.DROWNING, false);
-            if (Resources.soundEnable == true) {
-                Resources.getSoundPlayer(16) //TF sound
-                    .then((player) => {
-                    this.soundPlayer = player;
-                });
-            }
-            else
-                this.soundPlayer = null;
+            this.soundPlayer = Resources.getSoundPlayerNew(16); //TF sound
         }
         getActionName() {
             return "drowning";
@@ -1847,7 +1846,6 @@ var Lemmings;
         process(level, lem) {
             lem.disable();
             if (lem.frameIndex == 0) {
-                //TF sound
                 if (this.soundPlayer != null)
                     this.soundPlayer.play();
             }
@@ -1873,14 +1871,7 @@ var Lemmings;
             this.gameVictoryCondition = gameVictoryCondition;
             this.soundPlayer = null;
             this.sprite = sprites.getAnimation(Lemmings.SpriteTypes.EXITING, false);
-            if (Resources.soundEnable == true) {
-                Resources.getSoundPlayer(15) //TF sound
-                    .then((player) => {
-                    this.soundPlayer = player;
-                });
-            }
-            else
-                this.soundPlayer = null;
+            this.soundPlayer = Resources.getSoundPlayerNew(15); //TF sound
         }
         getActionName() {
             return "exiting";
@@ -1898,7 +1889,6 @@ var Lemmings;
         process(level, lem) {
             lem.disable();
             lem.frameIndex++;
-            //TF sound
             if (lem.frameIndex == 1) {
                 if (this.soundPlayer != null)
                     this.soundPlayer.play();
@@ -1922,22 +1912,8 @@ var Lemmings;
             this.soundPlayer11 = null;
             this.mask = masks.GetMask(Lemmings.MaskTypes.EXPLODING);
             this.sprite = sprites.getAnimation(Lemmings.SpriteTypes.EXPLODING, false);
-            if (Resources.soundEnable == true) {
-                Resources.getSoundPlayer(4) //TF sound
-                    .then((player) => {
-                    this.soundPlayer4 = player;
-                });
-            }
-            else
-                this.soundPlayer4 = null;
-            if (Resources.soundEnable == true) {
-                Resources.getSoundPlayer(11) //TF sound
-                    .then((player) => {
-                    this.soundPlayer11 = player;
-                });
-            }
-            else
-                this.soundPlayer11 = null;
+            this.soundPlayer4 = Resources.getSoundPlayerNew(4); //TF sound
+            this.soundPlayer11 = Resources.getSoundPlayerNew(11); //TF sound
         }
         getActionName() {
             return "exploding";
@@ -1964,12 +1940,10 @@ var Lemmings;
             if (lem.frameIndex == 1) {
                 this.triggerManager.removeByOwner(lem);
                 level.clearGroundWithMask(this.mask.GetMask(0), lem.x, lem.y);
-                //TF sound
                 if (this.soundPlayer4 != null)
                     this.soundPlayer4.play();
             }
             if (lem.frameIndex == 10) {
-                //TF sound
                 if (this.soundPlayer11 != null)
                     this.soundPlayer11.play();
             }
@@ -2284,14 +2258,7 @@ var Lemmings;
         constructor(sprites, Resources) {
             this.soundPlayer = null;
             this.sprite = sprites.getAnimation(Lemmings.SpriteTypes.SPLATTING, false);
-            if (Resources.soundEnable == true) {
-                Resources.getSoundPlayer(14) //TF sound
-                    .then((player) => {
-                    this.soundPlayer = player;
-                });
-            }
-            else
-                this.soundPlayer = null;
+            this.soundPlayer = Resources.getSoundPlayerNew(14); //TF sound
         }
         getActionName() {
             return "splatter";
@@ -2309,7 +2276,6 @@ var Lemmings;
         process(level, lem) {
             lem.disable();
             if (lem.frameIndex == 0) {
-                //TF sound
                 if (this.soundPlayer != null)
                     this.soundPlayer.play();
             }
@@ -2688,7 +2654,7 @@ var Lemmings;
                     frame = this.frameInc + this.firstFrameIndex;
                     if (frame >= this.frames.length)
                         frame = frame - this.frames.length;
-                    console.log("frame" + this.frameInc + "," + this.firstFrameIndex + "=" + frame);
+                    //console.log("frame "+this.frameInc +","+this.firstFrameIndex+"="+frame);
                     this.frameInc++;
                 }
                 /*
@@ -5148,8 +5114,8 @@ var Lemmings;
                 let time = null;
                 let input;
                 let output;
-                input = new AudioBuffer({ length: 8192 * 3, numberOfChannels: 2, sampleRate: this.audioCtx.sampleRate });
-                output = new AudioBuffer({ length: 8192 * 3, numberOfChannels: 2, sampleRate: this.audioCtx.sampleRate });
+                input = new AudioBuffer({ length: 8192 * 5, numberOfChannels: 2, sampleRate: this.audioCtx.sampleRate });
+                output = new AudioBuffer({ length: 8192 * 5, numberOfChannels: 2, sampleRate: this.audioCtx.sampleRate });
                 a = new AudioProcessingEvent('proc', {
                     inputBuffer: input,
                     outputBuffer: output,
@@ -5179,7 +5145,7 @@ var Lemmings;
             }
         }
         /** Start playback of the song/sound */
-        play() {
+        play(offeset = 0) {
             if (this.isSound == false) { //music
                 this.audioCtx.resume();
                 this.isPlaying = true;
@@ -5189,7 +5155,7 @@ var Lemmings;
                 let source1 = this.audioCtx.createBufferSource();
                 source1.buffer = this.SoundBuffer;
                 source1.connect(this.audioCtx.destination);
-                source1.start(0);
+                source1.start(offeset);
             }
         }
         audioScriptProcessor(e) {
@@ -9726,14 +9692,7 @@ var Lemmings;
             this.stage = null;
             this.soundPlayer3 = null;
             console.log("init sound: " + Resources.soundEnable);
-            if (Resources.soundEnable == true) {
-                Resources.getSoundPlayer(3) //TF sound
-                    .then((player) => {
-                    this.soundPlayer3 = player;
-                });
-            }
-            else
-                this.soundPlayer3 = null;
+            this.soundPlayer3 = Resources.getSoundPlayerNew(3); //TF sound
         }
         //C EST LA
         setGuiDisplay(dispaly, stage) {
@@ -9746,7 +9705,6 @@ var Lemmings;
                 let lem = this.lemmingManager.getLemmingAt(e.x, e.y);
                 if (!lem)
                     return;
-                //TF sound
                 if (this.soundPlayer3 != null)
                     this.soundPlayer3.play();
                 this.game.queueCmmand(new Lemmings.CommandLemmingsAction(lem.id));
@@ -9793,15 +9751,7 @@ var Lemmings;
             this.deltaReleaseRate = 0;
             this.soundPlayer0 = null;
             this.stage = null;
-            if (Resources.soundEnable == true) {
-                Resources.getSoundPlayer(0) //TF sound
-                    .then((player) => {
-                    this.soundPlayer0 = player;
-                });
-            }
-            else {
-                this.soundPlayer0 = null;
-            }
+            this.soundPlayer0 = Resources.getSoundPlayerNew(0); //TF sound
             gameTimer.onGameTick.on(() => {
                 this.gameTimeChanged = true;
                 this.doReleaseRateChanges();
@@ -10653,13 +10603,8 @@ var Lemmings;
                             game.setGameDispaly(this.stage.getGameDisplay(), this.stage);
                             game.setGuiDisplay(this.stage.getGuiDisplay(), this.stage);
                             game.getGameTimer().speedFactor = this.gameSpeedFactor;
-                            //                                    game.start();
                             game.onGameEnd.on((state) => this.onGameEnd(state));
                             this.game = game;
-                            //FullPage.clear();
-                            //this.stage.redrawSub();
-                            //let map = new DisplayImage(this.stage);
-                            //console.log(map);
                             this.game.renderSub(null);
                             level.RenderStart(FullPage, this.gameState, pagspr, 0, this.stage.getGameDisplay());
                             this.stage.redrawFullpage();

@@ -8,17 +8,8 @@ module Lemmings {
 
         constructor(sprites: LemmingsSprite, private gameVictoryCondition: GameVictoryCondition, Resources: GameResources) {
             this.sprite = sprites.getAnimation(SpriteTypes.EXITING, false);
-
-            if (Resources.soundEnable == true) {
-                Resources.getSoundPlayer(15)//TF sound
-                    .then((player) => {
-                        this.soundPlayer = player;
-                    });
+            this.soundPlayer = Resources.getSoundPlayerNew(15);//TF sound
             }
-            else
-                this.soundPlayer = null;
-
-        }
 
         public getActionName(): string {
             return "exiting";
@@ -44,8 +35,6 @@ module Lemmings {
             
             lem.frameIndex++;
 
-
-            //TF sound
             if (lem.frameIndex == 1) {
                 if (this.soundPlayer != null)
                     this.soundPlayer.play();

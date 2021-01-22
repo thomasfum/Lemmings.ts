@@ -721,7 +721,6 @@ module Lemmings {
                 this.game.stop();
                 this.game = null;
             }
-          
             this.gameResources.getLevel(this.levelGroupIndex, this.levelIndex)
                 .then((level) => {
                     if (level == null) return;
@@ -742,44 +741,21 @@ module Lemmings {
                             this.stage.redrawFullpage();
                             this.stage.resetFade();
 
-
                             /// create new game
                             this.gameFactory.getGame(this.gameID)
                                 .then(game => game.loadLevel(this.levelGroupIndex, this.levelIndex, this.MusicLevel))
                                 .then(game => {
-
-
                                     game.setGameDispaly(this.stage.getGameDisplay(), this.stage);
                                     game.setGuiDisplay(this.stage.getGuiDisplay(), this.stage);
-
                                     game.getGameTimer().speedFactor = this.gameSpeedFactor;
-
-//                                    game.start();
                                     game.onGameEnd.on((state) => this.onGameEnd(state));
-
                                     this.game = game;
-
-                          
-
-                                    //FullPage.clear();
-
-                                    //this.stage.redrawSub();
-                                    //let map = new DisplayImage(this.stage);
-                                    //console.log(map);
                                     this.game.renderSub(null);
                                     level.RenderStart(FullPage, this.gameState, pagspr, 0, this.stage.getGameDisplay());
-                                    
-
-
                                     this.stage.redrawFullpage();
                                 });
-
-
-
-                            
-                   
+                                
                         }
-
                     });
                     window.location.hash = this.buildLevelIndexHash();
                     console.dir(level);

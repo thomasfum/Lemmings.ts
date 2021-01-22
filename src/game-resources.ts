@@ -10,6 +10,7 @@ module Lemmings {
         private soundImage: Promise<SoundImageManager>;
         private mainDat: Promise<FileContainer> = null;
         public soundEnable = false;
+        private soundPlayerArray: AudioPlayer[] = [];
 
         constructor(private fileProvider: FileProvider, private config: GameConfig) {
 
@@ -57,7 +58,7 @@ module Lemmings {
         }
 
 
-        pagesSprites
+        //pagesSprites
 
         public getPagesSprite(colorPalette:ColorPalette, nbGroup:number): Promise<pagesSprites> {
             return new Promise<pagesSprites>((resolve, reject) => {
@@ -163,8 +164,35 @@ module Lemmings {
             }
         }
 
+
+        /** save all sound effects */
+        public getAllSounds(nbSound: number) {
+                this.initSoundImage().then(soundImage => {
+                    for (let i = 0; i < nbSound; i++) {
+                        /// get track
+                        var adlibSrc: SoundImagePlayer = soundImage.getSoundTrack(i);
+                        this.soundPlayerArray[i]= new AudioPlayer(adlibSrc, OplEmulatorType.Dosbox, true);
+                    }
+         });
+        }
+
+
+        public soundPlay(soundIndex: number, offeset: number = 0) {
+            if (this.soundEnable == true) {
+                if (this.soundPlayerArray[soundIndex] != undefined)
+                    if (this.soundPlayerArray[soundIndex] != null)
+                        this.soundPlayerArray[soundIndex].play(offeset);
+            }
+        }
         /** return a palyer to playback a sound effect */
-        public getSoundPlayer(sondIndex: number) {
+        public getSoundPlayerNew(soundIndex: number) {
+            if (this.soundEnable == true)
+                return this.soundPlayerArray[soundIndex];
+            else
+                return null;
+        }
+        /** return a palyer to playback a sound effect */
+        public getSoundPlayer(soundIndex: number) {
 
             this.stopSound();
 
@@ -173,7 +201,7 @@ module Lemmings {
                 this.initSoundImage().then(soundImage => {
 
                     /// get track
-                    var adlibSrc: SoundImagePlayer = soundImage.getSoundTrack(sondIndex);
+                    var adlibSrc: SoundImagePlayer = soundImage.getSoundTrack(soundIndex);
 
                     /// play
                     this.soundPlayer = new AudioPlayer(adlibSrc, OplEmulatorType.Dosbox,true);

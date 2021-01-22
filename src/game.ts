@@ -63,6 +63,9 @@ module Lemmings {
                 this.gameResources.soundEnable = true;
             else
                 this.gameResources.soundEnable = false;
+
+            this.gameResources.getAllSounds(18);
+
             //console.log("this.MusicLevel=" + this.gameResources.soundEnable);
 
             return new Promise<Game>((resolve, reject) => {
@@ -107,26 +110,9 @@ module Lemmings {
                     })
                     .then(skillPanelSprites => {
 
-
-                        if (this.gameResources.soundEnable == true) {
-                            this.gameResources.getSoundPlayer(1)//TF sound
-                                .then((player) => {
-                                    this.soundPlayer1 = player;
-                                });
-                        }
-                        else
-                            this.soundPlayer1 = null;
-
-
-                        if (this.gameResources.soundEnable == true) {
-                            this.gameResources.getSoundPlayer(2)//TF sound
-                                .then((player) => {
-                                    this.soundPlayer2 = player;
-                                });
-                        }
-                        else
-                            this.soundPlayer2 = null;
-
+                        this.soundPlayer1 = this.gameResources.getSoundPlayerNew(1);//TF sound
+                        this.soundPlayer2 = this.gameResources.getSoundPlayerNew(2);//TF sound
+                        
                         /// setup gui
                         this.gameGui = new GameGui(this, skillPanelSprites, this.skills, this.gameTimer, this.gameVictoryCondition,this.level, this.gameResources);
 
@@ -207,7 +193,6 @@ module Lemmings {
             let tick = this.gameTimer.getGameTicks();
             
             if (tick == 1) {
-                console.log("strat sound" + tick);//TF sound
                 if (this.soundPlayer2 != null)
                     this.soundPlayer2.play();
             }
@@ -215,7 +200,6 @@ module Lemmings {
 
             if (tick == 50) {
                 this.objectManager.openDoor()
-                console.log("open door" + tick);//TF sound
                 if (this.soundPlayer1 != null)
                     this.soundPlayer1.play();
             }

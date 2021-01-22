@@ -21,17 +21,9 @@ module Lemmings {
             private gameVictoryCondition: GameVictoryCondition,
             private level: Level,
             private Resources:GameResources ) {
-            if (Resources.soundEnable == true) {
-                Resources.getSoundPlayer(0)//TF sound
-                    .then((player) => {
-                        this.soundPlayer0 = player;
-                    });
-            }
-            else {
-
-                this.soundPlayer0 = null;
-            }
-
+            
+            this.soundPlayer0 = Resources.getSoundPlayerNew(0);//TF sound
+            
             gameTimer.onGameTick.on(() => {
                 this.gameTimeChanged = true;
                 this.doReleaseRateChanges();

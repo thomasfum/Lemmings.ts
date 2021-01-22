@@ -11,26 +11,8 @@ module Lemmings {
         constructor(sprites: LemmingsSprite, masks: MaskProvider, private triggerManager: TriggerManager, private particleTable: ParticleTable, Resources: GameResources) {
             this.mask = masks.GetMask(MaskTypes.EXPLODING);
             this.sprite = sprites.getAnimation(SpriteTypes.EXPLODING, false);
-
-
-            if (Resources.soundEnable == true) {
-                Resources.getSoundPlayer(4)//TF sound
-                    .then((player) => {
-                        this.soundPlayer4 = player;
-                    });
-            }
-            else
-                this.soundPlayer4 = null;
-
-            if (Resources.soundEnable == true) {
-                Resources.getSoundPlayer(11)//TF sound
-                    .then((player) => {
-                        this.soundPlayer11 = player;
-                    });
-            }
-            else
-                this.soundPlayer11 = null;
-
+            this.soundPlayer4 = Resources.getSoundPlayerNew(4);//TF sound
+            this.soundPlayer11 = Resources.getSoundPlayerNew(11);//TF sound
         }
 
         public getActionName(): string {
@@ -68,15 +50,12 @@ module Lemmings {
                 this.triggerManager.removeByOwner(lem);
 
                 level.clearGroundWithMask(this.mask.GetMask(0), lem.x, lem.y);
-                                            
-                //TF sound
                 if (this.soundPlayer4 != null)
                     this.soundPlayer4.play();
               
             }
 
             if (lem.frameIndex == 10) {
-                //TF sound
                 if (this.soundPlayer11 != null)
                     this.soundPlayer11.play();
             }

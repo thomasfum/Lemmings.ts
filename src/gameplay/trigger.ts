@@ -28,12 +28,17 @@ module Lemmings {
         }
 
 
-        public trigger(x: number, y: number, tick: number): TriggerTypes {
+        public trigger(x: number, y: number, tick: number, ressources: GameResources): TriggerTypes {
             if (this.disabledUntilTick <= tick) {
                 if ((x >= this.x1) && (y >= this.y1) && (x <= this.x2) && (y <= this.y2)) {
                     this.disabledUntilTick = tick + this.disableTicksCount;
-                    //TF Sound:
-                    console.log("Sound from trigger:"+this.soundIndex);
+                    
+                    console.log("Sound from trigger:" + this.soundIndex);
+                    if (this.soundIndex == 9) {
+                        ressources.soundPlay(10);//TF Sound:
+                        ressources.soundPlay(14,2);//TF Sound:
+
+                    }
                     if(this.obj!=null)
                     {
                         this.obj.isTrigerred=true;

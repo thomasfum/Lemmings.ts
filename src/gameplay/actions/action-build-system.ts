@@ -9,16 +9,8 @@ module Lemmings {
 
             this.sprite.push(sprites.getAnimation(SpriteTypes.BUILDING, false));
             this.sprite.push(sprites.getAnimation(SpriteTypes.BUILDING, true));
-
-            if (Resources.soundEnable == true) {
-                Resources.getSoundPlayer(17)//TF sound
-                    .then((player) => {
-                        this.soundPlayer = player;
-                    });
-            }
-            else
-                this.soundPlayer = null;
-
+            this.soundPlayer = Resources.getSoundPlayerNew(17);//TF sound
+            
         }
 
         public getActionName(): string {
@@ -75,7 +67,6 @@ module Lemmings {
                 }
 
                 lem.state++;
-                //TF sound
                 if ((lem.state >= 10)&& (lem.state <=12)) {
                     if (this.soundPlayer != null)
                         this.soundPlayer.play();
