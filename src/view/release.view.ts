@@ -787,5 +787,35 @@ soundsystem
 
 remove sound-system.ts et le repertoir Sounds
 
+Lem fun 08  !!!!!!! pas de porte
+Lem fun 09 tueur (son et animation )
+Lem fun 11 blockeur left
+Lem fun 18 flamme (son et animation )
+
+
+Lem trick 04 blockeur left
+Lem Trick 06 grillé (son et animation )
+Lem Trick 09 blockeur right
+
+Lem Taxing 02 2 disserentes traps (son et animation )
+Len Mayen 16 tueur (idem fun 9)
+
+Oh No crazy 7 HRC (son et animation )
+Oh No crazy 8 palnte bouffeuse et noyade (son et animation )
+Oh No wild 14 jet de gaz (son et animation )
+Oh No wild 15 marteau pilon (son et animation )
+Oh No wicked 1 HRC + marteau pilon (son et animation )
+Oh No wicked 11 cameleon (son et animation )
+Oh No havoc 10 aspiration (son et animation )
+Oh No havoc 17 cameleon (son et animation )
+93 Bliard 3 disserente sortie, a voir avec l'original
+93 Bliard 14 porte cachee, a voir  avec l'original
+
+
+
+
+
+
+
 
 */
