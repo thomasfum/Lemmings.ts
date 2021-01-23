@@ -135,8 +135,14 @@ module Lemmings {
             if (lem.isRemoved() || (lem.isDisabled())) {
                 return LemmingStateType.NO_STATE_TYPE;
             }
+            let offset=0;
 
-            let triggerType = this.triggerManager.trigger(lem.x, lem.y, this.Resources);
+            //console.log("bashing:"+lem.action.GetLemState());
+            if(lem.action.GetLemState()==LemmingStateType.BASHING)
+            {
+                offset=8;//test upper for basher
+            }
+            let triggerType = this.triggerManager.trigger(lem.x, lem.y-offset, this.Resources);
             if (triggerType!=TriggerTypes.NO_TRIGGER)
                 this.logging.log("trigger type: " + triggerType);
             switch (triggerType) {
@@ -157,6 +163,51 @@ module Lemmings {
                 case TriggerTypes.BLOCKER_RIGHT:
                     if (!lem.lookRight) lem.lookRight = true;
                     return LemmingStateType.NO_STATE_TYPE;
+                case TriggerTypes.ONWAY_LEFT:
+                    //console.log("ONWAY_LEFT:"+lem.lookRight);
+                    if(lem.lookRight==false)
+                        return LemmingStateType.NO_STATE_TYPE;
+                    //console.log("ONWAY_LEFT: going right"+lem.action.GetLemState());
+                    if(lem.action.GetLemState()==LemmingStateType.BASHING)
+                    {
+                        //console.log("ONWAY_LEFT:Bashing: GO BACK");
+                        lem.toogleDirection();
+                        return LemmingStateType.WALKING;
+                    }   
+                    else
+                        return LemmingStateType.NO_STATE_TYPE;
+                case TriggerTypes.ONWAY_RIGHT:
+                    //console.log("ONWAY_Right:"+lem.lookRight);
+                    if(lem.lookRight==true)
+                        return LemmingStateType.NO_STATE_TYPE;
+                    //console.log("ONWAY_Right: going left:"+lem.action.GetLemState());
+                    if(lem.action.GetLemState()==LemmingStateType.BASHING)
+                    {
+                        //console.log("ONWAY_Right:Bashing: GO BACK");
+                        lem.toogleDirection();
+                        return LemmingStateType.WALKING;
+                    }   
+                    else
+                        return LemmingStateType.NO_STATE_TYPE;
+
+                 
+/*
+        NO_TRIGGER = 0, =>OK
+        EXIT_LEVEL = 1, =>OK
+        UNKNOWN_2 = 2,
+        UNKNOWN_3 = 3,
+        TRAP = 4,       =>OK
+        DROWN = 5,      =>OK
+        KILL = 6,       =>OK
+        ONWAY_LEFT = 7, =>OK
+        ONWAY_RIGHT = 8,=>OK
+        STEEL = 9,
+
+        BLOCKER_LEFT,   =>OK
+        BLOCKER_RIGHT,  =>OK
+    }
+*/
+
                 default:
                     this.logging.log("unknown trigger type: " + triggerType);
                     return LemmingStateType.NO_STATE_TYPE;

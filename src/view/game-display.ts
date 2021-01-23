@@ -13,7 +13,6 @@ module Lemmings {
             private objectManager: ObjectManager,
             private triggerManager: TriggerManager,
             private Resources: GameResources) {
-            console.log("init sound: " + Resources.soundEnable);
             this.soundPlayer3 = Resources.getSoundPlayerNew(3);//TF sound
         }
 

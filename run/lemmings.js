@@ -886,7 +886,12 @@ var Lemmings;
             if (lem.isRemoved() || (lem.isDisabled())) {
                 return Lemmings.LemmingStateType.NO_STATE_TYPE;
             }
-            let triggerType = this.triggerManager.trigger(lem.x, lem.y, this.Resources);
+            let offset = 0;
+            //console.log("bashing:"+lem.action.GetLemState());
+            if (lem.action.GetLemState() == Lemmings.LemmingStateType.BASHING) {
+                offset = 8; //test upper for basher
+            }
+            let triggerType = this.triggerManager.trigger(lem.x, lem.y - offset, this.Resources);
             if (triggerType != Lemmings.TriggerTypes.NO_TRIGGER)
                 this.logging.log("trigger type: " + triggerType);
             switch (triggerType) {
@@ -909,6 +914,46 @@ var Lemmings;
                     if (!lem.lookRight)
                         lem.lookRight = true;
                     return Lemmings.LemmingStateType.NO_STATE_TYPE;
+                case Lemmings.TriggerTypes.ONWAY_LEFT:
+                    //console.log("ONWAY_LEFT:"+lem.lookRight);
+                    if (lem.lookRight == false)
+                        return Lemmings.LemmingStateType.NO_STATE_TYPE;
+                    //console.log("ONWAY_LEFT: going right"+lem.action.GetLemState());
+                    if (lem.action.GetLemState() == Lemmings.LemmingStateType.BASHING) {
+                        //console.log("ONWAY_LEFT:Bashing: GO BACK");
+                        lem.toogleDirection();
+                        return Lemmings.LemmingStateType.WALKING;
+                    }
+                    else
+                        return Lemmings.LemmingStateType.NO_STATE_TYPE;
+                case Lemmings.TriggerTypes.ONWAY_RIGHT:
+                    //console.log("ONWAY_Right:"+lem.lookRight);
+                    if (lem.lookRight == true)
+                        return Lemmings.LemmingStateType.NO_STATE_TYPE;
+                    //console.log("ONWAY_Right: going left:"+lem.action.GetLemState());
+                    if (lem.action.GetLemState() == Lemmings.LemmingStateType.BASHING) {
+                        //console.log("ONWAY_Right:Bashing: GO BACK");
+                        lem.toogleDirection();
+                        return Lemmings.LemmingStateType.WALKING;
+                    }
+                    else
+                        return Lemmings.LemmingStateType.NO_STATE_TYPE;
+                /*
+                        NO_TRIGGER = 0, =>OK
+                        EXIT_LEVEL = 1, =>OK
+                        UNKNOWN_2 = 2,
+                        UNKNOWN_3 = 3,
+                        TRAP = 4,       =>OK
+                        DROWN = 5,      =>OK
+                        KILL = 6,       =>OK
+                        ONWAY_LEFT = 7, =>OK
+                        ONWAY_RIGHT = 8,=>OK
+                        STEEL = 9,
+                
+                        BLOCKER_LEFT,   =>OK
+                        BLOCKER_RIGHT,  =>OK
+                    }
+                */
                 default:
                     this.logging.log("unknown trigger type: " + triggerType);
                     return Lemmings.LemmingStateType.NO_STATE_TYPE;
@@ -1020,6 +1065,12 @@ var Lemmings;
             this.y = y;
             this.id = id;
         }
+        toogleDirection() {
+            if (this.lookRight == true)
+                this.lookRight = false;
+            else
+                this.lookRight = true;
+        }
         /** return the number shown as countdown */
         getCountDownTime() {
             return (8 - (this.countdown >> 4));
@@ -1048,7 +1099,7 @@ var Lemmings;
                     return "FLOATER";
                 case Lemmings.LemmingStateType.MINEING: ////digg in diagonal
                     return "MINER";
-                case Lemmings.LemmingStateType.BASHING: //cdigg horizontally
+                case Lemmings.LemmingStateType.BASHING: //digg horizontally
                     return "BASHER";
                 case Lemmings.LemmingStateType.CLIMBING:
                     return "CLIMBER";
@@ -1631,6 +1682,9 @@ var Lemmings;
             return Lemmings.LemmingStateType.BUILDING;
         }
         triggerLemAction(lem) {
+            if (lem.action.GetLemState() == Lemmings.LemmingStateType.FALLING) {
+                return false;
+            }
             lem.setAction(this);
             return true;
         }
@@ -9691,7 +9745,6 @@ var Lemmings;
             this.dispaly = null;
             this.stage = null;
             this.soundPlayer3 = null;
-            console.log("init sound: " + Resources.soundEnable);
             this.soundPlayer3 = Resources.getSoundPlayerNew(3); //TF sound
         }
         //C EST LA
@@ -10184,7 +10237,7 @@ var Lemmings;
                 // Long press event trigger
                 var self = this;
                 this.timeOutEvent = setTimeout(function () {
-                    this.timeOutEvent = 0;
+                    self.timeOutEvent = 0;
                     console.log("long touch timeout");
                     self.longtouch = true;
                     self.Managemouse(e.touches[0].clientX, e.touches[0].clientY, 2); //left by default, to be managed (2==right click)
@@ -10635,9 +10688,39 @@ objets: trap_sound_effect_id
 https://www.html5rocks.com/en/tutorials/webaudio/intro/
 
 soundsystem
-
-
 remove sound-system.ts et le repertoir Sounds
+
+//to be tested
+
+Lem fun 08  !!!!!!! pas de porte
+Lem fun 09 tueur (son et animation )
+Lem fun 11 blockeur left                        => OK
+Lem fun 18 flamme (son et animation )
+
+
+Lem trick 04 blockeur left                      => OK
+Lem Trick 06 grill� (son et animation )
+Lem Trick 09 blockeur right                     => OK
+
+Lem Taxing 02 2 disserentes traps (son et animation )
+Len Mayen 16 tueur (idem fun 9)
+
+Oh No crazy 7 HRC (son et animation )
+Oh No crazy 8 palnte bouffeuse et noyade (son et animation )
+Oh No wild 14 jet de gaz (son et animation )
+Oh No wild 15 marteau pilon (son et animation )
+Oh No wicked 1 HRC + marteau pilon (son et animation )
+Oh No wicked 11 cameleon (son et animation )
+Oh No havoc 10 aspiration (son et animation )
+Oh No havoc 17 cameleon (son et animation )
+93 Bliard 3 disserente sortie, a voir avec l'original
+93 Bliard 14 porte cachee, a voir  avec l'original
+
+
+
+
+
+
 
 
 */ 

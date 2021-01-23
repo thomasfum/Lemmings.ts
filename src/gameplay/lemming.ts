@@ -24,6 +24,13 @@ module Lemmings {
             this.id = id;
         }
 
+        public toogleDirection()
+        {
+            if(this.lookRight==true)
+                this.lookRight=false;
+            else
+                this.lookRight=true;
+        }
         /** return the number shown as countdown */
         public getCountDownTime() : number {
             return (8 - (this.countdown >> 4));
@@ -55,7 +62,7 @@ module Lemmings {
                     return "FLOATER";
                 case LemmingStateType.MINEING:////digg in diagonal
                     return "MINER";
-                case LemmingStateType.BASHING://cdigg horizontally
+                case LemmingStateType.BASHING://digg horizontally
                     return "BASHER";
                 case LemmingStateType.CLIMBING:
                     return "CLIMBER";
