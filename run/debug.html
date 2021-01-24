@@ -26,7 +26,8 @@
         debugView.elementSelectedGame = document.getElementById("selectgame");
         debugView.elementSelectLevelGroup = document.getElementById("selectlevelgroup");
         debugView.elementLevelName = document.getElementById("levelName");
-		debugView.elementLevelVictory = document.getElementById("Victory");
+        debugView.elementLevelVictory = document.getElementById("Victory");
+        debugView.code = document.getElementById("Code");
 		
         debugView.elementGameState = document.getElementById("gameState"); 
         debugView.gameCanvas = document.getElementById("gameCanvas");
@@ -93,11 +94,17 @@
     Sound: <input type="button" onclick="debugView.playSound()" value=" &#9658;" />
     <input type="button" onclick="debugView.playSound()" value=" &#9724; " />
 
-    <input type="button" onclick="debugView.playSound(-1)" value=" &#10073;&#9664;" /><span id="soundno" >0</span>
+    <input type="button" onclick="debugView.playSound(-1)" value=" &#10073;&#9664;" /><span id="soundno" >1</span>
     <input type="button" onclick="debugView.playSound(1)" value=" &#9658;&#10073;" />
+    audio:
 
+    <select onChange="debugView.selectAudio(this.value)" id="selectAudio">
+      <option value="0"selected="selected">Mute</option>
+      <option value="1">FX</option>
+      <option value="2">Music</option>
+    </select>
     <br />
-    <span id="levelName" ></span><span id="Victory" ></span>
+    <span id="levelName" ></span><span id="Victory" ></span><span id="Code" ></span>
     <br />
 
     <div style="overflow-x: scroll; width:99%">

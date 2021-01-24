@@ -11,8 +11,8 @@ module Lemmings {
         constructor(sprites: LemmingsSprite, masks: MaskProvider, private triggerManager: TriggerManager, private particleTable: ParticleTable, Resources: GameResources) {
             this.mask = masks.GetMask(MaskTypes.EXPLODING);
             this.sprite = sprites.getAnimation(SpriteTypes.EXPLODING, false);
-            this.soundPlayer4 = Resources.getSoundPlayerNew(4);//TF sound
-            this.soundPlayer11 = Resources.getSoundPlayerNew(11);//TF sound
+            this.soundPlayer4 = Resources.getSoundPlayerNew(SoundFxTypes.OH_NO);//TF sound
+            this.soundPlayer11 = Resources.getSoundPlayerNew(SoundFxTypes.EXPLODE);//TF sound
         }
 
         public getActionName(): string {

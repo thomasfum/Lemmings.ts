@@ -110,8 +110,8 @@ module Lemmings {
                     })
                     .then(skillPanelSprites => {
 
-                        this.soundPlayer1 = this.gameResources.getSoundPlayerNew(1);//TF sound
-                        this.soundPlayer2 = this.gameResources.getSoundPlayerNew(2);//TF sound
+                        this.soundPlayer1 = this.gameResources.getSoundPlayerNew(SoundFxTypes.ENTRANCE_OPENING);//TF sound
+                        this.soundPlayer2 = this.gameResources.getSoundPlayerNew(SoundFxTypes.LETS_GO);//TF sound
                         
                         /// setup gui
                         this.gameGui = new GameGui(this, skillPanelSprites, this.skills, this.gameTimer, this.gameVictoryCondition,this.level, this.gameResources);

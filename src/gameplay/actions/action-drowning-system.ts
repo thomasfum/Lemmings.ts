@@ -8,7 +8,7 @@ module Lemmings {
 
         constructor(sprites: LemmingsSprite, Resources: GameResources) {
             this.sprite = sprites.getAnimation(SpriteTypes.DROWNING, false);
-            this.soundPlayer=Resources.getSoundPlayerNew(16);//TF sound
+            this.soundPlayer=Resources.getSoundPlayerNew(SoundFxTypes.DROWING);//TF sound
          
         }
 

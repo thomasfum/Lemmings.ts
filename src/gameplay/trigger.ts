@@ -28,21 +28,33 @@ module Lemmings {
         }
 
 
-        public trigger(x: number, y: number, tick: number, ressources: GameResources): TriggerTypes {
+        public trigger(x: number, y: number, tick: number, ressources: GameResources, graphicSet1:number): TriggerTypes {
             if (this.disabledUntilTick <= tick) {
                 if ((x >= this.x1) && (y >= this.y1) && (x <= this.x2) && (y <= this.y2)) {
                     this.disabledUntilTick = tick + this.disableTicksCount;
                     
-                    console.log("Sound from trigger:" + this.soundIndex);
-                    if (this.soundIndex == 9) {
-                        ressources.soundPlay(10);//TF Sound:
-                        ressources.soundPlay(14,2);//TF Sound:
-
-                    }
-                    if(this.obj!=null)
+                    if( this.type== TriggerTypes.TRAP)
                     {
-                        this.obj.isTrigerred=true;
-                        console.log("Object from trigger:"+this.obj.isTrigerred);
+                        console.log("Sound from trigger:" + this.soundIndex+ " DisableTricks="+this.disableTicksCount);
+                        if (this.soundIndex != 0) 
+                            ressources.soundPlay(this.soundIndex)
+                        /*
+                        if (this.soundIndex == 9) {
+                            ressources.soundPlay(11);//TF Sound:
+                            ressources.soundPlay(15,2);//TF Sound:
+                        }
+                        */
+
+                        if(this.obj!=null)
+                        {
+                            this.obj.isTrigerred=true;
+                            console.log("Object from trigger:"+this.obj.isTrigerred);
+                        }
+                    }
+                    if( this.type== TriggerTypes.KILL)
+                    {
+                        console.log("Kill: G="+graphicSet1);
+                        ressources.soundPlay(SoundFxTypes.KILL);
                     }
 
                     return this.type;

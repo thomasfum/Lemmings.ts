@@ -10,7 +10,7 @@ module Lemmings {
 
         private dispaly: DisplayImage = null;
         private deltaReleaseRate: number = 0;
-        private soundPlayer0: AudioPlayer = null;
+        private soundPlayer: AudioPlayer = null;
 
         private stage: Stage=null;
 
@@ -22,7 +22,7 @@ module Lemmings {
             private level: Level,
             private Resources:GameResources ) {
             
-            this.soundPlayer0 = Resources.getSoundPlayerNew(0);//TF sound
+            this.soundPlayer = Resources.getSoundPlayerNew(SoundFxTypes.SKILL_SELECT);//TF sound
             
             gameTimer.onGameTick.on(() => {
                 this.gameTimeChanged = true;
@@ -80,9 +80,9 @@ module Lemmings {
             if (newSkill == SkillTypes.UNKNOWN) return;
 
 
-            //TF sound
-            if (this.soundPlayer0 != null)
-                this.soundPlayer0.play();
+            
+            if (this.soundPlayer != null)
+                this.soundPlayer.play();
 
             this.game.queueCmmand(new CommandSelectSkill(newSkill));
 

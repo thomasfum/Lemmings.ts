@@ -92,7 +92,7 @@ module Lemmings {
                 let newAction = lem.process(this.level);
                 this.processNewAction(lem, newAction);
 
-                let triggerAction = this.runTrigger(lem);
+                let triggerAction = this.runTrigger(lem, this.level.graphicSet1);
                 this.processNewAction(lem, triggerAction);
             }
         }
@@ -131,7 +131,7 @@ module Lemmings {
 
 
 
-        private runTrigger(lem: Lemming): LemmingStateType {
+        private runTrigger(lem: Lemming, graphicSet1:number): LemmingStateType {
             if (lem.isRemoved() || (lem.isDisabled())) {
                 return LemmingStateType.NO_STATE_TYPE;
             }
@@ -142,7 +142,7 @@ module Lemmings {
             {
                 offset=8;//test upper for basher
             }
-            let triggerType = this.triggerManager.trigger(lem.x, lem.y-offset, this.Resources);
+            let triggerType = this.triggerManager.trigger(lem.x, lem.y-offset, this.Resources,graphicSet1);
             if (triggerType!=TriggerTypes.NO_TRIGGER)
                 this.logging.log("trigger type: " + triggerType);
             switch (triggerType) {
@@ -154,6 +154,7 @@ module Lemmings {
                     return LemmingStateType.EXITING;
                 case TriggerTypes.KILL:
                     return LemmingStateType.SPLATTING;
+                    //return LemmingStateType.FRYING;
                 case TriggerTypes.TRAP:
                     return LemmingStateType.OUT_OFF_LEVEL;
                     //return LemmingStateType.HOISTING;
@@ -168,7 +169,7 @@ module Lemmings {
                     if(lem.lookRight==false)
                         return LemmingStateType.NO_STATE_TYPE;
                     //console.log("ONWAY_LEFT: going right"+lem.action.GetLemState());
-                    if(lem.action.GetLemState()==LemmingStateType.BASHING)
+                    if((lem.action.GetLemState()==LemmingStateType.BASHING)||(lem.action.GetLemState()==LemmingStateType.MINEING))
                     {
                         //console.log("ONWAY_LEFT:Bashing: GO BACK");
                         lem.toogleDirection();
@@ -181,7 +182,7 @@ module Lemmings {
                     if(lem.lookRight==true)
                         return LemmingStateType.NO_STATE_TYPE;
                     //console.log("ONWAY_Right: going left:"+lem.action.GetLemState());
-                    if(lem.action.GetLemState()==LemmingStateType.BASHING)
+                    if((lem.action.GetLemState()==LemmingStateType.BASHING)||(lem.action.GetLemState()==LemmingStateType.MINEING))
                     {
                         //console.log("ONWAY_Right:Bashing: GO BACK");
                         lem.toogleDirection();

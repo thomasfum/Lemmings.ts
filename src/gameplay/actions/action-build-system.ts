@@ -9,7 +9,7 @@ module Lemmings {
 
             this.sprite.push(sprites.getAnimation(SpriteTypes.BUILDING, false));
             this.sprite.push(sprites.getAnimation(SpriteTypes.BUILDING, true));
-            this.soundPlayer = Resources.getSoundPlayerNew(17);//TF sound
+            this.soundPlayer = Resources.getSoundPlayerNew(SoundFxTypes.BUILDER);//TF sound
             
         }
 

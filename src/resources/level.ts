@@ -35,6 +35,7 @@ module Lemmings {
         public timeLimit = 0;
         public skills: SkillTypes[] = new Array(SkillTypes.length());
         public screenPositionX = 0;
+        public graphicSet1:number=0;
 
         public isSuperLemming = false;
         public accessCodeKey: string = "";
@@ -48,7 +49,7 @@ module Lemmings {
 
 
         /** set the map objects of this level and update trigger */
-        public setMapObjects(objects: LevelElement[], objectImg: ObjectImageInfo[]): void {
+        public setMapObjects(objects: LevelElement[], objectImg: ObjectImageInfo[],graphicSet1:number): void {
             this.entrances = [];
             this.triggers = [];
             this.objects = [];
@@ -61,7 +62,17 @@ module Lemmings {
                 /// add object
                 let newMapObject = new MapObject(ob, objectInfo);
                 this.objects.push(newMapObject);
-                console.log("Object:" + ob.id + ", x=" + ob.x + ", T=" + objectInfo.trigger_effect_id + ", S=" + objectInfo.trap_sound_effect_id + ", R=" + objectInfo.animationLoop);//+ objectInfo.unknown + ", " + objectInfo.unknown1 + ", " + objectInfo.unknown2);
+
+                let inactiveCount=0;
+                if(objectInfo.trigger_effect_id==TriggerTypes.TRAP)
+                {
+                    inactiveCount=objectInfo.frameCount;
+                    console.log("Object:" + ob.id + ", x=" + ob.x + ", T=" + objectInfo.trigger_effect_id + ", S=" + objectInfo.trap_sound_effect_id + ", R=" + objectInfo.animationLoop);//+ objectInfo.unknown + ", " + objectInfo.unknown1 + ", " + objectInfo.unknown2);
+                }
+                if(objectInfo.trigger_effect_id==TriggerTypes.KILL)
+                {
+                    console.log("Object:" + ob.id + ", x=" + ob.x + ", T=" + objectInfo.trigger_effect_id + ", S=" + objectInfo.trap_sound_effect_id + ", R=" + objectInfo.animationLoop +",G="+graphicSet1);//+ objectInfo.unknown + ", " + objectInfo.unknown1 + ", " + objectInfo.unknown2);
+                }
                 /// add entrances
                 if (ob.id == 1) {
                     this.entrances.push(ob);
@@ -76,7 +87,7 @@ module Lemmings {
                     let y2 = y1 + objectInfo.trigger_height;
 
                     //console.log("adding trigger: " + objectInfo.trigger_effect_id + ", " + x1 + ", " + y1 + ", " + x2 + ", " + y2 + ", " + objectInfo.trap_sound_effect_id);
-                    let newTrigger = new Trigger(objectInfo.trigger_effect_id, x1, y1, x2, y2, 0, objectInfo.trap_sound_effect_id, null,newMapObject);
+                    let newTrigger = new Trigger(objectInfo.trigger_effect_id, x1, y1, x2, y2, inactiveCount, objectInfo.trap_sound_effect_id, null,newMapObject);
 
                     this.triggers.push(newTrigger);
                 }

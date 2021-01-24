@@ -58,11 +58,6 @@ The goal is to finish it and extand it to custom levels like the ones present he
 ![Debug](docu/debug.png "Debug")
 
 
-###From tomsoftware:
-
-![demo1](docu/examples/demo_01.png "Demo 01")
-![demo2](docu/examples/demo_02.png "Demo 02")
-
 # Disclaimer
 Disclaimer: This Project does not claim rights to any Lemmings Version. To the best of our/my knowledge, these titles have been discontinued by their publishers. If you know otherwise, please contact us/me and we will remove them accordingly. Thank you for your attention. See the LICENSE for more information.
 
@@ -74,3 +69,5 @@ Special thanks goes to:
 - Robson Cozendey for his Java OPL3 emulator
 - tomsoftware for the original ts version
 - https://www.camanis.net/lemmings/files/docs/lemmings_main_dat_file_format.txt
+- https://www.camanis.net/lemmings/files/docs/lemmings_lvl_file_format.txt
+- https://www.camanis.net/lemmings/files/docs/lemmings_vgagrx_dat_groundxo_dat_file_format.txt

@@ -15,7 +15,7 @@ module Lemmings {
         BLOCKING, // 10
         BASHING,
         FLOATING,
-        MINEING,
+        MINEING, //diag
         DROWNING, // in water
         EXITING,
         FRYING, // killed by flameblower etc.

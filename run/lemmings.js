@@ -173,15 +173,15 @@ var Lemmings;
         }
         soundPlay(soundIndex, offeset = 0) {
             if (this.soundEnable == true) {
-                if (this.soundPlayerArray[soundIndex] != undefined)
-                    if (this.soundPlayerArray[soundIndex] != null)
-                        this.soundPlayerArray[soundIndex].play(offeset);
+                if (this.soundPlayerArray[soundIndex - 1] != undefined)
+                    if (this.soundPlayerArray[soundIndex - 1] != null)
+                        this.soundPlayerArray[soundIndex - 1].play(offeset);
             }
         }
         /** return a palyer to playback a sound effect */
         getSoundPlayerNew(soundIndex) {
             if (this.soundEnable == true)
-                return this.soundPlayerArray[soundIndex];
+                return this.soundPlayerArray[soundIndex - 1];
             else
                 return null;
         }
@@ -321,8 +321,8 @@ var Lemmings;
                     return this.gameResources.getSkillPanelSprite(this.level.colorPalette);
                 })
                     .then(skillPanelSprites => {
-                    this.soundPlayer1 = this.gameResources.getSoundPlayerNew(1); //TF sound
-                    this.soundPlayer2 = this.gameResources.getSoundPlayerNew(2); //TF sound
+                    this.soundPlayer1 = this.gameResources.getSoundPlayerNew(Lemmings.SoundFxTypes.ENTRANCE_OPENING); //TF sound
+                    this.soundPlayer2 = this.gameResources.getSoundPlayerNew(Lemmings.SoundFxTypes.LETS_GO); //TF sound
                     /// setup gui
                     this.gameGui = new Lemmings.GameGui(this, skillPanelSprites, this.skills, this.gameTimer, this.gameVictoryCondition, this.level, this.gameResources);
                     if (this.guiDispaly != null) {
@@ -857,7 +857,7 @@ var Lemmings;
                     continue;
                 let newAction = lem.process(this.level);
                 this.processNewAction(lem, newAction);
-                let triggerAction = this.runTrigger(lem);
+                let triggerAction = this.runTrigger(lem, this.level.graphicSet1);
                 this.processNewAction(lem, triggerAction);
             }
         }
@@ -882,7 +882,7 @@ var Lemmings;
                 }
             }
         }
-        runTrigger(lem) {
+        runTrigger(lem, graphicSet1) {
             if (lem.isRemoved() || (lem.isDisabled())) {
                 return Lemmings.LemmingStateType.NO_STATE_TYPE;
             }
@@ -891,7 +891,7 @@ var Lemmings;
             if (lem.action.GetLemState() == Lemmings.LemmingStateType.BASHING) {
                 offset = 8; //test upper for basher
             }
-            let triggerType = this.triggerManager.trigger(lem.x, lem.y - offset, this.Resources);
+            let triggerType = this.triggerManager.trigger(lem.x, lem.y - offset, this.Resources, graphicSet1);
             if (triggerType != Lemmings.TriggerTypes.NO_TRIGGER)
                 this.logging.log("trigger type: " + triggerType);
             switch (triggerType) {
@@ -903,6 +903,7 @@ var Lemmings;
                     return Lemmings.LemmingStateType.EXITING;
                 case Lemmings.TriggerTypes.KILL:
                     return Lemmings.LemmingStateType.SPLATTING;
+                //return LemmingStateType.FRYING;
                 case Lemmings.TriggerTypes.TRAP:
                     return Lemmings.LemmingStateType.OUT_OFF_LEVEL;
                 //return LemmingStateType.HOISTING;
@@ -919,7 +920,7 @@ var Lemmings;
                     if (lem.lookRight == false)
                         return Lemmings.LemmingStateType.NO_STATE_TYPE;
                     //console.log("ONWAY_LEFT: going right"+lem.action.GetLemState());
-                    if (lem.action.GetLemState() == Lemmings.LemmingStateType.BASHING) {
+                    if ((lem.action.GetLemState() == Lemmings.LemmingStateType.BASHING) || (lem.action.GetLemState() == Lemmings.LemmingStateType.MINEING)) {
                         //console.log("ONWAY_LEFT:Bashing: GO BACK");
                         lem.toogleDirection();
                         return Lemmings.LemmingStateType.WALKING;
@@ -931,7 +932,7 @@ var Lemmings;
                     if (lem.lookRight == true)
                         return Lemmings.LemmingStateType.NO_STATE_TYPE;
                     //console.log("ONWAY_Right: going left:"+lem.action.GetLemState());
-                    if (lem.action.GetLemState() == Lemmings.LemmingStateType.BASHING) {
+                    if ((lem.action.GetLemState() == Lemmings.LemmingStateType.BASHING) || (lem.action.GetLemState() == Lemmings.LemmingStateType.MINEING)) {
                         //console.log("ONWAY_Right:Bashing: GO BACK");
                         lem.toogleDirection();
                         return Lemmings.LemmingStateType.WALKING;
@@ -1490,11 +1491,11 @@ var Lemmings;
             }
         }
         /** test all triggers. Returns the triggered type that matches */
-        trigger(x, y, ressources) {
+        trigger(x, y, ressources, graphicSet1) {
             let l = this.triggers.length;
             let tick = this.gameTimer.getGameTicks();
             for (var i = 0; i < l; i++) {
-                let type = this.triggers[i].trigger(x, y, tick, ressources);
+                let type = this.triggers[i].trigger(x, y, tick, ressources, graphicSet1);
                 if (type != Lemmings.TriggerTypes.NO_TRIGGER)
                     return type;
             }
@@ -1527,18 +1528,28 @@ var Lemmings;
             this.disableTicksCount = disableTicksCount;
             this.soundIndex = soundIndex;
         }
-        trigger(x, y, tick, ressources) {
+        trigger(x, y, tick, ressources, graphicSet1) {
             if (this.disabledUntilTick <= tick) {
                 if ((x >= this.x1) && (y >= this.y1) && (x <= this.x2) && (y <= this.y2)) {
                     this.disabledUntilTick = tick + this.disableTicksCount;
-                    console.log("Sound from trigger:" + this.soundIndex);
-                    if (this.soundIndex == 9) {
-                        ressources.soundPlay(10); //TF Sound:
-                        ressources.soundPlay(14, 2); //TF Sound:
+                    if (this.type == Lemmings.TriggerTypes.TRAP) {
+                        console.log("Sound from trigger:" + this.soundIndex + " DisableTricks=" + this.disableTicksCount);
+                        if (this.soundIndex != 0)
+                            ressources.soundPlay(this.soundIndex);
+                        /*
+                        if (this.soundIndex == 9) {
+                            ressources.soundPlay(11);//TF Sound:
+                            ressources.soundPlay(15,2);//TF Sound:
+                        }
+                        */
+                        if (this.obj != null) {
+                            this.obj.isTrigerred = true;
+                            console.log("Object from trigger:" + this.obj.isTrigerred);
+                        }
                     }
-                    if (this.obj != null) {
-                        this.obj.isTrigerred = true;
-                        console.log("Object from trigger:" + this.obj.isTrigerred);
+                    if (this.type == Lemmings.TriggerTypes.KILL) {
+                        console.log("Kill: G=" + graphicSet1);
+                        ressources.soundPlay(Lemmings.SoundFxTypes.KILL);
                     }
                     return this.type;
                 }
@@ -1673,7 +1684,7 @@ var Lemmings;
             this.soundPlayer = null;
             this.sprite.push(sprites.getAnimation(Lemmings.SpriteTypes.BUILDING, false));
             this.sprite.push(sprites.getAnimation(Lemmings.SpriteTypes.BUILDING, true));
-            this.soundPlayer = Resources.getSoundPlayerNew(17); //TF sound
+            this.soundPlayer = Resources.getSoundPlayerNew(Lemmings.SoundFxTypes.BUILDER); //TF sound
         }
         getActionName() {
             return "building";
@@ -1882,7 +1893,7 @@ var Lemmings;
         constructor(sprites, Resources) {
             this.soundPlayer = null;
             this.sprite = sprites.getAnimation(Lemmings.SpriteTypes.DROWNING, false);
-            this.soundPlayer = Resources.getSoundPlayerNew(16); //TF sound
+            this.soundPlayer = Resources.getSoundPlayerNew(Lemmings.SoundFxTypes.DROWING); //TF sound
         }
         getActionName() {
             return "drowning";
@@ -1925,7 +1936,7 @@ var Lemmings;
             this.gameVictoryCondition = gameVictoryCondition;
             this.soundPlayer = null;
             this.sprite = sprites.getAnimation(Lemmings.SpriteTypes.EXITING, false);
-            this.soundPlayer = Resources.getSoundPlayerNew(15); //TF sound
+            this.soundPlayer = Resources.getSoundPlayerNew(Lemmings.SoundFxTypes.EXIT); //TF sound
         }
         getActionName() {
             return "exiting";
@@ -1966,8 +1977,8 @@ var Lemmings;
             this.soundPlayer11 = null;
             this.mask = masks.GetMask(Lemmings.MaskTypes.EXPLODING);
             this.sprite = sprites.getAnimation(Lemmings.SpriteTypes.EXPLODING, false);
-            this.soundPlayer4 = Resources.getSoundPlayerNew(4); //TF sound
-            this.soundPlayer11 = Resources.getSoundPlayerNew(11); //TF sound
+            this.soundPlayer4 = Resources.getSoundPlayerNew(Lemmings.SoundFxTypes.OH_NO); //TF sound
+            this.soundPlayer11 = Resources.getSoundPlayerNew(Lemmings.SoundFxTypes.EXPLODE); //TF sound
         }
         getActionName() {
             return "exploding";
@@ -2312,7 +2323,7 @@ var Lemmings;
         constructor(sprites, Resources) {
             this.soundPlayer = null;
             this.sprite = sprites.getAnimation(Lemmings.SpriteTypes.SPLATTING, false);
-            this.soundPlayer = Resources.getSoundPlayerNew(14); //TF sound
+            this.soundPlayer = Resources.getSoundPlayerNew(Lemmings.SoundFxTypes.AARGH); //TF sound
         }
         getActionName() {
             return "splatter";
@@ -3000,6 +3011,7 @@ var Lemmings;
                     level.needCount = levelProperties.needCount;
                     level.timeLimit = levelProperties.timeLimit;
                     level.skills = levelProperties.skills;
+                    level.graphicSet1 = levelReader.graphicSet1;
                     let fileList = [];
                     /// load level ground
                     fileList.push(this.fileProvider.loadBinary(this.config.path, "VGAGR" + levelReader.graphicSet1 + ".DAT"));
@@ -3028,7 +3040,7 @@ var Lemmings;
                     }
                     level.setGroundImage(render.img.getData());
                     level.setGroundMaskLayer(new Lemmings.SolidLayer(level.width, level.height, render.img.mask));
-                    level.setMapObjects(levelReader.objects, groundReader.getObjectImages());
+                    level.setMapObjects(levelReader.objects, groundReader.getObjectImages(), level.graphicSet1);
                     level.setPalettes(groundReader.colorPalette, groundReader.groundPalette);
                     resolve(level);
                 });
@@ -3058,6 +3070,7 @@ var Lemmings;
             this.timeLimit = 0;
             this.skills = new Array(Lemmings.SkillTypes.length());
             this.screenPositionX = 0;
+            this.graphicSet1 = 0;
             this.isSuperLemming = false;
             this.accessCodeKey = "";
             this.gamePaletteID = 0;
@@ -3065,7 +3078,7 @@ var Lemmings;
             this.height = height;
         }
         /** set the map objects of this level and update trigger */
-        setMapObjects(objects, objectImg) {
+        setMapObjects(objects, objectImg, graphicSet1) {
             this.entrances = [];
             this.triggers = [];
             this.objects = [];
@@ -3076,7 +3089,14 @@ var Lemmings;
                 /// add object
                 let newMapObject = new Lemmings.MapObject(ob, objectInfo);
                 this.objects.push(newMapObject);
-                console.log("Object:" + ob.id + ", x=" + ob.x + ", T=" + objectInfo.trigger_effect_id + ", S=" + objectInfo.trap_sound_effect_id + ", R=" + objectInfo.animationLoop); //+ objectInfo.unknown + ", " + objectInfo.unknown1 + ", " + objectInfo.unknown2);
+                let inactiveCount = 0;
+                if (objectInfo.trigger_effect_id == Lemmings.TriggerTypes.TRAP) {
+                    inactiveCount = objectInfo.frameCount;
+                    console.log("Object:" + ob.id + ", x=" + ob.x + ", T=" + objectInfo.trigger_effect_id + ", S=" + objectInfo.trap_sound_effect_id + ", R=" + objectInfo.animationLoop); //+ objectInfo.unknown + ", " + objectInfo.unknown1 + ", " + objectInfo.unknown2);
+                }
+                if (objectInfo.trigger_effect_id == Lemmings.TriggerTypes.KILL) {
+                    console.log("Object:" + ob.id + ", x=" + ob.x + ", T=" + objectInfo.trigger_effect_id + ", S=" + objectInfo.trap_sound_effect_id + ", R=" + objectInfo.animationLoop + ",G=" + graphicSet1); //+ objectInfo.unknown + ", " + objectInfo.unknown1 + ", " + objectInfo.unknown2);
+                }
                 /// add entrances
                 if (ob.id == 1) {
                     this.entrances.push(ob);
@@ -3088,7 +3108,7 @@ var Lemmings;
                     let x2 = x1 + objectInfo.trigger_width;
                     let y2 = y1 + objectInfo.trigger_height;
                     //console.log("adding trigger: " + objectInfo.trigger_effect_id + ", " + x1 + ", " + y1 + ", " + x2 + ", " + y2 + ", " + objectInfo.trap_sound_effect_id);
-                    let newTrigger = new Lemmings.Trigger(objectInfo.trigger_effect_id, x1, y1, x2, y2, 0, objectInfo.trap_sound_effect_id, null, newMapObject);
+                    let newTrigger = new Lemmings.Trigger(objectInfo.trigger_effect_id, x1, y1, x2, y2, inactiveCount, objectInfo.trap_sound_effect_id, null, newMapObject);
                     this.triggers.push(newTrigger);
                 }
             }
@@ -5751,6 +5771,31 @@ var Lemmings;
         }
     }
     Lemmings.SoundImagePlayer = SoundImagePlayer;
+})(Lemmings || (Lemmings = {}));
+var Lemmings;
+(function (Lemmings) {
+    let SoundFxTypes;
+    (function (SoundFxTypes) {
+        SoundFxTypes[SoundFxTypes["NO_SOUND"] = 0] = "NO_SOUND";
+        SoundFxTypes[SoundFxTypes["SKILL_SELECT"] = 1] = "SKILL_SELECT";
+        SoundFxTypes[SoundFxTypes["ENTRANCE_OPENING"] = 2] = "ENTRANCE_OPENING";
+        SoundFxTypes[SoundFxTypes["LETS_GO"] = 3] = "LETS_GO";
+        SoundFxTypes[SoundFxTypes["SKILL_ASSIGNED"] = 4] = "SKILL_ASSIGNED";
+        SoundFxTypes[SoundFxTypes["OH_NO"] = 5] = "OH_NO";
+        SoundFxTypes[SoundFxTypes["ELECTRODE"] = 6] = "ELECTRODE";
+        SoundFxTypes[SoundFxTypes["SQUISHING"] = 7] = "SQUISHING";
+        SoundFxTypes[SoundFxTypes["AARGH"] = 8] = "AARGH";
+        SoundFxTypes[SoundFxTypes["ROAP"] = 9] = "ROAP";
+        SoundFxTypes[SoundFxTypes["STEEL"] = 10] = "STEEL";
+        SoundFxTypes[SoundFxTypes["CAMELEON"] = 11] = "CAMELEON";
+        SoundFxTypes[SoundFxTypes["EXPLODE"] = 12] = "EXPLODE";
+        SoundFxTypes[SoundFxTypes["KILL"] = 13] = "KILL";
+        SoundFxTypes[SoundFxTypes["TEN_TONS"] = 14] = "TEN_TONS";
+        SoundFxTypes[SoundFxTypes["BEAR_TRAP"] = 15] = "BEAR_TRAP";
+        SoundFxTypes[SoundFxTypes["EXIT"] = 16] = "EXIT";
+        SoundFxTypes[SoundFxTypes["DROWING"] = 17] = "DROWING";
+        SoundFxTypes[SoundFxTypes["BUILDER"] = 18] = "BUILDER"; //18 = sound effect for the last 3 bricks a builder is laying down                                            =>OK
+    })(SoundFxTypes = Lemmings.SoundFxTypes || (Lemmings.SoundFxTypes = {}));
 })(Lemmings || (Lemmings = {}));
 /*
  * File: OPL3.java
@@ -9183,7 +9228,10 @@ var Lemmings;
             this.elementLevelName = null;
             this.elementGameState = null;
             this.elementLevelVictory = null;
+            this.code = null;
             this.gameSpeedFactor = 1;
+            this.lvlTotal = 0;
+            this.MusicLevel = 0;
             /// split the hash of the url in parts + reverse
             let hashParts = window.location.hash.substr(1).split(",", 3).reverse();
             this.levelIndex = this.strToNum(hashParts[0]);
@@ -9222,7 +9270,7 @@ var Lemmings;
             }
             /// create new game
             this.gameFactory.getGame(this.gameID)
-                .then(game => game.loadLevel(this.levelGroupIndex, this.levelIndex, 0))
+                .then(game => game.loadLevel(this.levelGroupIndex, this.levelIndex, this.MusicLevel))
                 .then(game => {
                 if (replayString != null) {
                     game.getCommandManager().loadReplay(replayString);
@@ -9282,6 +9330,10 @@ var Lemmings;
             }
             this.game.getGameTimer().tick();
         }
+        selectAudio(Audio) {
+            console.log("selectAudio:" + Audio);
+            this.MusicLevel = Audio;
+        }
         selectSpeedFactor(newSpeed) {
             if (this.game == null) {
                 return;
@@ -9321,9 +9373,9 @@ var Lemmings;
             if (moveInterval == null)
                 moveInterval = 0;
             this.soundIndex += moveInterval;
-            this.soundIndex = (this.soundIndex < 0) ? 0 : this.soundIndex;
+            this.soundIndex = (this.soundIndex < 1) ? 1 : this.soundIndex;
             this.changeHtmlText(this.elementSoundNumber, this.soundIndex.toString());
-            this.gameResources.getSoundPlayer(this.soundIndex)
+            this.gameResources.getSoundPlayer(this.soundIndex - 1)
                 .then((player) => {
                 this.soundPlayer = player;
                 this.soundPlayer.play();
@@ -9354,6 +9406,12 @@ var Lemmings;
                 }
                 /// update and load level
                 this.changeHtmlText(this.elementLevelNumber, (this.levelIndex + 1).toString());
+                this.lvlTotal = 0;
+                for (var i = 0; i < this.levelGroupIndex; i++) {
+                    let currentGroupLevelNumber = config.level.getGroupLength(i);
+                    this.lvlTotal += currentGroupLevelNumber;
+                }
+                this.lvlTotal += this.levelIndex;
                 this.loadLevel();
             });
         }
@@ -9422,7 +9480,10 @@ var Lemmings;
                 //    let a: GameVictoryCondition ;
                 //    a =this.game.getVictoryCondition();
                 this.changeHtmlText(this.elementLevelName, level.name);
-                this.changeHtmlText(this.elementLevelVictory, "Needed: " + level.needCount.toString());
+                this.changeHtmlText(this.elementLevelVictory, " Needed: " + level.needCount.toString());
+                let codeGen = new Lemmings.CodeGenerator();
+                let accessCode = codeGen.createCode(this.lvlTotal, 100, level.accessCodeKey);
+                this.changeHtmlText(this.code, " Code: " + accessCode);
                 if (this.stage != null) {
                     let gameDisplay = this.stage.getGameDisplay();
                     gameDisplay.clear();
@@ -9745,7 +9806,7 @@ var Lemmings;
             this.dispaly = null;
             this.stage = null;
             this.soundPlayer3 = null;
-            this.soundPlayer3 = Resources.getSoundPlayerNew(3); //TF sound
+            this.soundPlayer3 = Resources.getSoundPlayerNew(Lemmings.SoundFxTypes.SKILL_ASSIGNED); //TF sound
         }
         //C EST LA
         setGuiDisplay(dispaly, stage) {
@@ -9802,9 +9863,9 @@ var Lemmings;
             this.backgroundChanged = true;
             this.dispaly = null;
             this.deltaReleaseRate = 0;
-            this.soundPlayer0 = null;
+            this.soundPlayer = null;
             this.stage = null;
-            this.soundPlayer0 = Resources.getSoundPlayerNew(0); //TF sound
+            this.soundPlayer = Resources.getSoundPlayerNew(Lemmings.SoundFxTypes.SKILL_SELECT); //TF sound
             gameTimer.onGameTick.on(() => {
                 this.gameTimeChanged = true;
                 this.doReleaseRateChanges();
@@ -9849,9 +9910,8 @@ var Lemmings;
             let newSkill = this.getSkillByPanelIndex(panelIndex);
             if (newSkill == Lemmings.SkillTypes.UNKNOWN)
                 return;
-            //TF sound
-            if (this.soundPlayer0 != null)
-                this.soundPlayer0.play();
+            if (this.soundPlayer != null)
+                this.soundPlayer.play();
             this.game.queueCmmand(new Lemmings.CommandSelectSkill(newSkill));
             this.skillSelectionChanged = true;
         }
@@ -10040,10 +10100,10 @@ var Lemmings;
             this.levelIndex = 0;
             this.levelGroupIndex = 0;
             this.musicIndex = 0;
-            this.soundIndex = 0;
+            //  private soundIndex: number = 0;
             this.gameResources = null;
             this.musicPlayer = null;
-            this.soundPlayer = null;
+            //  private soundPlayer: AudioPlayer = null;
             this.game = null;
             this.gameFactory = new Lemmings.GameFactory("./");
             this.MusicLevel = 2;
@@ -10402,12 +10462,15 @@ var Lemmings;
             this.start(replayString);
         }
         /** pause the game */
-        cheat() {
+        /*
+        public cheat() {
             if (this.game == null) {
                 return;
             }
+
             this.game.cheat();
         }
+        */
         /** pause the game */
         suspend() {
             if (this.game == null) {
@@ -10455,30 +10518,41 @@ var Lemmings;
                 this.musicPlayer = null;
             }
         }
-        stopSound() {
-            if (this.soundPlayer) {
-                this.soundPlayer.stop();
-                this.soundPlayer = null;
-            }
-        }
-        playSound(moveInterval) {
-            this.stopSound();
-            if (moveInterval == null)
-                moveInterval = 0;
-            this.soundIndex += moveInterval;
-            this.soundIndex = (this.soundIndex < 0) ? 0 : this.soundIndex;
-            this.gameResources.getSoundPlayer(this.soundIndex)
-                .then((player) => {
-                this.soundPlayer = player;
-                this.soundPlayer.play();
-            });
-        }
-        enableDebug() {
-            if (this.game == null) {
-                return;
-            }
-            this.game.setDebugMode(true);
-        }
+        /*
+                public stopSound() {
+                    if (this.soundPlayer) {
+                        this.soundPlayer.stop();
+                        this.soundPlayer = null;
+                    }
+                }
+        
+                public playSound(moveInterval: number) {
+                    this.stopSound();
+        
+                    if (moveInterval == null) moveInterval = 0;
+        
+                    this.soundIndex += moveInterval;
+        
+                    this.soundIndex = (this.soundIndex < 0) ? 0 : this.soundIndex;
+                    
+                    this.gameResources.getSoundPlayer(this.soundIndex)
+                        .then((player) => {
+                            this.soundPlayer = player;
+                            this.soundPlayer.play();
+                        });
+                    
+                    
+                }
+        
+        
+                public enableDebug() {
+                    if (this.game == null) {
+                        return;
+                    }
+                    
+                    this.game.setDebugMode(true);
+                }
+        */
         /** add/subtract one to the current levelIndex */
         moveToLevel(moveInterval) {
             if (moveInterval == null)
@@ -10690,33 +10764,175 @@ https://www.html5rocks.com/en/tutorials/webaudio/intro/
 soundsystem
 remove sound-system.ts et le repertoir Sounds
 
+
+Lem fun 11 blockeur left                        => OK!
+Lem trick 04 blockeur left                      => OK!
+Lem Trick 09 blockeur right                     => OK!
 //to be tested
+                                                                T       S   sound
+Lem fun 28 electrocuté                                          4=trap  06
+Lem Taxing  01 pendu                                            4=trap  09  10-14
+Lem Taxing      02 2 differentes traps (son et animation )      4=trap  14
+Lem Taxing      02 2 differentes traps (son et animation )      4=trap  15
+Oh No Tames     09 emapler par stalagtite                       4=trap  08
+Oh No crazy     07 HRC (son et animation )                      4=trap  13
+Oh No crazy     08 palnte bouffeuse et noyade (son et animation)4=trap  17          plante
+Oh No crazy     08 palnte bouffeuse et noyade (son et animation)4=trap  17          plante
+Oh No wild      15 marteau pilon (son et animation )            4=trap  07
+Oh No wicked    01 marteau pilon (son et animation )            4=trap  07
+Oh No wicked    01 HRC  (son et animation )                     4=trap  13
+Oh No wicked    11 cameleon (son et animation )                 4=trap  11          cameleon
+Oh No havoc     10 aspiration (son et animation )               4=trap  14
+Oh No havoc     17 cameleon (son et animation )                 4=trap  11          cameleon
 
-Lem fun 08  !!!!!!! pas de porte
-Lem fun 09 tueur (son et animation )
-Lem fun 11 blockeur left                        => OK
-Lem fun 18 flamme (son et animation )
+
+Lem fun 09 tueur (son et animation )                    6=kill  00    => 10
+Lem fun 18 flamme (son et animation )                   6=kill  00    => 10    annimatio brulee avec fumee, noyade actuellement
+Lem Trick 06 grill� (son et animation )                6=kill  00
+Lem Taxing 02 2 disserentes traps (son et animation )   5=noy   00
+Len Mayen 16 tueur (idem fun 9)                         6=kill  00    => 10     animation avec morceaux
 
 
-Lem trick 04 blockeur left                      => OK
-Lem Trick 06 grill� (son et animation )
-Lem Trick 09 blockeur right                     => OK
-
-Lem Taxing 02 2 disserentes traps (son et animation )
-Len Mayen 16 tueur (idem fun 9)
-
-Oh No crazy 7 HRC (son et animation )
-Oh No crazy 8 palnte bouffeuse et noyade (son et animation )
 Oh No wild 14 jet de gaz (son et animation )
-Oh No wild 15 marteau pilon (son et animation )
-Oh No wicked 1 HRC + marteau pilon (son et animation )
-Oh No wicked 11 cameleon (son et animation )
-Oh No havoc 10 aspiration (son et animation )
-Oh No havoc 17 cameleon (son et animation )
-93 Bliard 3 disserente sortie, a voir avec l'original
+
+
+93 Bliard 3 diff    erente sortie, a voir avec l'original
 93 Bliard 14 porte cachee, a voir  avec l'original
 
 
+
+
+
+//explision ne devrait pas detruire les zones indestructibles
+
+
+ graphics set 0:
+                    0x0000 = exit
+                    0x0001 = start
+                    0x0002 = waving green flag
+                    0x0003 = one-way block pointing left
+                    0x0004 = one-way block pointing right
+                    0x0005 = water
+                    0x0006 = bear trap
+                    0x0007 = exit decoration, flames
+                    0x0008 = rock squishing trap
+                    0x0009 = waving blue flag
+                    0x000A = 10 ton squishing trap
+                    0x000B - 0x000F = invalid
+     graphics set 1:
+                    0x0000 = exit
+                    0x0001 = start
+                    0x0002 = waving green flag
+                    0x0003 = one-way block pointing left
+                    0x0004 = one-way block pointing right
+                    0x0005 = red lava
+                    0x0006 = exit decoration, flames
+                    0x0007 = fire pit trap
+                    0x0008 = fire shooter trap from left
+                    0x0009 = waving blue flag
+                    0x000A = fire shooter trap from right
+                    0x000B - 0x000F = invalid
+     graphics set 2:
+                    0x0000 = exit
+                    0x0001 = start
+                    0x0002 = waving green flag
+                    0x0003 = one-way block pointing left
+                    0x0004 = one-way block pointing right
+                    0x0005 = green liquid
+                    0x0006 = exit decoration, flames
+                    0x0007 = waving blue flag
+                    0x0008 = pillar squishing trap
+                    0x0009 = spinning death trap
+                    0x000A - 0x000F = invalid
+     graphics set 3:
+                    0x0000 = exit
+                    0x0001 = start
+                    0x0002 = waving green flag
+                    0x0003 = one-way block pointing left
+                    0x0004 = one-way block pointing right
+                    0x0005 = water
+                    0x0006 = exit decoration, flames
+                    0x0007 = waving blue flag
+                    0x0008 = spinny rope trap
+                    0x0009 = spikes from left trap
+                    0x000A = spikes from right trap
+                    0x000B - 0x000F = invalid
+     graphics set 4:
+                    0x0000 = exit
+                    0x0001 = start
+                    0x0002 = waving green flag
+                    0x0003 = waving blue flag
+                    0x0004 = one-way block pointing left
+                    0x0005 = one-way block pointing right
+                    0x0006 = sparkle water
+                    0x0007 = slice trap
+                    0x0008 = exit decoration, flames
+                    0x0009 = electrode trap
+                    0x000A = zap trap
+                    0x000B - 0x000F = invalid
+     graphics set 5:
+                    0x0000 = exit
+                    0x0001 = start
+                    0x0002 = waving green flag
+                    0x0003 = one-way block pointing left
+                    0x0004 = one-way block pointing right
+                    0x0005 = sandy water
+                    0x0006 = hydraulic press trap
+                    0x0007 = flatten wheel trap
+                    0x0008 = waving blue flag
+                    0x0009 = exit decoration, candy canes
+                    0x000A - 0x000F = invalid
+     graphics set 6:
+                    0x0000 = exit
+                    0x0001 = start
+                    0x0002 = waving green flag
+                    0x0003 = one-way block pointing left
+                    0x0004 = one-way block pointing right
+                    0x0005 = wavy tentacles (water)
+                    0x0006 = tentacle grab trap
+                    0x0007 = exit decoration, green thing
+                    0x0008 = licker from right trap
+                    0x0009 = exit decoration, green thing
+                    0x000A = licker from right trap
+            0x000B = waving blue flag
+                    0x000C - 0x000F = invalid
+     graphics set 7:
+                    0x0000 = exit
+                    0x0001 = start
+                    0x0002 = waving green flag
+                    0x0003 = one-way block pointing left
+                    0x0004 = one-way block pointing right
+                    0x0005 = ice water
+                    0x0006 = exit decoration, red flag
+                    0x0007 = waving blue flag
+                    0x0008 = icicle point trap
+                    0x0009 = ice blast from left trap
+                    0x000A - 0x000F = invalid
+     graphics set 8:
+                    0x0000 = exit
+                    0x0001 = start
+                    0x0002 = waving green flag
+                    0x0003 = one-way block pointing left
+                    0x0004 = one-way block pointing right
+                    0x0005 = bubble water
+                    0x0006 = exit decoration, red thing
+                    0x0007 = waving blue flag
+                    0x0008 = zapper from left trap
+                    0x0009 = sucker from top trap
+                    0x000A = gold thing??
+                    0x000B - 0x000F = invalid
+     graphics set 9:
+                    0x0000 = exit
+                    0x0001 = start
+                    0x0002 = gift box
+                    0x0003 = exit decoration, flames
+                    0x0004 = bouncing snowman
+                    0x0005 = twinkling xmas lights
+                    0x0006 = fireplace - bottom
+                    0x0007 = fireplace - top
+                    0x0008 = santa-in-the-box bottom
+                    0x0009 = santa-in-the-box top
+                    0x000A- 0x000F = invalid
 
 
 

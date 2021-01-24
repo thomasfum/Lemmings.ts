@@ -25,8 +25,11 @@ module Lemmings {
         public elementLevelName: HTMLElement = null;
         public elementGameState: HTMLElement = null;
         public elementLevelVictory: HTMLElement = null;
+        public code: HTMLElement = null;
 
         private gameSpeedFactor = 1;
+        private lvlTotal:number=0;
+        private MusicLevel:number=0;
 
 
         public constructor() {
@@ -76,7 +79,7 @@ module Lemmings {
 
             /// create new game
             this.gameFactory.getGame(this.gameID)
-                .then(game => game.loadLevel(this.levelGroupIndex, this.levelIndex,0))
+                .then(game => game.loadLevel(this.levelGroupIndex, this.levelIndex,this.MusicLevel))
                 .then(game => {
 
                     if (replayString != null) {
@@ -158,6 +161,13 @@ module Lemmings {
             this.game.getGameTimer().tick();
         }
 
+     
+
+        public selectAudio(Audio: number) {
+            console.log("selectAudio:"+Audio);
+            this.MusicLevel=Audio;
+        }
+
         public selectSpeedFactor(newSpeed: number) {
             if (this.game == null) {
                 return;
@@ -209,11 +219,11 @@ module Lemmings {
 
             this.soundIndex += moveInterval;
 
-            this.soundIndex = (this.soundIndex < 0) ? 0 : this.soundIndex;
+            this.soundIndex = (this.soundIndex < 1) ? 1 : this.soundIndex;
 
             this.changeHtmlText(this.elementSoundNumber, this.soundIndex.toString());
 
-            this.gameResources.getSoundPlayer(this.soundIndex)
+            this.gameResources.getSoundPlayer(this.soundIndex-1)
                 .then((player) => {
                     this.soundPlayer = player;
                    this.soundPlayer.play();
@@ -251,6 +261,16 @@ module Lemmings {
 
                 /// update and load level
                 this.changeHtmlText(this.elementLevelNumber, (this.levelIndex + 1).toString());
+
+                
+                this.lvlTotal=0;
+                for (var i = 0; i < this.levelGroupIndex; i++) {
+                    let currentGroupLevelNumber = config.level.getGroupLength(i);
+                    this.lvlTotal += currentGroupLevelNumber;
+                }
+                this.lvlTotal+=this.levelIndex;
+
+                
                 this.loadLevel();
             });
         }
@@ -344,7 +364,11 @@ module Lemmings {
                 //    a =this.game.getVictoryCondition();
 
                     this.changeHtmlText(this.elementLevelName, level.name);
-                    this.changeHtmlText(this.elementLevelVictory,"Needed: "+level.needCount.toString());
+                    this.changeHtmlText(this.elementLevelVictory," Needed: "+level.needCount.toString());
+                    let codeGen= new CodeGenerator();
+                    let accessCode=codeGen.createCode(this.lvlTotal,100,level.accessCodeKey);
+                    this.changeHtmlText(this.code," Code: "+accessCode);
+                 
                    
 
                     if (this.stage != null){

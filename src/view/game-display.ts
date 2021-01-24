@@ -13,7 +13,7 @@ module Lemmings {
             private objectManager: ObjectManager,
             private triggerManager: TriggerManager,
             private Resources: GameResources) {
-            this.soundPlayer3 = Resources.getSoundPlayerNew(3);//TF sound
+            this.soundPlayer3 = Resources.getSoundPlayerNew(SoundFxTypes.SKILL_ASSIGNED);//TF sound
         }
 
         //C EST LA

@@ -69,6 +69,7 @@
                         level.needCount = levelProperties.needCount;
                         level.timeLimit = levelProperties.timeLimit;
                         level.skills = levelProperties.skills;
+                        level.graphicSet1=levelReader.graphicSet1;
 
                         let fileList:Promise<BinaryReader>[] = [];
 
@@ -108,7 +109,7 @@
                         level.setGroundImage(render.img.getData());
                         level.setGroundMaskLayer(new SolidLayer(level.width, level.height, render.img.mask));
 
-                        level.setMapObjects(levelReader.objects, groundReader.getObjectImages());
+                        level.setMapObjects(levelReader.objects, groundReader.getObjectImages(),level.graphicSet1);
                         level.setPalettes(groundReader.colorPalette, groundReader.groundPalette);
 
                         resolve(level);

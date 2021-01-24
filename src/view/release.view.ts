@@ -16,10 +16,10 @@ module Lemmings {
         private levelGroupIndex: number = 0;
         private gameID: number;
         private musicIndex: number = 0;
-        private soundIndex: number = 0;
+      //  private soundIndex: number = 0;
         private gameResources: GameResources = null;
         private musicPlayer: AudioPlayer = null;
-        private soundPlayer: AudioPlayer = null;
+      //  private soundPlayer: AudioPlayer = null;
         private game: Game = null;
         private gameFactory = new GameFactory("./");
         private currentLevel: Level;
@@ -428,6 +428,7 @@ module Lemmings {
         }
 
         /** pause the game */
+        /*
         public cheat() {
             if (this.game == null) {
                 return;
@@ -435,7 +436,7 @@ module Lemmings {
 
             this.game.cheat();
         }
-
+        */
         /** pause the game */
         public suspend() {
             if (this.game == null) {
@@ -496,7 +497,7 @@ module Lemmings {
             }
         }
 
-
+/*
         public stopSound() {
             if (this.soundPlayer) {
                 this.soundPlayer.stop();
@@ -530,7 +531,7 @@ module Lemmings {
             
             this.game.setDebugMode(true);
         }
-
+*/
         
 
         /** add/subtract one to the current levelIndex */
@@ -785,33 +786,175 @@ https://www.html5rocks.com/en/tutorials/webaudio/intro/
 soundsystem
 remove sound-system.ts et le repertoir Sounds
 
-//to be tested
 
-Lem fun 08  !!!!!!! pas de porte
-Lem fun 09 tueur (son et animation )
 Lem fun 11 blockeur left                        => OK!
-Lem fun 18 flamme (son et animation )
-
-
 Lem trick 04 blockeur left                      => OK!
-Lem Trick 06 grill� (son et animation )
 Lem Trick 09 blockeur right                     => OK!
+//to be tested
+                                                                T       S   sound
+Lem fun 28 electrocuté                                          4=trap  06
+Lem Taxing  01 pendu                                            4=trap  09  10-14
+Lem Taxing      02 2 differentes traps (son et animation )      4=trap  14
+Lem Taxing      02 2 differentes traps (son et animation )      4=trap  15
+Oh No Tames     09 emapler par stalagtite                       4=trap  08
+Oh No crazy     07 HRC (son et animation )                      4=trap  13
+Oh No crazy     08 palnte bouffeuse et noyade (son et animation)4=trap  17          plante
+Oh No crazy     08 palnte bouffeuse et noyade (son et animation)4=trap  17          plante
+Oh No wild      15 marteau pilon (son et animation )            4=trap  07
+Oh No wicked    01 marteau pilon (son et animation )            4=trap  07
+Oh No wicked    01 HRC  (son et animation )                     4=trap  13
+Oh No wicked    11 cameleon (son et animation )                 4=trap  11          cameleon
+Oh No havoc     10 aspiration (son et animation )               4=trap  14
+Oh No havoc     17 cameleon (son et animation )                 4=trap  11          cameleon
 
-Lem Taxing 02 2 disserentes traps (son et animation )
-Len Mayen 16 tueur (idem fun 9)
 
-Oh No crazy 7 HRC (son et animation )
-Oh No crazy 8 palnte bouffeuse et noyade (son et animation )
+Lem fun 09 tueur (son et animation )                    6=kill  00    => 10
+Lem fun 18 flamme (son et animation )                   6=kill  00    => 10    annimatio brulee avec fumee, noyade actuellement
+Lem Trick 06 grill� (son et animation )                6=kill  00
+Lem Taxing 02 2 disserentes traps (son et animation )   5=noy   00
+Len Mayen 16 tueur (idem fun 9)                         6=kill  00    => 10     animation avec morceaux
+
+
 Oh No wild 14 jet de gaz (son et animation )
-Oh No wild 15 marteau pilon (son et animation )
-Oh No wicked 1 HRC + marteau pilon (son et animation )
-Oh No wicked 11 cameleon (son et animation )
-Oh No havoc 10 aspiration (son et animation )
-Oh No havoc 17 cameleon (son et animation )
-93 Bliard 3 differente sortie, a voir avec l'original
+
+
+93 Bliard 3 diff    erente sortie, a voir avec l'original
 93 Bliard 14 porte cachee, a voir  avec l'original
 
 
+
+
+
+//explision ne devrait pas detruire les zones indestructibles
+
+
+ graphics set 0:
+	                0x0000 = exit
+	                0x0001 = start
+	                0x0002 = waving green flag
+	                0x0003 = one-way block pointing left
+	                0x0004 = one-way block pointing right
+	                0x0005 = water
+	                0x0006 = bear trap
+	                0x0007 = exit decoration, flames
+	                0x0008 = rock squishing trap
+	                0x0009 = waving blue flag
+	                0x000A = 10 ton squishing trap
+	                0x000B - 0x000F = invalid
+	 graphics set 1:
+	                0x0000 = exit
+	                0x0001 = start
+	                0x0002 = waving green flag
+	                0x0003 = one-way block pointing left
+	                0x0004 = one-way block pointing right
+	                0x0005 = red lava
+	                0x0006 = exit decoration, flames
+	                0x0007 = fire pit trap
+	                0x0008 = fire shooter trap from left
+	                0x0009 = waving blue flag
+	                0x000A = fire shooter trap from right
+	                0x000B - 0x000F = invalid
+	 graphics set 2:
+	                0x0000 = exit
+	                0x0001 = start
+	                0x0002 = waving green flag
+	                0x0003 = one-way block pointing left
+	                0x0004 = one-way block pointing right
+	                0x0005 = green liquid
+	                0x0006 = exit decoration, flames
+	                0x0007 = waving blue flag
+	                0x0008 = pillar squishing trap
+	                0x0009 = spinning death trap
+	                0x000A - 0x000F = invalid
+	 graphics set 3:
+	                0x0000 = exit
+	                0x0001 = start
+	                0x0002 = waving green flag
+	                0x0003 = one-way block pointing left
+	                0x0004 = one-way block pointing right
+	                0x0005 = water
+	                0x0006 = exit decoration, flames
+	                0x0007 = waving blue flag
+	                0x0008 = spinny rope trap
+	                0x0009 = spikes from left trap
+	                0x000A = spikes from right trap
+	                0x000B - 0x000F = invalid
+	 graphics set 4:
+	                0x0000 = exit
+	                0x0001 = start
+	                0x0002 = waving green flag
+	                0x0003 = waving blue flag
+	                0x0004 = one-way block pointing left
+	                0x0005 = one-way block pointing right
+	                0x0006 = sparkle water
+	                0x0007 = slice trap
+	                0x0008 = exit decoration, flames
+	                0x0009 = electrode trap
+	                0x000A = zap trap
+	                0x000B - 0x000F = invalid
+	 graphics set 5:
+	                0x0000 = exit
+	                0x0001 = start
+	                0x0002 = waving green flag
+	                0x0003 = one-way block pointing left
+	                0x0004 = one-way block pointing right
+	                0x0005 = sandy water
+	                0x0006 = hydraulic press trap
+	                0x0007 = flatten wheel trap
+	                0x0008 = waving blue flag
+	                0x0009 = exit decoration, candy canes
+	                0x000A - 0x000F = invalid
+	 graphics set 6:
+	                0x0000 = exit
+	                0x0001 = start
+	                0x0002 = waving green flag
+	                0x0003 = one-way block pointing left
+	                0x0004 = one-way block pointing right
+	                0x0005 = wavy tentacles (water)
+	                0x0006 = tentacle grab trap
+	                0x0007 = exit decoration, green thing
+	                0x0008 = licker from right trap
+	                0x0009 = exit decoration, green thing
+	                0x000A = licker from right trap
+			0x000B = waving blue flag
+	                0x000C - 0x000F = invalid
+	 graphics set 7:
+	                0x0000 = exit
+	                0x0001 = start
+	                0x0002 = waving green flag
+	                0x0003 = one-way block pointing left
+	                0x0004 = one-way block pointing right
+	                0x0005 = ice water
+	                0x0006 = exit decoration, red flag
+	                0x0007 = waving blue flag
+	                0x0008 = icicle point trap
+	                0x0009 = ice blast from left trap
+	                0x000A - 0x000F = invalid
+	 graphics set 8:
+	                0x0000 = exit
+	                0x0001 = start
+	                0x0002 = waving green flag
+	                0x0003 = one-way block pointing left
+	                0x0004 = one-way block pointing right
+	                0x0005 = bubble water
+	                0x0006 = exit decoration, red thing
+	                0x0007 = waving blue flag
+	                0x0008 = zapper from left trap
+	                0x0009 = sucker from top trap
+	                0x000A = gold thing??
+	                0x000B - 0x000F = invalid
+	 graphics set 9:
+	                0x0000 = exit
+	                0x0001 = start
+	                0x0002 = gift box
+	                0x0003 = exit decoration, flames
+	                0x0004 = bouncing snowman
+	                0x0005 = twinkling xmas lights
+	                0x0006 = fireplace - bottom
+	                0x0007 = fireplace - top
+	                0x0008 = santa-in-the-box bottom
+	                0x0009 = santa-in-the-box top
+	                0x000A- 0x000F = invalid
 
 
 

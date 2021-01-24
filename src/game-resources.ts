@@ -179,15 +179,15 @@ module Lemmings {
 
         public soundPlay(soundIndex: number, offeset: number = 0) {
             if (this.soundEnable == true) {
-                if (this.soundPlayerArray[soundIndex] != undefined)
-                    if (this.soundPlayerArray[soundIndex] != null)
-                        this.soundPlayerArray[soundIndex].play(offeset);
+                if (this.soundPlayerArray[soundIndex-1] != undefined)
+                    if (this.soundPlayerArray[soundIndex-1] != null)
+                        this.soundPlayerArray[soundIndex-1].play(offeset);
             }
         }
         /** return a palyer to playback a sound effect */
         public getSoundPlayerNew(soundIndex: number) {
             if (this.soundEnable == true)
-                return this.soundPlayerArray[soundIndex];
+                return this.soundPlayerArray[soundIndex-1];
             else
                 return null;
         }
