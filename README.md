@@ -32,6 +32,10 @@ The goal is to finish it and extand it to custom levels like the ones present he
 ## ToDo
 * finish welcome page (Reel)
 * automate music and sound
+* trap animation not triggered, sound to be added
+* killing machine do not start right lemming animation, right sound to be added
+* explosion should not destroy some hard part of the level
+* manage "one way" objects for bathers and miners
 * fix some game issues (some killing leming ojects are not triggered (hanging, rolling...))
 
 ## How to run
