@@ -198,7 +198,7 @@ module Lemmings {
             }
 
             //draw minimap
-            dispaly.drawFrame(this.level.getGroundMaskLayer().getMiniMap(-1,-1),209,18);
+            dispaly.drawFrame(this.level.getGroundMaskLayer().getMiniMap(-1,-1,this.level.colorPalette),209,18);
            
         }
 

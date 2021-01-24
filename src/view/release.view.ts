@@ -792,10 +792,10 @@ Lem trick 04 blockeur left                      => OK!
 Lem Trick 09 blockeur right                     => OK!
 //to be tested
                                                                 T       S   sound
-Lem fun 28 electrocuté                                          4=trap  06
-Lem Taxing  01 pendu                                            4=trap  09  10-14
-Lem Taxing      02 2 differentes traps (son et animation )      4=trap  14
-Lem Taxing      02 2 differentes traps (son et animation )      4=trap  15
+Lem Taxing      01 pendu                                        4=trap  09  10-14   OK
+Lem Taxing      02 2 differentes traps (son et animation )      4=trap  14          OK
+Lem Taxing      02 2 differentes traps (son et animation )      4=trap  15          OK
+Lem Taxing      28 electrocuté                                  4=trap  06          OK
 Oh No Tames     09 emapler par stalagtite                       4=trap  08
 Oh No crazy     07 HRC (son et animation )                      4=trap  13
 Oh No crazy     08 palnte bouffeuse et noyade (son et animation)4=trap  17          plante

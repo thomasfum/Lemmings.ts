@@ -3944,7 +3944,7 @@ var Lemmings;
             this.view_width = width;
             this.lemmingManager = lemmingManager;
         }
-        getMiniMap(_x, _width) {
+        getMiniMap(_x, _width, palette) {
             let f;
             f = new Lemmings.Frame(102, 20);
             //console.log("posimage:"+_x+ " ; "+_width);
@@ -3962,7 +3962,7 @@ var Lemmings;
                     let index = x + y * this.width;
                     let c = this.groundMask[index];
                     if (c != 0)
-                        f.setPixel(Math.round(x / stepx), Math.round(y / stepy) + 1, Lemmings.ColorPalette.colorFromRGB(211, 211, 146));
+                        f.setPixel(Math.round(x / stepx), Math.round(y / stepy) + 1, /*Lemmings.ColorPalette.colorFromRGB(211,211,146)*/ palette.getColor(7));
                     else
                         f.setPixel(Math.round(x / stepx), Math.round(y / stepy) + 1, Lemmings.ColorPalette.colorFromRGB(0, 0, 0));
                 }
@@ -9999,7 +9999,7 @@ var Lemmings;
                 this.drawSelection(dispaly, this.getPanelIndexBySkill(this.skills.getSelectedSkill()));
             }
             //draw minimap
-            dispaly.drawFrame(this.level.getGroundMaskLayer().getMiniMap(-1, -1), 209, 18);
+            dispaly.drawFrame(this.level.getGroundMaskLayer().getMiniMap(-1, -1, this.level.colorPalette), 209, 18);
         }
         /** left pad a string with spaces */
         stringRightPad(str, length) {
@@ -10770,10 +10770,10 @@ Lem trick 04 blockeur left                      => OK!
 Lem Trick 09 blockeur right                     => OK!
 //to be tested
                                                                 T       S   sound
-Lem fun 28 electrocuté                                          4=trap  06
-Lem Taxing  01 pendu                                            4=trap  09  10-14
-Lem Taxing      02 2 differentes traps (son et animation )      4=trap  14
-Lem Taxing      02 2 differentes traps (son et animation )      4=trap  15
+Lem Taxing      01 pendu                                        4=trap  09  10-14   OK
+Lem Taxing      02 2 differentes traps (son et animation )      4=trap  14          OK
+Lem Taxing      02 2 differentes traps (son et animation )      4=trap  15          OK
+Lem Taxing      28 electrocuté                                  4=trap  06          OK
 Oh No Tames     09 emapler par stalagtite                       4=trap  08
 Oh No crazy     07 HRC (son et animation )                      4=trap  13
 Oh No crazy     08 palnte bouffeuse et noyade (son et animation)4=trap  17          plante
@@ -11044,7 +11044,7 @@ var Lemmings;
                         //this.updateViewPoint(this.gameImgProps, (0-e.deltaX)*16, 0, 0);
                         //this.setGameViewPointPosition(newposx,0);
                         if (this.guiImgProps.display != null)
-                            this.guiImgProps.display.drawFrame(this.level.getGroundMaskLayer().getMiniMap(this.gameImgProps.viewPoint.x, this.level.width), 209, 18);
+                            this.guiImgProps.display.drawFrame(this.level.getGroundMaskLayer().getMiniMap(this.gameImgProps.viewPoint.x, this.level.width, this.level.colorPalette), 209, 18);
                         this.redraw();
                     }
                 }
@@ -11231,7 +11231,7 @@ var Lemmings;
             stageImage.viewPoint.x = this.limitValue(0, stageImage.viewPoint.x, stageImage.display.getWidth() - stageImage.width / stageImage.viewPoint.scale);
             stageImage.viewPoint.y = this.limitValue(0, stageImage.viewPoint.y, stageImage.display.getHeight() - stageImage.height / stageImage.viewPoint.scale);
             if (this.guiImgProps.display != null)
-                this.guiImgProps.display.drawFrame(this.level.getGroundMaskLayer().getMiniMap(stageImage.viewPoint.x, this.level.width), 209, 18);
+                this.guiImgProps.display.drawFrame(this.level.getGroundMaskLayer().getMiniMap(stageImage.viewPoint.x, this.level.width, this.level.colorPalette), 209, 18);
             this.redraw();
         }
         UpdateAutoScroll() {

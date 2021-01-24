@@ -116,7 +116,7 @@ module Lemmings {
                         //this.setGameViewPointPosition(newposx,0);
                        
                         if (this.guiImgProps.display!=null)
-                            this.guiImgProps.display.drawFrame(this.level.getGroundMaskLayer().getMiniMap(this.gameImgProps.viewPoint.x,this.level.width),209,18);
+                            this.guiImgProps.display.drawFrame(this.level.getGroundMaskLayer().getMiniMap(this.gameImgProps.viewPoint.x,this.level.width,this.level.colorPalette),209,18);
                    
                         this.redraw();
                     }
@@ -357,7 +357,7 @@ module Lemmings {
             stageImage.viewPoint.y = this.limitValue(0, stageImage.viewPoint.y, stageImage.display.getHeight() - stageImage.height / stageImage.viewPoint.scale);
 
             if (this.guiImgProps.display!=null)
-                this.guiImgProps.display.drawFrame(this.level.getGroundMaskLayer().getMiniMap(stageImage.viewPoint.x,this.level.width),209,18);
+                this.guiImgProps.display.drawFrame(this.level.getGroundMaskLayer().getMiniMap(stageImage.viewPoint.x,this.level.width,this.level.colorPalette),209,18);
            
             this.redraw();
     

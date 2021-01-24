@@ -44,7 +44,7 @@ module Lemmings {
         }
 
         
-        public  getMiniMap(_x:number, _width:number):Frame {
+        public  getMiniMap(_x:number, _width:number, palette:ColorPalette):Frame {
             let f: Frame;
             f = new  Frame(102,20);
             //console.log("posimage:"+_x+ " ; "+_width);
@@ -65,7 +65,7 @@ module Lemmings {
                     let index = x + y * this.width;
                     let c=this.groundMask[index];
                     if(c!=0)
-                        f.setPixel(Math.round(x/stepx) ,Math.round(y/stepy)+1,Lemmings.ColorPalette.colorFromRGB(211,211,146));
+                        f.setPixel(Math.round(x/stepx) ,Math.round(y/stepy)+1,/*Lemmings.ColorPalette.colorFromRGB(211,211,146)*/palette.getColor(7));
                         
                     else
                         f.setPixel(Math.round(x/stepx) ,Math.round(y/stepy)+1,Lemmings.ColorPalette.colorFromRGB(0,0,0));
