@@ -92,18 +92,19 @@ module Lemmings {
                 f.setPixel(101,y,Lemmings.ColorPalette.colorFromRGB(0,0,0));
             }
 
+            //243,211,211
 
             //draw viewport rect
             let dx=Math.trunc(this.view_X/stepx);
             //console.log("posimage:"+dx);
 
             for (let x = dx; x <=dx+21; x=x+1 ){
-                f.setPixel(x,0,Lemmings.ColorPalette.colorFromRGB(255,255,255));
-                f.setPixel(x,19,Lemmings.ColorPalette.colorFromRGB(255,255,255));
+                f.setPixel(x, 0, Lemmings.ColorPalette.colorFromRGB(243, 211, 211));
+                f.setPixel(x, 19, Lemmings.ColorPalette.colorFromRGB(243, 211, 211));
             }
             for (let y = 0; y <19; y=y+1 ){
-                f.setPixel(dx,y,Lemmings.ColorPalette.colorFromRGB(255,255,255));
-                f.setPixel(dx+21,y,Lemmings.ColorPalette.colorFromRGB(255,255,255));
+                f.setPixel(dx, y, Lemmings.ColorPalette.colorFromRGB(243, 211, 211));
+                f.setPixel(dx + 21, y, Lemmings.ColorPalette.colorFromRGB(243, 211, 211));
             }
             return f;
         }

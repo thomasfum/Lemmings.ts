@@ -71,7 +71,7 @@ module Lemmings {
                 }
                 if(objectInfo.trigger_effect_id==TriggerTypes.KILL)
                 {
-                    console.log("Object:" + ob.id + ", x=" + ob.x + ", T=" + objectInfo.trigger_effect_id + ", S=" + objectInfo.trap_sound_effect_id + ", R=" + objectInfo.animationLoop +",G="+graphicSet1);//+ objectInfo.unknown + ", " + objectInfo.unknown1 + ", " + objectInfo.unknown2);
+                    console.warn("Object:" + ob.id + ", x=" + ob.x + ", T=" + objectInfo.trigger_effect_id + ", S=" + objectInfo.trap_sound_effect_id + ", R=" + objectInfo.animationLoop +",G="+graphicSet1);//+ objectInfo.unknown + ", " + objectInfo.unknown1 + ", " + objectInfo.unknown2);
                 }
                 /// add entrances
                 if (ob.id == 1) {

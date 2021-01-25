@@ -318,7 +318,7 @@ var Lemmings;
                     let particleTable = new Lemmings.ParticleTable(this.level.colorPalette);
                     /// setup Lemmings
                     this.lemmingManager = new Lemmings.LemmingManager(this.level, lemSprite, this.triggerManager, this.gameVictoryCondition, masks, particleTable, this.gameResources);
-                    return this.gameResources.getSkillPanelSprite(this.level.colorPalette);
+                    return this.gameResources.getSkillPanelSprite(this.level.colorPalette); //TF ICI
                 })
                     .then(skillPanelSprites => {
                     this.soundPlayer1 = this.gameResources.getSoundPlayerNew(Lemmings.SoundFxTypes.ENTRANCE_OPENING); //TF sound
@@ -3095,7 +3095,7 @@ var Lemmings;
                     console.log("Object:" + ob.id + ", x=" + ob.x + ", T=" + objectInfo.trigger_effect_id + ", S=" + objectInfo.trap_sound_effect_id + ", R=" + objectInfo.animationLoop); //+ objectInfo.unknown + ", " + objectInfo.unknown1 + ", " + objectInfo.unknown2);
                 }
                 if (objectInfo.trigger_effect_id == Lemmings.TriggerTypes.KILL) {
-                    console.log("Object:" + ob.id + ", x=" + ob.x + ", T=" + objectInfo.trigger_effect_id + ", S=" + objectInfo.trap_sound_effect_id + ", R=" + objectInfo.animationLoop + ",G=" + graphicSet1); //+ objectInfo.unknown + ", " + objectInfo.unknown1 + ", " + objectInfo.unknown2);
+                    console.warn("Object:" + ob.id + ", x=" + ob.x + ", T=" + objectInfo.trigger_effect_id + ", S=" + objectInfo.trap_sound_effect_id + ", R=" + objectInfo.animationLoop + ",G=" + graphicSet1); //+ objectInfo.unknown + ", " + objectInfo.unknown1 + ", " + objectInfo.unknown2);
                 }
                 /// add entrances
                 if (ob.id == 1) {
@@ -3866,7 +3866,7 @@ var Lemmings;
             emptyFrame.fill(0, 0, 0);
             this.letterSprite[" "] = emptyFrame;
             let blackAndWithPalette = new Lemmings.ColorPalette();
-            blackAndWithPalette.setColorRGB(1, 255, 255, 255);
+            blackAndWithPalette.setColorRGB(1, 243, 211, 211);
             /// read panel skill-count number letters
             fr2.setOffset(0x1900);
             for (let i = 0; i < 10; i++) {
@@ -3982,16 +3982,17 @@ var Lemmings;
             for (let y = 0; y < 19; y = y + 1) {
                 f.setPixel(101, y, Lemmings.ColorPalette.colorFromRGB(0, 0, 0));
             }
+            //243,211,211
             //draw viewport rect
             let dx = Math.trunc(this.view_X / stepx);
             //console.log("posimage:"+dx);
             for (let x = dx; x <= dx + 21; x = x + 1) {
-                f.setPixel(x, 0, Lemmings.ColorPalette.colorFromRGB(255, 255, 255));
-                f.setPixel(x, 19, Lemmings.ColorPalette.colorFromRGB(255, 255, 255));
+                f.setPixel(x, 0, Lemmings.ColorPalette.colorFromRGB(243, 211, 211));
+                f.setPixel(x, 19, Lemmings.ColorPalette.colorFromRGB(243, 211, 211));
             }
             for (let y = 0; y < 19; y = y + 1) {
-                f.setPixel(dx, y, Lemmings.ColorPalette.colorFromRGB(255, 255, 255));
-                f.setPixel(dx + 21, y, Lemmings.ColorPalette.colorFromRGB(255, 255, 255));
+                f.setPixel(dx, y, Lemmings.ColorPalette.colorFromRGB(243, 211, 211));
+                f.setPixel(dx + 21, y, Lemmings.ColorPalette.colorFromRGB(243, 211, 211));
             }
             return f;
         }

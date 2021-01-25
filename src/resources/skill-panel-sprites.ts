@@ -56,7 +56,7 @@ module Lemmings {
             this.letterSprite[" "] = emptyFrame;
 
             let blackAndWithPalette = new ColorPalette();
-            blackAndWithPalette.setColorRGB(1, 255, 255, 255);
+            blackAndWithPalette.setColorRGB(1, 243, 211, 211);
 
             /// read panel skill-count number letters
             fr2.setOffset(0x1900);

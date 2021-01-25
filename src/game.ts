@@ -105,7 +105,7 @@ module Lemmings {
                         /// setup Lemmings
                         this.lemmingManager = new LemmingManager(this.level, lemSprite, this.triggerManager, this.gameVictoryCondition, masks, particleTable,this.gameResources);
 
-                        return this.gameResources.getSkillPanelSprite(this.level.colorPalette);
+                        return this.gameResources.getSkillPanelSprite(this.level.colorPalette);//TF ICI
 
                     })
                     .then(skillPanelSprites => {

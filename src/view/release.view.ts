@@ -791,6 +791,10 @@ Lem fun 11 blockeur left                        => OK!
 Lem trick 04 blockeur left                      => OK!
 Lem Trick 09 blockeur right                     => OK!
 //to be tested
+
+
+---------------------------------------------------------
+Trigger=4
                                                                 T       S   sound
 Lem Taxing      01 pendu                                        4=trap  09  10-14   OK
 Lem Taxing      02 2 differentes traps (son et animation )      4=trap  14          OK
@@ -807,13 +811,34 @@ Oh No wicked    11 cameleon (son et animation )                 4=trap  11      
 Oh No havoc     10 aspiration (son et animation )               4=trap  14
 Oh No havoc     17 cameleon (son et animation )                 4=trap  11          cameleon
 
+---------------------------------------------------------
+Trigger 6
 
-Lem fun 09 tueur (son et animation )                    6=kill  00    => 10
-Lem fun 18 flamme (son et animation )                   6=kill  00    => 10    annimatio brulee avec fumee, noyade actuellement
+        L   G                   attendu
+Lem fun     06  1   lance flame
+Lem fun     09  2   tueur rotatif
+Lem fun     18  1   brasier  (easy to test)                     annimatio brulee avec fumee, noyade actuellement
+Lem fun     20  2   tueur rotatif
+Lem fun     23  1   mini brasier et un lanceur de flamme
+Lem fun     28  1   2 brasiers
+Lem fun     30  1   2 brasiers
+Lem ticky   06  1   1 brasiers
+Lem ticky   17  1   1 lance flame
+Lem ticky   20  1   1 lance flame
+Lem ticky   26  2   3 tueur rotatif 
+Lem ticky   29  2   4 tueur rotatif 
+Lem taxing  05  1   2 lance flame
+
+HoNo crazy  09  2   1 lance flame
+HoNo wild   12  2   1 lance flame
+HoNo wild   14  2   1 lance flame
+HoNo wicked 15  2   3 lance flame
+HoNo havoc  15  2   1 lance flame
+
+
 Lem Trick 06 grill� (son et animation )                6=kill  00
-Lem Taxing 02 2 disserentes traps (son et animation )   5=noy   00
 Len Mayen 16 tueur (idem fun 9)                         6=kill  00    => 10     animation avec morceaux
-
+Lem Taxing 02 2 disserentes traps (son et animation )   5=noy   00
 
 Oh No wild 14 jet de gaz (son et animation )
 
