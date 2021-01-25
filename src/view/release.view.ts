@@ -817,21 +817,21 @@ Trigger 6
         L   G                   attendu
 Lem fun     06  1   lance flame
 Lem fun     09  2   tueur rotatif
-Lem fun     18  1   brasier  (easy to test)                     annimatio brulee avec fumee, noyade actuellement
+Lem fun     18  1   brasier  (easy to test)    IJJLFLCCDO                 annimatio brulee avec fumee, noyade actuellement
 Lem fun     20  2   tueur rotatif
 Lem fun     23  1   mini brasier et un lanceur de flamme
 Lem fun     28  1   2 brasiers
 Lem fun     30  1   2 brasiers
 Lem ticky   06  1   1 brasiers
 Lem ticky   17  1   1 lance flame
-Lem ticky   20  1   1 lance flame
-Lem ticky   26  2   3 tueur rotatif 
-Lem ticky   29  2   4 tueur rotatif 
+Lem ticky   20  1   1 lance flame (easy to test)  IJJLFMCCFR  annimatio brulee avec fumee
+Lem ticky   26  2   3 tueur rotatif (easy to test) 
+Lem ticky   29  2   4 tueur rotatif  NJMFMCALFX
 Lem taxing  05  1   2 lance flame
 
 HoNo crazy  09  2   1 lance flame
 HoNo wild   12  2   1 lance flame
-HoNo wild   14  2   1 lance flame
+HoNo wild   14  2   1 lance flame (easy to test) FMCIHVTGDP
 HoNo wicked 15  2   3 lance flame
 HoNo havoc  15  2   1 lance flame
 

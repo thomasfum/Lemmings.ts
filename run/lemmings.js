@@ -825,6 +825,7 @@ var Lemmings;
             this.actions[Lemmings.LemmingStateType.OHNO] = new Lemmings.ActionOhNoSystem(lemmingsSprite);
             this.actions[Lemmings.LemmingStateType.SPLATTING] = new Lemmings.ActionSplatterSystem(lemmingsSprite, Resources); //splash
             this.actions[Lemmings.LemmingStateType.DROWNING] = new Lemmings.ActionDrowningSystem(lemmingsSprite, Resources); //noyade
+            this.actions[Lemmings.LemmingStateType.FRYING] = new Lemmings.ActionFryingSystem(lemmingsSprite);
             this.skillActions[Lemmings.SkillTypes.DIGGER] = this.actions[Lemmings.LemmingStateType.DIGGING];
             this.skillActions[Lemmings.SkillTypes.FLOATER] = this.actions[Lemmings.LemmingStateType.FLOATING];
             this.skillActions[Lemmings.SkillTypes.BLOCKER] = this.actions[Lemmings.LemmingStateType.BLOCKING];
@@ -2119,6 +2120,40 @@ var Lemmings;
     ActionFloatingSystem.floatSpeed = [3, 3, 3, 3, -1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2];
     ActionFloatingSystem.floatFrame = [0, 1, 3, 5, 5, 5, 5, 5, 5, 6, 7, 7, 6, 5, 4, 4];
     Lemmings.ActionFloatingSystem = ActionFloatingSystem;
+})(Lemmings || (Lemmings = {}));
+var Lemmings;
+(function (Lemmings) {
+    class ActionFryingSystem {
+        constructor(sprites) {
+            this.sprite = sprites.getAnimation(Lemmings.SpriteTypes.WALKING, false);
+        }
+        getActionName() {
+            return "Frying";
+        }
+        GetLemState() {
+            return Lemmings.LemmingStateType.WALKING;
+        }
+        triggerLemAction(lem) {
+            return false;
+        }
+        /** render Lemming to gamedisply */
+        draw(gameDisplay, lem) {
+            let frame = this.sprite.getFrame(lem.frameIndex);
+            gameDisplay.drawFrame(frame, lem.x, lem.y);
+            console.log("Frying draw");
+        }
+        process(level, lem) {
+            lem.frameIndex++;
+            console.log("Frying process" + lem.frameIndex);
+            /*
+                        if (lem.frameIndex >= 14) {
+                            return LemmingStateType.OUT_OFF_LEVEL;
+                        }
+            */
+            return Lemmings.LemmingStateType.NO_STATE_TYPE;
+        }
+    }
+    Lemmings.ActionFryingSystem = ActionFryingSystem;
 })(Lemmings || (Lemmings = {}));
 var Lemmings;
 (function (Lemmings) {
@@ -10770,6 +10805,10 @@ Lem fun 11 blockeur left                        => OK!
 Lem trick 04 blockeur left                      => OK!
 Lem Trick 09 blockeur right                     => OK!
 //to be tested
+
+
+---------------------------------------------------------
+Trigger=4
                                                                 T       S   sound
 Lem Taxing      01 pendu                                        4=trap  09  10-14   OK
 Lem Taxing      02 2 differentes traps (son et animation )      4=trap  14          OK
@@ -10786,13 +10825,34 @@ Oh No wicked    11 cameleon (son et animation )                 4=trap  11      
 Oh No havoc     10 aspiration (son et animation )               4=trap  14
 Oh No havoc     17 cameleon (son et animation )                 4=trap  11          cameleon
 
+---------------------------------------------------------
+Trigger 6
 
-Lem fun 09 tueur (son et animation )                    6=kill  00    => 10
-Lem fun 18 flamme (son et animation )                   6=kill  00    => 10    annimatio brulee avec fumee, noyade actuellement
+        L   G                   attendu
+Lem fun     06  1   lance flame
+Lem fun     09  2   tueur rotatif
+Lem fun     18  1   brasier  (easy to test)    IJJLFLCCDO                 annimatio brulee avec fumee, noyade actuellement
+Lem fun     20  2   tueur rotatif
+Lem fun     23  1   mini brasier et un lanceur de flamme
+Lem fun     28  1   2 brasiers
+Lem fun     30  1   2 brasiers
+Lem ticky   06  1   1 brasiers
+Lem ticky   17  1   1 lance flame
+Lem ticky   20  1   1 lance flame (easy to test)  IJJLFMCCFR  annimatio brulee avec fumee
+Lem ticky   26  2   3 tueur rotatif (easy to test)
+Lem ticky   29  2   4 tueur rotatif  NJMFMCALFX
+Lem taxing  05  1   2 lance flame
+
+HoNo crazy  09  2   1 lance flame
+HoNo wild   12  2   1 lance flame
+HoNo wild   14  2   1 lance flame (easy to test) FMCIHVTGDP
+HoNo wicked 15  2   3 lance flame
+HoNo havoc  15  2   1 lance flame
+
+
 Lem Trick 06 grill� (son et animation )                6=kill  00
-Lem Taxing 02 2 disserentes traps (son et animation )   5=noy   00
 Len Mayen 16 tueur (idem fun 9)                         6=kill  00    => 10     animation avec morceaux
-
+Lem Taxing 02 2 disserentes traps (son et animation )   5=noy   00
 
 Oh No wild 14 jet de gaz (son et animation )
 

@@ -43,7 +43,7 @@ module Lemmings {
             this.actions[LemmingStateType.OHNO] = new ActionOhNoSystem(lemmingsSprite);
             this.actions[LemmingStateType.SPLATTING] = new ActionSplatterSystem(lemmingsSprite, Resources);//splash
             this.actions[LemmingStateType.DROWNING] = new ActionDrowningSystem(lemmingsSprite, Resources);//noyade
-
+            this.actions[LemmingStateType.FRYING] = new ActionFryingSystem(lemmingsSprite);
 
             this.skillActions[SkillTypes.DIGGER] = this.actions[LemmingStateType.DIGGING];
             this.skillActions[SkillTypes.FLOATER] = this.actions[LemmingStateType.FLOATING];
