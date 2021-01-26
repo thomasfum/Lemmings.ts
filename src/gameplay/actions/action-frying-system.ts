@@ -2,43 +2,48 @@ module Lemmings {
 
     export class ActionFryingSystem implements IActionSystem {
 
+        private soundPlayer: AudioPlayer = null;
+
         private sprite: Animation;
 
-        constructor(sprites: LemmingsSprite) {
-            this.sprite = sprites.getAnimation(SpriteTypes.WALKING, false);
+        constructor(sprites: LemmingsSprite, Resources: GameResources) {
+            this.sprite = sprites.getAnimation(SpriteTypes.FRYING, true);
+            this.soundPlayer = Resources.getSoundPlayerNew(SoundFxTypes.KILL);//TF sound
         }
 
         public getActionName(): string {
-            return "Frying";
+            return "frying";
         }
-        public GetLemState(): LemmingStateType{
-            return LemmingStateType.WALKING;
+        public GetLemState(): LemmingStateType {
+            return LemmingStateType.FRYING;
         }
 
         public triggerLemAction(lem: Lemming): boolean {
             return false;
         }
 
-        /** render Lemming to gamedisply */
         public draw(gameDisplay: DisplayImage, lem: Lemming) {
+
             let frame = this.sprite.getFrame(lem.frameIndex);
 
-            gameDisplay.drawFrame(frame, lem.x, lem.y);
-            console.log("Frying draw");
+            gameDisplay.drawFrame(frame, lem.x, lem.y-2);
         }
 
 
         public process(level: Level, lem: Lemming): LemmingStateType {
+            lem.disable();
 
+            if (lem.frameIndex == 0) {
+                if (this.soundPlayer != null)
+                    this.soundPlayer.play();
+            }
             lem.frameIndex++;
-            console.log("Frying process" + lem.frameIndex);
-/*
+
             if (lem.frameIndex >= 14) {
                 return LemmingStateType.OUT_OFF_LEVEL;
             }
-*/
-            return LemmingStateType.NO_STATE_TYPE;
 
+            return LemmingStateType.NO_STATE_TYPE;
         }
 
     }

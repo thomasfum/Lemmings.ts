@@ -47,12 +47,12 @@ module Lemmings {
         }
 
         /** test all triggers. Returns the triggered type that matches */
-        trigger(x: number, y: number, ressources:GameResources,graphicSet1:number): TriggerTypes {
+        trigger(x: number, y: number, ressources:GameResources): TriggerTypes {
             let l = this.triggers.length;
             let tick = this.gameTimer.getGameTicks();
 
             for (var i = 0; i < l; i++) {
-                let type = this.triggers[i].trigger(x, y, tick, ressources, graphicSet1);
+                let type = this.triggers[i].trigger(x, y, tick, ressources);
 
                 if (type != TriggerTypes.NO_TRIGGER)
                     return type;

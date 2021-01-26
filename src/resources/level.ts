@@ -63,16 +63,19 @@ module Lemmings {
                 let newMapObject = new MapObject(ob, objectInfo);
                 this.objects.push(newMapObject);
 
-                let inactiveCount=0;
+                let inactiveCount = 0;
+
                 if(objectInfo.trigger_effect_id==TriggerTypes.TRAP)
                 {
                     inactiveCount=objectInfo.frameCount;
-                    console.log("Object:" + ob.id + ", x=" + ob.x + ", T=" + objectInfo.trigger_effect_id + ", S=" + objectInfo.trap_sound_effect_id + ", R=" + objectInfo.animationLoop);//+ objectInfo.unknown + ", " + objectInfo.unknown1 + ", " + objectInfo.unknown2);
+                //    console.log("Object:" + ob.id + ", x=" + ob.x + ", T=" + objectInfo.trigger_effect_id + ", S=" + objectInfo.trap_sound_effect_id + ", R=" + objectInfo.animationLoop);//+ objectInfo.unknown + ", " + objectInfo.unknown1 + ", " + objectInfo.unknown2);
                 }
+                /*
                 if(objectInfo.trigger_effect_id==TriggerTypes.KILL)
                 {
                     console.warn("Object:" + ob.id + ", x=" + ob.x + ", T=" + objectInfo.trigger_effect_id + ", S=" + objectInfo.trap_sound_effect_id + ", R=" + objectInfo.animationLoop +",G="+graphicSet1);//+ objectInfo.unknown + ", " + objectInfo.unknown1 + ", " + objectInfo.unknown2);
                 }
+                */
                 /// add entrances
                 if (ob.id == 1) {
                     this.entrances.push(ob);

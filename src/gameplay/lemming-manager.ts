@@ -43,7 +43,7 @@ module Lemmings {
             this.actions[LemmingStateType.OHNO] = new ActionOhNoSystem(lemmingsSprite);
             this.actions[LemmingStateType.SPLATTING] = new ActionSplatterSystem(lemmingsSprite, Resources);//splash
             this.actions[LemmingStateType.DROWNING] = new ActionDrowningSystem(lemmingsSprite, Resources);//noyade
-            this.actions[LemmingStateType.FRYING] = new ActionFryingSystem(lemmingsSprite);
+            this.actions[LemmingStateType.FRYING] = new ActionFryingSystem(lemmingsSprite, Resources);
 
             this.skillActions[SkillTypes.DIGGER] = this.actions[LemmingStateType.DIGGING];
             this.skillActions[SkillTypes.FLOATER] = this.actions[LemmingStateType.FLOATING];
@@ -92,7 +92,7 @@ module Lemmings {
                 let newAction = lem.process(this.level);
                 this.processNewAction(lem, newAction);
 
-                let triggerAction = this.runTrigger(lem, this.level.graphicSet1);
+                let triggerAction = this.runTrigger(lem);
                 this.processNewAction(lem, triggerAction);
             }
         }
@@ -131,7 +131,7 @@ module Lemmings {
 
 
 
-        private runTrigger(lem: Lemming, graphicSet1:number): LemmingStateType {
+        private runTrigger(lem: Lemming): LemmingStateType {
             if (lem.isRemoved() || (lem.isDisabled())) {
                 return LemmingStateType.NO_STATE_TYPE;
             }
@@ -142,7 +142,7 @@ module Lemmings {
             {
                 offset=8;//test upper for basher
             }
-            let triggerType = this.triggerManager.trigger(lem.x, lem.y-offset, this.Resources,graphicSet1);
+            let triggerType = this.triggerManager.trigger(lem.x, lem.y-offset, this.Resources);
             if (triggerType!=TriggerTypes.NO_TRIGGER)
                 this.logging.log("trigger type: " + triggerType);
             switch (triggerType) {
@@ -153,8 +153,8 @@ module Lemmings {
                 case TriggerTypes.EXIT_LEVEL:
                     return LemmingStateType.EXITING;
                 case TriggerTypes.KILL:
-                    return LemmingStateType.SPLATTING;
-                    //return LemmingStateType.FRYING;
+                    //return LemmingStateType.SPLATTING;
+                    return LemmingStateType.FRYING;
                 case TriggerTypes.TRAP:
                     return LemmingStateType.OUT_OFF_LEVEL;
                     //return LemmingStateType.HOISTING;

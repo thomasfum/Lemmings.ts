@@ -825,7 +825,7 @@ var Lemmings;
             this.actions[Lemmings.LemmingStateType.OHNO] = new Lemmings.ActionOhNoSystem(lemmingsSprite);
             this.actions[Lemmings.LemmingStateType.SPLATTING] = new Lemmings.ActionSplatterSystem(lemmingsSprite, Resources); //splash
             this.actions[Lemmings.LemmingStateType.DROWNING] = new Lemmings.ActionDrowningSystem(lemmingsSprite, Resources); //noyade
-            this.actions[Lemmings.LemmingStateType.FRYING] = new Lemmings.ActionFryingSystem(lemmingsSprite);
+            this.actions[Lemmings.LemmingStateType.FRYING] = new Lemmings.ActionFryingSystem(lemmingsSprite, Resources);
             this.skillActions[Lemmings.SkillTypes.DIGGER] = this.actions[Lemmings.LemmingStateType.DIGGING];
             this.skillActions[Lemmings.SkillTypes.FLOATER] = this.actions[Lemmings.LemmingStateType.FLOATING];
             this.skillActions[Lemmings.SkillTypes.BLOCKER] = this.actions[Lemmings.LemmingStateType.BLOCKING];
@@ -858,7 +858,7 @@ var Lemmings;
                     continue;
                 let newAction = lem.process(this.level);
                 this.processNewAction(lem, newAction);
-                let triggerAction = this.runTrigger(lem, this.level.graphicSet1);
+                let triggerAction = this.runTrigger(lem);
                 this.processNewAction(lem, triggerAction);
             }
         }
@@ -883,7 +883,7 @@ var Lemmings;
                 }
             }
         }
-        runTrigger(lem, graphicSet1) {
+        runTrigger(lem) {
             if (lem.isRemoved() || (lem.isDisabled())) {
                 return Lemmings.LemmingStateType.NO_STATE_TYPE;
             }
@@ -892,7 +892,7 @@ var Lemmings;
             if (lem.action.GetLemState() == Lemmings.LemmingStateType.BASHING) {
                 offset = 8; //test upper for basher
             }
-            let triggerType = this.triggerManager.trigger(lem.x, lem.y - offset, this.Resources, graphicSet1);
+            let triggerType = this.triggerManager.trigger(lem.x, lem.y - offset, this.Resources);
             if (triggerType != Lemmings.TriggerTypes.NO_TRIGGER)
                 this.logging.log("trigger type: " + triggerType);
             switch (triggerType) {
@@ -903,8 +903,8 @@ var Lemmings;
                 case Lemmings.TriggerTypes.EXIT_LEVEL:
                     return Lemmings.LemmingStateType.EXITING;
                 case Lemmings.TriggerTypes.KILL:
-                    return Lemmings.LemmingStateType.SPLATTING;
-                //return LemmingStateType.FRYING;
+                    //return LemmingStateType.SPLATTING;
+                    return Lemmings.LemmingStateType.FRYING;
                 case Lemmings.TriggerTypes.TRAP:
                     return Lemmings.LemmingStateType.OUT_OFF_LEVEL;
                 //return LemmingStateType.HOISTING;
@@ -1492,11 +1492,11 @@ var Lemmings;
             }
         }
         /** test all triggers. Returns the triggered type that matches */
-        trigger(x, y, ressources, graphicSet1) {
+        trigger(x, y, ressources) {
             let l = this.triggers.length;
             let tick = this.gameTimer.getGameTicks();
             for (var i = 0; i < l; i++) {
-                let type = this.triggers[i].trigger(x, y, tick, ressources, graphicSet1);
+                let type = this.triggers[i].trigger(x, y, tick, ressources);
                 if (type != Lemmings.TriggerTypes.NO_TRIGGER)
                     return type;
             }
@@ -1529,7 +1529,7 @@ var Lemmings;
             this.disableTicksCount = disableTicksCount;
             this.soundIndex = soundIndex;
         }
-        trigger(x, y, tick, ressources, graphicSet1) {
+        trigger(x, y, tick, ressources) {
             if (this.disabledUntilTick <= tick) {
                 if ((x >= this.x1) && (y >= this.y1) && (x <= this.x2) && (y <= this.y2)) {
                     this.disabledUntilTick = tick + this.disableTicksCount;
@@ -1537,20 +1537,10 @@ var Lemmings;
                         console.log("Sound from trigger:" + this.soundIndex + " DisableTricks=" + this.disableTicksCount);
                         if (this.soundIndex != 0)
                             ressources.soundPlay(this.soundIndex);
-                        /*
-                        if (this.soundIndex == 9) {
-                            ressources.soundPlay(11);//TF Sound:
-                            ressources.soundPlay(15,2);//TF Sound:
-                        }
-                        */
                         if (this.obj != null) {
                             this.obj.isTrigerred = true;
-                            console.log("Object from trigger:" + this.obj.isTrigerred);
+                            //console.log("Object from trigger:"+this.obj.isTrigerred);
                         }
-                    }
-                    if (this.type == Lemmings.TriggerTypes.KILL) {
-                        console.log("Kill: G=" + graphicSet1);
-                        ressources.soundPlay(Lemmings.SoundFxTypes.KILL);
                     }
                     return this.type;
                 }
@@ -2124,32 +2114,34 @@ var Lemmings;
 var Lemmings;
 (function (Lemmings) {
     class ActionFryingSystem {
-        constructor(sprites) {
-            this.sprite = sprites.getAnimation(Lemmings.SpriteTypes.WALKING, false);
+        constructor(sprites, Resources) {
+            this.soundPlayer = null;
+            this.sprite = sprites.getAnimation(Lemmings.SpriteTypes.FRYING, true);
+            this.soundPlayer = Resources.getSoundPlayerNew(Lemmings.SoundFxTypes.KILL); //TF sound
         }
         getActionName() {
-            return "Frying";
+            return "frying";
         }
         GetLemState() {
-            return Lemmings.LemmingStateType.WALKING;
+            return Lemmings.LemmingStateType.FRYING;
         }
         triggerLemAction(lem) {
             return false;
         }
-        /** render Lemming to gamedisply */
         draw(gameDisplay, lem) {
             let frame = this.sprite.getFrame(lem.frameIndex);
-            gameDisplay.drawFrame(frame, lem.x, lem.y);
-            console.log("Frying draw");
+            gameDisplay.drawFrame(frame, lem.x, lem.y - 3);
         }
         process(level, lem) {
+            lem.disable();
+            if (lem.frameIndex == 0) {
+                if (this.soundPlayer != null)
+                    this.soundPlayer.play();
+            }
             lem.frameIndex++;
-            console.log("Frying process" + lem.frameIndex);
-            /*
-                        if (lem.frameIndex >= 14) {
-                            return LemmingStateType.OUT_OFF_LEVEL;
-                        }
-            */
+            if (lem.frameIndex >= 14) {
+                return Lemmings.LemmingStateType.OUT_OFF_LEVEL;
+            }
             return Lemmings.LemmingStateType.NO_STATE_TYPE;
         }
     }
@@ -3127,11 +3119,14 @@ var Lemmings;
                 let inactiveCount = 0;
                 if (objectInfo.trigger_effect_id == Lemmings.TriggerTypes.TRAP) {
                     inactiveCount = objectInfo.frameCount;
-                    console.log("Object:" + ob.id + ", x=" + ob.x + ", T=" + objectInfo.trigger_effect_id + ", S=" + objectInfo.trap_sound_effect_id + ", R=" + objectInfo.animationLoop); //+ objectInfo.unknown + ", " + objectInfo.unknown1 + ", " + objectInfo.unknown2);
+                    //    console.log("Object:" + ob.id + ", x=" + ob.x + ", T=" + objectInfo.trigger_effect_id + ", S=" + objectInfo.trap_sound_effect_id + ", R=" + objectInfo.animationLoop);//+ objectInfo.unknown + ", " + objectInfo.unknown1 + ", " + objectInfo.unknown2);
                 }
-                if (objectInfo.trigger_effect_id == Lemmings.TriggerTypes.KILL) {
-                    console.warn("Object:" + ob.id + ", x=" + ob.x + ", T=" + objectInfo.trigger_effect_id + ", S=" + objectInfo.trap_sound_effect_id + ", R=" + objectInfo.animationLoop + ",G=" + graphicSet1); //+ objectInfo.unknown + ", " + objectInfo.unknown1 + ", " + objectInfo.unknown2);
+                /*
+                if(objectInfo.trigger_effect_id==TriggerTypes.KILL)
+                {
+                    console.warn("Object:" + ob.id + ", x=" + ob.x + ", T=" + objectInfo.trigger_effect_id + ", S=" + objectInfo.trap_sound_effect_id + ", R=" + objectInfo.animationLoop +",G="+graphicSet1);//+ objectInfo.unknown + ", " + objectInfo.unknown1 + ", " + objectInfo.unknown2);
                 }
+                */
                 /// add entrances
                 if (ob.id == 1) {
                     this.entrances.push(ob);
