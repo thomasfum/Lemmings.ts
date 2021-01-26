@@ -7,6 +7,7 @@ module Lemmings {
 
         /** the background image */
         private groundImage: Uint8ClampedArray;
+        private welcomeTick:number = 0;
 
         private codeGen: CodeGenerator=null;
 
@@ -236,13 +237,44 @@ module Lemmings {
             let TickReel = (tick % 16);
             let TickBlink = (tick % 8);
 
-            for (let i = 0; i < 35; i++) {
-                pageDisplay.drawFrame(Reel, 48 + (i * 16) - TickReel, 382);
-            }
-            this.drawString(pageDisplay, "Message", 600 - tick, 382, sprites);
+        
 
-            pageDisplay.drawFrame(LeftLemmingWorkingScroller[TickReel], 0, 382);
-            pageDisplay.drawFrame(RighttLemmingWorkingScroller[TickReel], 600, 382);
+            //Lemmings By DMA Design
+            //Programming By Russell Kay
+            //Animation By Gary Timmons
+            //Graphics By Scott Johnston
+            //Music By Brian Johnston & Tim Wright  PC Music By Tonny Willyams
+            //Copyright 1991 Psygnosis Ltd.
+            let sentence =                                     "Lemmings By DMA Design      ";
+            sentence +=                                        "      Programming By Russell Kay    ";
+            sentence +=                                        "      Animation By Gary Timmons     ";
+            sentence +=                                        "      Graphics By Scott Johnston    ";
+            sentence += "  Music By Brian Johnston & Tim Wright      PC Music By Tonny Willyams    ";
+            sentence +=                                     "     Copyright 1991 Psygnosis Ltd."
+            //this.drawString(pageDisplay, "Message", 600 - tick, 382, sprites);
+            if ((tick < 440) ||//lem
+                ((tick > 500) && (tick < 1090)) ||//prog
+                ((tick > 1140) && (tick < 1710)) || //ani
+                ((tick > 1780) && (tick < 1780 + 580)) || //graph
+                ((tick > 1780 + 590 + 70) && (tick > 3600)) ||//music
+                ((tick < 4110) && (tick > 4110+590))|| //copiright 
+                (tick > 4110 + 590+90) 
+                    ) {
+                this.welcomeTick++;
+                for (let i = 0; i < 35; i++) {
+                    pageDisplay.drawFrame(Reel, 48 + (i * 16) - TickReel, 382);
+                
+                }
+                this.drawString(pageDisplay, sentence, 600 - this.welcomeTick, 382, sprites);
+                pageDisplay.drawFrame(LeftLemmingWorkingScroller[TickReel], 0, 382);
+                pageDisplay.drawFrame(RighttLemmingWorkingScroller[TickReel], 600, 382);
+                console.log("T=" + tick);
+            }
+
+    
+            
+
+            
             let step = 96;
             let tickB = Math.round(tick / step);
             let tickC = tickB%6;
@@ -308,7 +340,7 @@ module Lemmings {
             let funSign2=sprites.getFunSign2();
                 
 
-
+            this.welcomeTick = 0;
             pageDisplay.clear();
 
             pageDisplay.drawFrame(brownFrame, 0, 0);
@@ -368,15 +400,7 @@ module Lemmings {
             this.drawString(pageDisplay, "    A DMA Design Game", 120,  320, sprites);
 
            this.RenderWelcomeDyn(pageDisplay, sprites, tick);
-           /*
-            for(let i=0; i<35;i++)
-            {
-                pageDisplay.drawFrame(Reel, 48+ (i*16), 382);
-            }
-            pageDisplay.drawFrame(LeftLemmingWorkingScroller[0], 0, 382);
-            pageDisplay.drawFrame(RighttLemmingWorkingScroller[0], 600, 382);
-            */
-
+      
         }
      
 

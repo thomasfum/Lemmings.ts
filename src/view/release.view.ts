@@ -655,9 +655,9 @@ module Lemmings {
                     level.RenderWelcome(FullPage, pagspr, this.MusicLevel, this.levelGroupIndex, this.nbgroup, this.WelcomePageTick);
                     this.stage.redrawFullpage();
                     clearInterval(this.WelcomePageTimer);
+                    let lvl = level;
                     this.WelcomePageTimer = setInterval(() =>{
                         let FullPage = this.stage.getFullPageDisplay();
-                        let level = new Level(0, 0);
                         this.WelcomePageTick++;
                         level.RenderWelcomeDyn(FullPage, this.WelcomePageSprire, this.WelcomePageTick);
                         this.stage.redrawFullpage();
