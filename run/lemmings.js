@@ -3081,6 +3081,7 @@ var Lemmings;
     /** Level Data */
     class Level {
         constructor(width, height) {
+            this.welcomeMainTick = 0;
             this.welcomeTick = 0;
             this.codeGen = null;
             /** the background mask 0=noGround / 1=ground*/
@@ -3247,12 +3248,9 @@ var Lemmings;
             let Reel = sprites.getReel();
             let TickReel = (tick % 16);
             let TickBlink = (tick % 8);
-            //Lemmings By DMA Design
-            //Programming By Russell Kay
-            //Animation By Gary Timmons
-            //Graphics By Scott Johnston
-            //Music By Brian Johnston & Tim Wright  PC Music By Tonny Willyams
-            //Copyright 1991 Psygnosis Ltd.
+            if (this.welcomeMainTick >= 4999)
+                this.welcomeTick = 0;
+            this.welcomeMainTick = tick % 5000;
             let sentence = "Lemmings By DMA Design      ";
             sentence += "      Programming By Russell Kay    ";
             sentence += "      Animation By Gary Timmons     ";
@@ -3260,21 +3258,21 @@ var Lemmings;
             sentence += "  Music By Brian Johnston & Tim Wright      PC Music By Tonny Willyams    ";
             sentence += "     Copyright 1991 Psygnosis Ltd.";
             //this.drawString(pageDisplay, "Message", 600 - tick, 382, sprites);
-            if ((tick < 440) || //lem
-                ((tick > 500) && (tick < 1090)) || //prog
-                ((tick > 1140) && (tick < 1710)) || //ani
-                ((tick > 1780) && (tick < 1780 + 580)) || //graph
-                ((tick > 1780 + 590 + 70) && (tick > 3600)) || //music
-                ((tick < 4110) && (tick > 4110 + 590)) || //copiright 
-                (tick > 4110 + 590 + 90)) {
+            if ((this.welcomeMainTick < 440) || //lem                                ok
+                ((this.welcomeMainTick > 500) && (this.welcomeMainTick < 1090)) || //prog            ok
+                ((this.welcomeMainTick > 1140) && (this.welcomeMainTick < 1710)) || //ani           ok
+                ((this.welcomeMainTick > 1780) && (this.welcomeMainTick < 1780 + 580)) || //graph   ok
+                ((this.welcomeMainTick > 1785 + 590 + 70) && (this.welcomeMainTick < 3630)) || //music
+                ((this.welcomeMainTick > 3630 + 70) && (this.welcomeMainTick < 3630 + 70 + 590)) || //copiright 
+                (this.welcomeMainTick > 3630 + 70 + 590 + 90)) {
                 this.welcomeTick++;
-                for (let i = 0; i < 35; i++) {
+                for (let i = 0; i <= 35; i++) {
                     pageDisplay.drawFrame(Reel, 48 + (i * 16) - TickReel, 382);
                 }
                 this.drawString(pageDisplay, sentence, 600 - this.welcomeTick, 382, sprites);
                 pageDisplay.drawFrame(LeftLemmingWorkingScroller[TickReel], 0, 382);
                 pageDisplay.drawFrame(RighttLemmingWorkingScroller[TickReel], 600, 382);
-                console.log("T=" + tick);
+                //console.log("T=" + tick +", WT="+ this.welcomeTick+", WMT"+this.welcomeMainTick);
             }
             let step = 96;
             let tickB = Math.round(tick / step);
@@ -3331,6 +3329,7 @@ var Lemmings;
             let funSign = sprites.getFunSign();
             let funSign2 = sprites.getFunSign2();
             this.welcomeTick = 0;
+            this.welcomeMainTick = 0;
             pageDisplay.clear();
             pageDisplay.drawFrame(brownFrame, 0, 0);
             pageDisplay.drawFrame(brownFrame, 0, 104);
@@ -3472,9 +3471,11 @@ var Lemmings;
         /** draw a text with green letters */
         drawString(dispaly, text, x, y, sprites) {
             for (let i = 0; i < text.length; i++) {
-                let letterImg = sprites.getLetterSprite(text[i]);
-                if (letterImg != null) {
-                    dispaly.drawFrame(letterImg, x, y);
+                if ((x > 0) && (x < 700)) {
+                    let letterImg = sprites.getLetterSprite(text[i]);
+                    if (letterImg != null) {
+                        dispaly.drawFrame(letterImg, x, y);
+                    }
                 }
                 x += 16;
             }

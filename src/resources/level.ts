@@ -7,6 +7,7 @@ module Lemmings {
 
         /** the background image */
         private groundImage: Uint8ClampedArray;
+        private welcomeMainTick:number = 0;
         private welcomeTick:number = 0;
 
         private codeGen: CodeGenerator=null;
@@ -237,14 +238,11 @@ module Lemmings {
             let TickReel = (tick % 16);
             let TickBlink = (tick % 8);
 
-        
+            if(this.welcomeMainTick >= 4999)
+                this.welcomeTick=0;
+            this.welcomeMainTick=tick % 5000;
 
-            //Lemmings By DMA Design
-            //Programming By Russell Kay
-            //Animation By Gary Timmons
-            //Graphics By Scott Johnston
-            //Music By Brian Johnston & Tim Wright  PC Music By Tonny Willyams
-            //Copyright 1991 Psygnosis Ltd.
+         
             let sentence =                                     "Lemmings By DMA Design      ";
             sentence +=                                        "      Programming By Russell Kay    ";
             sentence +=                                        "      Animation By Gary Timmons     ";
@@ -252,23 +250,25 @@ module Lemmings {
             sentence += "  Music By Brian Johnston & Tim Wright      PC Music By Tonny Willyams    ";
             sentence +=                                     "     Copyright 1991 Psygnosis Ltd."
             //this.drawString(pageDisplay, "Message", 600 - tick, 382, sprites);
-            if ((tick < 440) ||//lem
-                ((tick > 500) && (tick < 1090)) ||//prog
-                ((tick > 1140) && (tick < 1710)) || //ani
-                ((tick > 1780) && (tick < 1780 + 580)) || //graph
-                ((tick > 1780 + 590 + 70) && (tick > 3600)) ||//music
-                ((tick < 4110) && (tick > 4110+590))|| //copiright 
-                (tick > 4110 + 590+90) 
+            if ((this.welcomeMainTick < 440) ||//lem                                ok
+                ((this.welcomeMainTick > 500) && (this.welcomeMainTick < 1090)) ||//prog            ok
+                ((this.welcomeMainTick > 1140) && (this.welcomeMainTick < 1710)) || //ani           ok
+                ((this.welcomeMainTick > 1780) && (this.welcomeMainTick < 1780 + 580)) || //graph   ok
+                ((this.welcomeMainTick > 1785 + 590 + 70) && (this.welcomeMainTick < 3630)) ||//music
+                ((this.welcomeMainTick > 3630+70) && (this.welcomeMainTick < 3630+70+590))|| //copiright 
+                (this.welcomeMainTick > 3630+70+590+90) 
                     ) {
                 this.welcomeTick++;
-                for (let i = 0; i < 35; i++) {
+               
+
+                for (let i = 0; i <= 35; i++) {
                     pageDisplay.drawFrame(Reel, 48 + (i * 16) - TickReel, 382);
                 
                 }
                 this.drawString(pageDisplay, sentence, 600 - this.welcomeTick, 382, sprites);
                 pageDisplay.drawFrame(LeftLemmingWorkingScroller[TickReel], 0, 382);
                 pageDisplay.drawFrame(RighttLemmingWorkingScroller[TickReel], 600, 382);
-                console.log("T=" + tick);
+                //console.log("T=" + tick +", WT="+ this.welcomeTick+", WMT"+this.welcomeMainTick);
             }
 
     
@@ -341,6 +341,7 @@ module Lemmings {
                 
 
             this.welcomeTick = 0;
+            this.welcomeMainTick = 0;
             pageDisplay.clear();
 
             pageDisplay.drawFrame(brownFrame, 0, 0);
@@ -525,9 +526,12 @@ module Lemmings {
          private drawString(dispaly: DisplayImage, text: string, x: number, y: number,sprites: pagesSprites): number {
 
             for (let i = 0; i < text.length; i++) {
-                let letterImg = sprites.getLetterSprite(text[i]);
-                if (letterImg != null) {
-                    dispaly.drawFrame(letterImg, x, y);
+                if((x>0)&&(x<700))
+                {
+                    let letterImg = sprites.getLetterSprite(text[i]);
+                    if (letterImg != null) {
+                        dispaly.drawFrame(letterImg, x, y);
+                    }
                 }
                 x += 16;
             }
