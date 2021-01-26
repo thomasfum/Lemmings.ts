@@ -28,15 +28,16 @@ The goal is to finish it and extand it to custom levels like the ones present he
 * Original mouse navigation added
 * Welcome page of each game added with mouse and touch pad support
 * Game selection page added with mouse and touch pad support
+* "one way" objects for bathers and miners are now managed
+* trap animation are now correctly triggered, with the right sound
+* killing machin now starts the right lemming animation, with right sound
+
 
 ## ToDo
 * finish welcome page (Reel)
-* automate music and sound
-* trap animation not triggered, sound to be added
-* killing machine do not start right lemming animation, right sound to be added
+* automate music
 * explosion should not destroy some hard part of the level
-* manage "one way" objects for bathers and miners
-* fix some game issues (some killing leming ojects are not triggered (hanging, rolling...))
+* fix some game issues 
 
 ## How to run
 * download the *Lemmings.ts.zip* from <a href="https://github.com/thomasfum/Lemmings.ts/releases">[releases]</a>
