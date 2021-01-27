@@ -263,11 +263,16 @@ module Lemmings {
                 if (lem!=null)
                 {
                     //square cursor
-                    if(lem.isRemoved()==false)
-                    {
-                        this.DrawCursor(this.gameImgProps,false,this.calcPosition2D(this.gameImgProps, this.lastMousePos));
-                        this.DrawCursor(this.guiImgProps,true,this.calcPosition2D(this.guiImgProps, this.lastMousePos));
-                        this.CurrentLemmingState=lem.GetCurrentSkill()+" "+ (lem.id+1);
+                    if ((lem.isRemoved() == false) && (lem.isDisabled()==false)) {
+                        this.DrawCursor(this.gameImgProps, false, this.calcPosition2D(this.gameImgProps, this.lastMousePos));
+                        this.DrawCursor(this.guiImgProps, true, this.calcPosition2D(this.guiImgProps, this.lastMousePos));
+                        this.CurrentLemmingState = lem.GetCurrentSkill() + " " + (lem.id + 1);
+                    }
+                    else {
+                        //cross cursor
+                        this.DrawCursor(this.gameImgProps, true, this.calcPosition2D(this.gameImgProps, this.lastMousePos));
+                        this.DrawCursor(this.guiImgProps, true, this.calcPosition2D(this.guiImgProps, this.lastMousePos));
+                        this.CurrentLemmingState = "";
                     }
                 }
 

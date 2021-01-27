@@ -422,6 +422,11 @@ var Lemmings;
             }
             return Lemmings.GameStateTypes.RUNNING;
         }
+        finish() {
+            console.log("Finishing game");
+            this.finalGameState = Lemmings.GameStateTypes.FAILED_LESS_LEMMINGS;
+            this.checkForGameOver();
+        }
         /** check if the game  */
         checkForGameOver() {
             if (this.finalGameState != Lemmings.GameStateTypes.UNKNOWN) {
@@ -1219,7 +1224,7 @@ var Lemmings;
         }
     }
     Lemming.LEM_MIN_Y = -5;
-    Lemming.LEM_MAX_FALLING = 60;
+    Lemming.LEM_MAX_FALLING = 50; //60 trop grand pour Mayen 0
     Lemmings.Lemming = Lemming;
 })(Lemmings || (Lemmings = {}));
 var Lemmings;
@@ -1507,12 +1512,15 @@ var Lemmings;
             }
             for (var i = 0; i < l; i++) {
                 let triggerType = this.triggers[i].trigger(lem.x, lem.y - offset, tick, ressources);
-                if (triggerType != Lemmings.TriggerTypes.NO_TRIGGER)
-                    console.log("trigger type: " + triggerType);
+                //if (triggerType!=TriggerTypes.NO_TRIGGER)
+                //    console.log("trigger type: " + triggerType);
                 switch (triggerType) {
                     case Lemmings.TriggerTypes.STEEL:
-                        if ((lem.action.GetLemState() == Lemmings.LemmingStateType.DIGGING) || (lem.action.GetLemState() == Lemmings.LemmingStateType.MINEING) || (lem.action.GetLemState() == Lemmings.LemmingStateType.BASHING)) {
-                            console.log("STEEL trigger-----!!!");
+                        //console.log("STEEL trigger-----!!!");
+                        if ((lem.action.GetLemState() == Lemmings.LemmingStateType.DIGGING) || (lem.action.GetLemState() == Lemmings.LemmingStateType.MINEING)) {
+                            return Lemmings.LemmingStateType.WALKING;
+                        }
+                        if (lem.action.GetLemState() == Lemmings.LemmingStateType.BASHING) {
                             lem.toogleDirection();
                             return Lemmings.LemmingStateType.WALKING;
                         }
@@ -2052,7 +2060,7 @@ var Lemmings;
         draw(gameDisplay, lem) {
             if (lem.frameIndex == 0) {
                 let frame = this.sprite.getFrame(lem.frameIndex);
-                gameDisplay.drawFrame(frame, lem.x, lem.y);
+                gameDisplay.drawFrame(frame, lem.x - 8, lem.y - 11);
             }
             else {
                 this.particleTable.draw(gameDisplay, lem.frameIndex - 1, lem.x, lem.y);
@@ -3256,6 +3264,11 @@ var Lemmings;
         }
         /** clear a point  */
         clearGroundAt(x, y) {
+            //isPointIn
+            for (let i = 0; i < this.steel.length; i++) {
+                if (this.steel[i].isPointIn(x, y) == true)
+                    return;
+            }
             this.groundMask.clearGroundAt(x, y);
             let index = (y * this.width + x) * 4;
             this.groundImage[index + 0] = 0; // R
@@ -4908,6 +4921,11 @@ var Lemmings;
         draw(gameDisplay) {
             //  console.warn("debug Steel: x=" + this.x + ", y=" + this.y + ", dx=" + this.width + ", dy=" + this.height);
             gameDisplay.drawRect(this.x, this.y, this.width, this.height, 0, 255, 0);
+        }
+        isPointIn(x, y) {
+            if ((x >= this.x) && (y >= this.y) && (x <= this.x + this.width) && (y <= this.y + this.height))
+                return true;
+            return false;
         }
     }
     Lemmings.Range = Range;
@@ -10458,6 +10476,11 @@ var Lemmings;
                         this.RenderSelectpage();
                     }
                 }
+                else if (this.gameState == GameState.Playing) {
+                    console.log(" Key down: " + e.code + ", " + e.key + ", " + e.keyCode + ", " + this.gameState);
+                    if (e.code == "Escape") //
+                        this.game.finish();
+                }
                 e.stopPropagation();
                 e.preventDefault();
                 return false;
@@ -11129,6 +11152,8 @@ Oh No wild 14 jet de gaz (son et animation )
                     0x0009 = santa-in-the-box top
                     0x000A- 0x000F = invalid
 
+                M
+//lem fun 1:    5
 
 
 
@@ -11348,10 +11373,16 @@ var Lemmings;
             else {
                 if (lem != null) {
                     //square cursor
-                    if (lem.isRemoved() == false) {
+                    if ((lem.isRemoved() == false) && (lem.isDisabled() == false)) {
                         this.DrawCursor(this.gameImgProps, false, this.calcPosition2D(this.gameImgProps, this.lastMousePos));
                         this.DrawCursor(this.guiImgProps, true, this.calcPosition2D(this.guiImgProps, this.lastMousePos));
                         this.CurrentLemmingState = lem.GetCurrentSkill() + " " + (lem.id + 1);
+                    }
+                    else {
+                        //cross cursor
+                        this.DrawCursor(this.gameImgProps, true, this.calcPosition2D(this.gameImgProps, this.lastMousePos));
+                        this.DrawCursor(this.guiImgProps, true, this.calcPosition2D(this.guiImgProps, this.lastMousePos));
+                        this.CurrentLemmingState = "";
                     }
                 }
             }

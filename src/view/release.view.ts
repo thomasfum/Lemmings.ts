@@ -233,6 +233,11 @@ module Lemmings {
 
                     }
                 }
+                else if (this.gameState == GameState.Playing) {
+                    console.log(" Key down: " + e.code + ", " + e.key + ", " + e.keyCode + ", " + this.gameState);
+                    if (e.code == "Escape")//
+                        this.game.finish();
+                }
 
                 e.stopPropagation();
                 e.preventDefault();
@@ -981,6 +986,8 @@ Oh No wild 14 jet de gaz (son et animation )
 	                0x0009 = santa-in-the-box top
 	                0x000A- 0x000F = invalid
 
+                M
+//lem fun 1:    5
 
 
 

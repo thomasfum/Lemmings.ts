@@ -156,6 +156,13 @@ module Lemmings {
         /** clear a point  */
         public clearGroundAt(x: number, y: number) {
 
+            //isPointIn
+
+            for (let i = 0; i < this.steel.length; i++) {
+                if (this.steel[i].isPointIn(x, y) == true)
+                    return;
+            }
+
             this.groundMask.clearGroundAt(x, y);
 
             let index = (y * this.width + x) * 4;

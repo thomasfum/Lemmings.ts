@@ -63,13 +63,17 @@ module Lemmings {
             for (var i = 0; i < l; i++) {
 
                 let triggerType = this.triggers[i].trigger(lem.x, lem.y - offset, tick, ressources);
-                if (triggerType!=TriggerTypes.NO_TRIGGER)
-                    console.log("trigger type: " + triggerType);
+                //if (triggerType!=TriggerTypes.NO_TRIGGER)
+                //    console.log("trigger type: " + triggerType);
     
                 switch (triggerType) {
                     case TriggerTypes.STEEL:
-                        if ((lem.action.GetLemState() == LemmingStateType.DIGGING) || (lem.action.GetLemState() == LemmingStateType.MINEING) || (lem.action.GetLemState() == LemmingStateType.BASHING)) {
-                            console.log("STEEL trigger-----!!!");
+                        //console.log("STEEL trigger-----!!!");
+                        if ((lem.action.GetLemState() == LemmingStateType.DIGGING) || (lem.action.GetLemState() == LemmingStateType.MINEING)) {
+
+                            return LemmingStateType.WALKING;
+                        }
+                        if (lem.action.GetLemState() == LemmingStateType.BASHING) {
                             lem.toogleDirection();
                             return LemmingStateType.WALKING;
                         }

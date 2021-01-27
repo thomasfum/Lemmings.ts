@@ -248,7 +248,11 @@ module Lemmings {
             return GameStateTypes.RUNNING;
 
         }
-
+        public finish() {
+            console.log("Finishing game");
+            this.finalGameState = GameStateTypes.FAILED_LESS_LEMMINGS;
+            this.checkForGameOver();
+        }
         /** check if the game  */
         private checkForGameOver() {
             if (this.finalGameState != GameStateTypes.UNKNOWN) {
