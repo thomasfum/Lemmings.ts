@@ -26,16 +26,19 @@ module Lemmings {
             this.soundIndex = soundIndex;
             
         }
+        public gerType(): TriggerTypes {
+            return this.type;
+        }
 
 
         public trigger(x: number, y: number, tick: number, ressources: GameResources): TriggerTypes {
             if (this.disabledUntilTick <= tick) {
                 if ((x >= this.x1) && (y >= this.y1) && (x <= this.x2) && (y <= this.y2)) {
                     this.disabledUntilTick = tick + this.disableTicksCount;
-                    
+
                     if( this.type== TriggerTypes.TRAP)
                     {
-                        console.log("Sound from trigger:" + this.soundIndex+ " DisableTricks="+this.disableTicksCount);
+                       // console.log("Sound from trigger:" + this.soundIndex+ " DisableTricks="+this.disableTicksCount);
                         if (this.soundIndex != 0) 
                             ressources.soundPlay(this.soundIndex)
                         if(this.obj!=null)

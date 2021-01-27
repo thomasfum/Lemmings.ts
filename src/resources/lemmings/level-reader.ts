@@ -134,8 +134,33 @@ module Lemmings {
 
 
     /** read Level Steel areas (Lemming can't pass) */
-    private readSteelArea(fr: BinaryReader) {
+      /*
+      BYTES 0x0760 to 0x07DF (4 byte blocks)
 
+        x pos : 9-bit value.  min 0x000, max 0xC78.  0x000 = -16, 0x008 = -12,
+	        0x010 = -8, 0x018 = -4, ... , 0xC78 = 1580.
+	        note: each hex value represents 4 pixels.  since it is 9 bit value it
+	              bleeds into the next attribute.
+
+        y pos : min 0x00, max 0x27. 0x00 = 0, 0x01 = 4, 0x02 = 8, ... , 0x27 = 156
+	        note: each hex value represents 4 pixels
+
+        area : min 0x00, max 0xFF.  the first nibble is the x-size, from 0 - F.
+               each value represents 4 pixels. the second nibble is the y-size.
+               0x00 = (4,4), 0x11 = (8,8), 0x7F = (32,64), 0x23 = (12,16)
+
+        eg: 00 9F 52 00 = put steel at (-12,124) width = 24, height = 12
+
+        each 4 byte block starting at byte 0x0760 represents a steel area which
+        the lemmings cannot bash through.  the first three bytes are given above,
+        and the last byte is always 00.. what a waste of space considering how
+        compact they made the first 3 bytes!  write 0x00 to fill each byte up to
+        0x07E0 if need be.
+
+
+*/
+    private readSteelArea(fr: BinaryReader) {
+   
       /// reset array
       this.steel = [];
 
@@ -143,25 +168,35 @@ module Lemmings {
 
       for (var i = 0; i < 32; i++) {
         var newRange = new Range();
-
         var pos = fr.readWord();
         var size = fr.readByte();
         var unknown = fr.readByte();
+
 
         if ((pos == 0) && (size == 0)) continue;
         if (unknown != 0) {
           this.log.log("Error in readSteelArea() : unknown != 0");
           continue;
         }
+          /*
+          //original
+                newRange.x = (pos & 0x01FF) * 4 - 16;
+                newRange.y = ((pos >> 9) & 0x007F) * 4;
+        */
+          //new calculation
+          newRange.y = (pos & 0x007F) * 4;
+          newRange.x = (((pos ) >> 7) ) * 4 -16;
 
-        newRange.x = (pos & 0x01FF) * 4 - 16;
-        newRange.y = ((pos >> 9) & 0x007F) * 4;
 
-        newRange.width = (size & 0x0F) * 4 + 4;
-        newRange.height = ((size >> 4) & 0x0F) * 4 + 4;
+        newRange.height = (size & 0x0F) * 4 + 4;
+        newRange.width = ((size >> 4) & 0x0F) * 4 + 4;
+
+        //console.warn("Steel: x=" + newRange.x + ", y=" + newRange.y + ", dx=" + newRange.width + ", dy=" + newRange.height);
 
         this.steel.push(newRange);
-      }
+        }
+
+        console.warn("Nb steel:" + this.steel.length);
     }
 
 

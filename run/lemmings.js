@@ -858,7 +858,8 @@ var Lemmings;
                     continue;
                 let newAction = lem.process(this.level);
                 this.processNewAction(lem, newAction);
-                let triggerAction = this.runTrigger(lem);
+                //let triggerAction = this.runTrigger(lem);
+                let triggerAction = this.triggerManager.triggerNew(lem, this.Resources);
                 this.processNewAction(lem, triggerAction);
             }
         }
@@ -883,84 +884,86 @@ var Lemmings;
                 }
             }
         }
-        runTrigger(lem) {
+        //TF to be removed
+        /*
+        private runTrigger(lem: Lemming): LemmingStateType {
             if (lem.isRemoved() || (lem.isDisabled())) {
-                return Lemmings.LemmingStateType.NO_STATE_TYPE;
+                return LemmingStateType.NO_STATE_TYPE;
             }
-            let offset = 0;
+            let offset=0;
+
             //console.log("bashing:"+lem.action.GetLemState());
-            if (lem.action.GetLemState() == Lemmings.LemmingStateType.BASHING) {
-                offset = 8; //test upper for basher
+            if(lem.action.GetLemState()==LemmingStateType.BASHING)
+            {
+                offset=8;//test upper for basher
             }
             let triggerType = this.triggerManager.trigger(lem.x, lem.y - offset, this.Resources);
-            if (triggerType != Lemmings.TriggerTypes.NO_TRIGGER)
+
+
+            
+            if (triggerType!=TriggerTypes.NO_TRIGGER)
                 this.logging.log("trigger type: " + triggerType);
+
             switch (triggerType) {
-                case Lemmings.TriggerTypes.NO_TRIGGER:
-                    return Lemmings.LemmingStateType.NO_STATE_TYPE;
-                case Lemmings.TriggerTypes.DROWN:
-                    return Lemmings.LemmingStateType.DROWNING;
-                case Lemmings.TriggerTypes.EXIT_LEVEL:
-                    return Lemmings.LemmingStateType.EXITING;
-                case Lemmings.TriggerTypes.KILL:
+                case TriggerTypes.STEEL:
+                    if ((lem.action.GetLemState() == LemmingStateType.DIGGING) || (lem.action.GetLemState() == LemmingStateType.MINEING) || (lem.action.GetLemState() == LemmingStateType.BASHING) ) {
+                        console.log("STEEL trigger-----!!!");
+                        lem.toogleDirection();
+                        return LemmingStateType.WALKING;
+                    }
+                    else
+                        return LemmingStateType.NO_STATE_TYPE;
+                case TriggerTypes.NO_TRIGGER:
+                    return LemmingStateType.NO_STATE_TYPE;
+                case TriggerTypes.DROWN:
+                    return LemmingStateType.DROWNING;
+                case TriggerTypes.EXIT_LEVEL:
+                    return LemmingStateType.EXITING;
+                case TriggerTypes.KILL:
                     //return LemmingStateType.SPLATTING;
-                    return Lemmings.LemmingStateType.FRYING;
-                case Lemmings.TriggerTypes.TRAP:
-                    return Lemmings.LemmingStateType.OUT_OFF_LEVEL;
-                //return LemmingStateType.HOISTING;
-                case Lemmings.TriggerTypes.BLOCKER_LEFT:
-                    if (lem.lookRight)
-                        lem.lookRight = false;
-                    return Lemmings.LemmingStateType.NO_STATE_TYPE;
-                case Lemmings.TriggerTypes.BLOCKER_RIGHT:
-                    if (!lem.lookRight)
-                        lem.lookRight = true;
-                    return Lemmings.LemmingStateType.NO_STATE_TYPE;
-                case Lemmings.TriggerTypes.ONWAY_LEFT:
+                    return LemmingStateType.FRYING;
+                case TriggerTypes.TRAP:
+                    return LemmingStateType.OUT_OFF_LEVEL;
+                    //return LemmingStateType.HOISTING;
+                case TriggerTypes.BLOCKER_LEFT:
+                    if (lem.lookRight) lem.lookRight = false;
+                    return LemmingStateType.NO_STATE_TYPE;
+                case TriggerTypes.BLOCKER_RIGHT:
+                    if (!lem.lookRight) lem.lookRight = true;
+                    return LemmingStateType.NO_STATE_TYPE;
+                case TriggerTypes.ONWAY_LEFT:
                     //console.log("ONWAY_LEFT:"+lem.lookRight);
-                    if (lem.lookRight == false)
-                        return Lemmings.LemmingStateType.NO_STATE_TYPE;
+                    if(lem.lookRight==false)
+                        return LemmingStateType.NO_STATE_TYPE;
                     //console.log("ONWAY_LEFT: going right"+lem.action.GetLemState());
-                    if ((lem.action.GetLemState() == Lemmings.LemmingStateType.BASHING) || (lem.action.GetLemState() == Lemmings.LemmingStateType.MINEING)) {
+                    if((lem.action.GetLemState()==LemmingStateType.BASHING)||(lem.action.GetLemState()==LemmingStateType.MINEING))
+                    {
                         //console.log("ONWAY_LEFT:Bashing: GO BACK");
                         lem.toogleDirection();
-                        return Lemmings.LemmingStateType.WALKING;
+                        return LemmingStateType.WALKING;
                     }
                     else
-                        return Lemmings.LemmingStateType.NO_STATE_TYPE;
-                case Lemmings.TriggerTypes.ONWAY_RIGHT:
+                        return LemmingStateType.NO_STATE_TYPE;
+                case TriggerTypes.ONWAY_RIGHT:
                     //console.log("ONWAY_Right:"+lem.lookRight);
-                    if (lem.lookRight == true)
-                        return Lemmings.LemmingStateType.NO_STATE_TYPE;
+                    if(lem.lookRight==true)
+                        return LemmingStateType.NO_STATE_TYPE;
                     //console.log("ONWAY_Right: going left:"+lem.action.GetLemState());
-                    if ((lem.action.GetLemState() == Lemmings.LemmingStateType.BASHING) || (lem.action.GetLemState() == Lemmings.LemmingStateType.MINEING)) {
+                    if((lem.action.GetLemState()==LemmingStateType.BASHING)||(lem.action.GetLemState()==LemmingStateType.MINEING))
+                    {
                         //console.log("ONWAY_Right:Bashing: GO BACK");
                         lem.toogleDirection();
-                        return Lemmings.LemmingStateType.WALKING;
+                        return LemmingStateType.WALKING;
                     }
                     else
-                        return Lemmings.LemmingStateType.NO_STATE_TYPE;
-                /*
-                        NO_TRIGGER = 0, =>OK
-                        EXIT_LEVEL = 1, =>OK
-                        UNKNOWN_2 = 2,
-                        UNKNOWN_3 = 3,
-                        TRAP = 4,       =>OK
-                        DROWN = 5,      =>OK
-                        KILL = 6,       =>OK
-                        ONWAY_LEFT = 7, =>OK
-                        ONWAY_RIGHT = 8,=>OK
-                        STEEL = 9,
-                
-                        BLOCKER_LEFT,   =>OK
-                        BLOCKER_RIGHT,  =>OK
-                    }
-                */
+                        return LemmingStateType.NO_STATE_TYPE;
                 default:
                     this.logging.log("unknown trigger type: " + triggerType);
-                    return Lemmings.LemmingStateType.NO_STATE_TYPE;
+                    return LemmingStateType.NO_STATE_TYPE;
+
             }
         }
+        */
         /** render all Lemmings to the GameDisplay */
         render(gameDisplay) {
             let lems = this.lemmings;
@@ -1491,16 +1494,78 @@ var Lemmings;
                 this.triggers[i].draw(gameDisplay);
             }
         }
-        /** test all triggers. Returns the triggered type that matches */
-        trigger(x, y, ressources) {
+        triggerNew(lem, ressources) {
             let l = this.triggers.length;
             let tick = this.gameTimer.getGameTicks();
-            for (var i = 0; i < l; i++) {
-                let type = this.triggers[i].trigger(x, y, tick, ressources);
-                if (type != Lemmings.TriggerTypes.NO_TRIGGER)
-                    return type;
+            if (lem.isRemoved() || (lem.isDisabled())) {
+                return Lemmings.LemmingStateType.NO_STATE_TYPE;
             }
-            return Lemmings.TriggerTypes.NO_TRIGGER;
+            let offset = 0;
+            //console.log("bashing:"+lem.action.GetLemState());
+            if (lem.action.GetLemState() == Lemmings.LemmingStateType.BASHING) {
+                offset = 8; //test upper for basher
+            }
+            for (var i = 0; i < l; i++) {
+                let triggerType = this.triggers[i].trigger(lem.x, lem.y - offset, tick, ressources);
+                if (triggerType != Lemmings.TriggerTypes.NO_TRIGGER)
+                    console.log("trigger type: " + triggerType);
+                switch (triggerType) {
+                    case Lemmings.TriggerTypes.STEEL:
+                        if ((lem.action.GetLemState() == Lemmings.LemmingStateType.DIGGING) || (lem.action.GetLemState() == Lemmings.LemmingStateType.MINEING) || (lem.action.GetLemState() == Lemmings.LemmingStateType.BASHING)) {
+                            console.log("STEEL trigger-----!!!");
+                            lem.toogleDirection();
+                            return Lemmings.LemmingStateType.WALKING;
+                        }
+                        break;
+                    case Lemmings.TriggerTypes.NO_TRIGGER:
+                        break;
+                    case Lemmings.TriggerTypes.DROWN:
+                        return Lemmings.LemmingStateType.DROWNING;
+                    case Lemmings.TriggerTypes.EXIT_LEVEL:
+                        return Lemmings.LemmingStateType.EXITING;
+                    case Lemmings.TriggerTypes.KILL:
+                        //return LemmingStateType.SPLATTING;
+                        return Lemmings.LemmingStateType.FRYING;
+                    case Lemmings.TriggerTypes.TRAP:
+                        return Lemmings.LemmingStateType.OUT_OFF_LEVEL;
+                    //return LemmingStateType.HOISTING;
+                    case Lemmings.TriggerTypes.BLOCKER_LEFT:
+                        if (lem.lookRight)
+                            lem.lookRight = false;
+                        break;
+                    case Lemmings.TriggerTypes.BLOCKER_RIGHT:
+                        if (!lem.lookRight)
+                            lem.lookRight = true;
+                        break;
+                    case Lemmings.TriggerTypes.ONWAY_LEFT:
+                        //console.log("ONWAY_LEFT:"+lem.lookRight);
+                        if (lem.lookRight == false)
+                            break;
+                        //console.log("ONWAY_LEFT: going right"+lem.action.GetLemState());
+                        if ((lem.action.GetLemState() == Lemmings.LemmingStateType.BASHING) || (lem.action.GetLemState() == Lemmings.LemmingStateType.MINEING)) {
+                            //console.log("ONWAY_LEFT:Bashing: GO BACK");
+                            lem.toogleDirection();
+                            return Lemmings.LemmingStateType.WALKING;
+                        }
+                        break;
+                    case Lemmings.TriggerTypes.ONWAY_RIGHT:
+                        //console.log("ONWAY_Right:"+lem.lookRight);
+                        if (lem.lookRight == true)
+                            break;
+                        //console.log("ONWAY_Right: going left:"+lem.action.GetLemState());
+                        if ((lem.action.GetLemState() == Lemmings.LemmingStateType.BASHING) || (lem.action.GetLemState() == Lemmings.LemmingStateType.MINEING)) {
+                            //console.log("ONWAY_Right:Bashing: GO BACK");
+                            lem.toogleDirection();
+                            return Lemmings.LemmingStateType.WALKING;
+                        }
+                        else
+                            break;
+                    default:
+                        console.warn("unknown trigger type: " + triggerType);
+                        break;
+                }
+            }
+            return Lemmings.LemmingStateType.NO_STATE_TYPE;
         }
     }
     Lemmings.TriggerManager = TriggerManager;
@@ -1529,12 +1594,15 @@ var Lemmings;
             this.disableTicksCount = disableTicksCount;
             this.soundIndex = soundIndex;
         }
+        gerType() {
+            return this.type;
+        }
         trigger(x, y, tick, ressources) {
             if (this.disabledUntilTick <= tick) {
                 if ((x >= this.x1) && (y >= this.y1) && (x <= this.x2) && (y <= this.y2)) {
                     this.disabledUntilTick = tick + this.disableTicksCount;
                     if (this.type == Lemmings.TriggerTypes.TRAP) {
-                        console.log("Sound from trigger:" + this.soundIndex + " DisableTricks=" + this.disableTicksCount);
+                        // console.log("Sound from trigger:" + this.soundIndex+ " DisableTricks="+this.disableTicksCount);
                         if (this.soundIndex != 0)
                             ressources.soundPlay(this.soundIndex);
                         if (this.obj != null) {
@@ -3025,6 +3093,7 @@ var Lemmings;
                     level.isSuperLemming = levelReader.isSuperLemming;
                     level.accessCodeKey = this.config.accessCodeKey;
                     level.gamePaletteID = this.config.gamePaletteID;
+                    level.setSteel(levelReader.steel);
                     /// default level properties
                     let levelProperties = levelReader.levelProperties;
                     /// switch level properties to odd table config
@@ -3083,6 +3152,7 @@ var Lemmings;
         constructor(width, height) {
             this.welcomeMainTick = 0;
             this.welcomeTick = 0;
+            this.steel = [];
             this.codeGen = null;
             /** the background mask 0=noGround / 1=ground*/
             this.groundMask = null;
@@ -3109,7 +3179,7 @@ var Lemmings;
         /** set the map objects of this level and update trigger */
         setMapObjects(objects, objectImg, graphicSet1) {
             this.entrances = [];
-            this.triggers = [];
+            //this.triggers = [];
             this.objects = [];
             /// process all objects
             for (let i = 0; i < objects.length; i++) {
@@ -3487,6 +3557,19 @@ var Lemmings;
             //console.log("level.render=" + this.width + "," + this.height);
             gameDisplay.setBackground(this.groundImage, this.groundMask);
             // console.dir(this.groundImage);
+        }
+        renderSteel(gameDisplay) {
+            for (let i = 0; i < this.steel.length; i++) {
+                this.steel[i].draw(gameDisplay);
+            }
+        }
+        setSteel(r) {
+            this.triggers = [];
+            this.steel = r;
+            for (let i = 0; i < this.steel.length; i++) {
+                let newTrigger = new Lemmings.Trigger(Lemmings.TriggerTypes.STEEL, this.steel[i].x, this.steel[i].y, this.steel[i].x + this.steel[i].width, this.steel[i].y + this.steel[i].height, 0, 0, null, null);
+                this.triggers.push(newTrigger);
+            }
         }
     }
     Lemmings.Level = Level;
@@ -4822,6 +4905,10 @@ var Lemmings;
             this.width = 0;
             this.height = 0;
         }
+        draw(gameDisplay) {
+            //  console.warn("debug Steel: x=" + this.x + ", y=" + this.y + ", dx=" + this.width + ", dy=" + this.height);
+            gameDisplay.drawRect(this.x, this.y, this.width, this.height, 0, 255, 0);
+        }
     }
     Lemmings.Range = Range;
 })(Lemmings || (Lemmings = {}));
@@ -4919,6 +5006,31 @@ var Lemmings;
             }
         }
         /** read Level Steel areas (Lemming can't pass) */
+        /*
+        BYTES 0x0760 to 0x07DF (4 byte blocks)
+  
+          x pos : 9-bit value.  min 0x000, max 0xC78.  0x000 = -16, 0x008 = -12,
+              0x010 = -8, 0x018 = -4, ... , 0xC78 = 1580.
+              note: each hex value represents 4 pixels.  since it is 9 bit value it
+                    bleeds into the next attribute.
+  
+          y pos : min 0x00, max 0x27. 0x00 = 0, 0x01 = 4, 0x02 = 8, ... , 0x27 = 156
+              note: each hex value represents 4 pixels
+  
+          area : min 0x00, max 0xFF.  the first nibble is the x-size, from 0 - F.
+                 each value represents 4 pixels. the second nibble is the y-size.
+                 0x00 = (4,4), 0x11 = (8,8), 0x7F = (32,64), 0x23 = (12,16)
+  
+          eg: 00 9F 52 00 = put steel at (-12,124) width = 24, height = 12
+  
+          each 4 byte block starting at byte 0x0760 represents a steel area which
+          the lemmings cannot bash through.  the first three bytes are given above,
+          and the last byte is always 00.. what a waste of space considering how
+          compact they made the first 3 bytes!  write 0x00 to fill each byte up to
+          0x07E0 if need be.
+  
+  
+  */
         readSteelArea(fr) {
             /// reset array
             this.steel = [];
@@ -4934,12 +5046,20 @@ var Lemmings;
                     this.log.log("Error in readSteelArea() : unknown != 0");
                     continue;
                 }
-                newRange.x = (pos & 0x01FF) * 4 - 16;
-                newRange.y = ((pos >> 9) & 0x007F) * 4;
-                newRange.width = (size & 0x0F) * 4 + 4;
-                newRange.height = ((size >> 4) & 0x0F) * 4 + 4;
+                /*
+                //original
+                      newRange.x = (pos & 0x01FF) * 4 - 16;
+                      newRange.y = ((pos >> 9) & 0x007F) * 4;
+              */
+                //new calculation
+                newRange.y = (pos & 0x007F) * 4;
+                newRange.x = (((pos) >> 7)) * 4 - 16;
+                newRange.height = (size & 0x0F) * 4 + 4;
+                newRange.width = ((size >> 4) & 0x0F) * 4 + 4;
+                //console.warn("Steel: x=" + newRange.x + ", y=" + newRange.y + ", dx=" + newRange.width + ", dy=" + newRange.height);
                 this.steel.push(newRange);
             }
+            console.warn("Nb steel:" + this.steel.length);
         }
         /** read general Level information */
         readLevelName(fr) {
@@ -9890,6 +10010,7 @@ var Lemmings;
                 return;
             this.lemmingManager.renderDebug(this.dispaly);
             this.triggerManager.renderDebug(this.dispaly);
+            this.level.renderSteel(this.dispaly);
         }
     }
     Lemmings.GameDisplay = GameDisplay;

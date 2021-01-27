@@ -92,7 +92,8 @@ module Lemmings {
                 let newAction = lem.process(this.level);
                 this.processNewAction(lem, newAction);
 
-                let triggerAction = this.runTrigger(lem);
+                //let triggerAction = this.runTrigger(lem);
+                let triggerAction = this.triggerManager.triggerNew(lem, this.Resources);
                 this.processNewAction(lem, triggerAction);
             }
         }
@@ -129,8 +130,8 @@ module Lemmings {
             }
         }
 
-
-
+        //TF to be removed
+        /*
         private runTrigger(lem: Lemming): LemmingStateType {
             if (lem.isRemoved() || (lem.isDisabled())) {
                 return LemmingStateType.NO_STATE_TYPE;
@@ -142,10 +143,22 @@ module Lemmings {
             {
                 offset=8;//test upper for basher
             }
-            let triggerType = this.triggerManager.trigger(lem.x, lem.y-offset, this.Resources);
+            let triggerType = this.triggerManager.trigger(lem.x, lem.y - offset, this.Resources);
+
+
+            
             if (triggerType!=TriggerTypes.NO_TRIGGER)
                 this.logging.log("trigger type: " + triggerType);
+
             switch (triggerType) {
+                case TriggerTypes.STEEL:
+                    if ((lem.action.GetLemState() == LemmingStateType.DIGGING) || (lem.action.GetLemState() == LemmingStateType.MINEING) || (lem.action.GetLemState() == LemmingStateType.BASHING) ) {
+                        console.log("STEEL trigger-----!!!");
+                        lem.toogleDirection();
+                        return LemmingStateType.WALKING;
+                    }
+                    else
+                        return LemmingStateType.NO_STATE_TYPE;
                 case TriggerTypes.NO_TRIGGER:
                     return LemmingStateType.NO_STATE_TYPE;
                 case TriggerTypes.DROWN:
@@ -190,32 +203,13 @@ module Lemmings {
                     }   
                     else
                         return LemmingStateType.NO_STATE_TYPE;
-
-                 
-/*
-        NO_TRIGGER = 0, =>OK
-        EXIT_LEVEL = 1, =>OK
-        UNKNOWN_2 = 2,
-        UNKNOWN_3 = 3,
-        TRAP = 4,       =>OK
-        DROWN = 5,      =>OK
-        KILL = 6,       =>OK
-        ONWAY_LEFT = 7, =>OK
-        ONWAY_RIGHT = 8,=>OK
-        STEEL = 9,
-
-        BLOCKER_LEFT,   =>OK
-        BLOCKER_RIGHT,  =>OK
-    }
-*/
-
                 default:
                     this.logging.log("unknown trigger type: " + triggerType);
                     return LemmingStateType.NO_STATE_TYPE;
 
             }
         }
-
+        */
 
         /** render all Lemmings to the GameDisplay */
         public render(gameDisplay: DisplayImage) {

@@ -8,7 +8,8 @@ module Lemmings {
         /** the background image */
         private groundImage: Uint8ClampedArray;
         private welcomeMainTick:number = 0;
-        private welcomeTick:number = 0;
+        private welcomeTick: number = 0;
+        private steel: Range[] = [];
 
         private codeGen: CodeGenerator=null;
 
@@ -53,7 +54,7 @@ module Lemmings {
         /** set the map objects of this level and update trigger */
         public setMapObjects(objects: LevelElement[], objectImg: ObjectImageInfo[],graphicSet1:number): void {
             this.entrances = [];
-            this.triggers = [];
+            //this.triggers = [];
             this.objects = [];
 
             /// process all objects
@@ -545,6 +546,23 @@ module Lemmings {
             //console.log("level.render=" + this.width + "," + this.height);
             gameDisplay.setBackground(this.groundImage, this.groundMask);
            // console.dir(this.groundImage);
+        }
+
+
+        public renderSteel(gameDisplay: DisplayImage) {
+            for (let i = 0; i < this.steel.length; i++) {
+                this.steel[i].draw(gameDisplay);
+            }
+        }
+
+        public setSteel(r: Range[]) {
+            this.triggers = [];
+            this.steel = r;
+            for (let i = 0; i < this.steel.length; i++) {
+                
+                let newTrigger = new Trigger(TriggerTypes.STEEL, this.steel[i].x, this.steel[i].y, this.steel[i].x + this.steel[i].width, this.steel[i].y + this.steel[i].height, 0, 0, null, null);
+                this.triggers.push(newTrigger);
+            }
         }
 
     }

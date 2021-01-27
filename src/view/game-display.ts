@@ -56,6 +56,7 @@ module Lemmings {
 
             this.lemmingManager.renderDebug(this.dispaly);
             this.triggerManager.renderDebug(this.dispaly);
+            this.level.renderSteel(this.dispaly);
         }
 
     }

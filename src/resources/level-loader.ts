@@ -52,7 +52,8 @@
                         level.screenPositionX = levelReader.screenPositionX;
                         level.isSuperLemming = levelReader.isSuperLemming;
                         level.accessCodeKey=this.config.accessCodeKey
-                        level.gamePaletteID=this.config.gamePaletteID
+                        level.gamePaletteID = this.config.gamePaletteID
+                        level.setSteel( levelReader.steel);
                       
                         /// default level properties
                         let levelProperties = levelReader.levelProperties
