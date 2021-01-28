@@ -358,7 +358,7 @@ module Lemmings {
                     /// move to next level
                     console.log("good => next");
                     this.gameState = GameState.Objective;
-                    this.continue();
+                    //this.continue();
                     this.moveToLevel(1);
                 }
                 if (Button == 2)//right
@@ -594,7 +594,7 @@ module Lemmings {
                     this.WelcomePageSprire = pagspr;
                     let gameDisplay = this.stage.getGameDisplay();
                     gameDisplay.clear();
-                    gameDisplay.redraw();
+                    //gameDisplay.redraw();
                     //fullpage
                     let FullPage =this.stage.getFullPageDisplay();
                 
@@ -648,16 +648,16 @@ module Lemmings {
         private StartActualGame()
         {
             let FullPage =this.stage.getFullPageDisplay();
-            FullPage.clear();
-            FullPage.redraw();
+            //FullPage.clear();
+            //FullPage.redraw();
             console.log("start actual game");
             
             let gameDisplay = this.stage.getGameDisplay();
             gameDisplay.clear();
             this.stage.resetFade();
-            this.currentLevel.render(gameDisplay);
+            //this.currentLevel.render(gameDisplay);
             gameDisplay.setScreenPosition(this.currentLevel.screenPositionX, 0);
-            gameDisplay.redraw();
+            //gameDisplay.redraw();
             this.gameState = GameState.Playing;//palying
             this.start();
          
