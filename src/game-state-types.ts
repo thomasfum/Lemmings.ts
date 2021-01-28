@@ -5,7 +5,8 @@ module Lemmings {
       RUNNING,
       FAILED_OUT_OF_TIME,
       FAILED_LESS_LEMMINGS,
-      SUCCEEDED
+      SUCCEEDED,
+      CANCELED
     };
 
     export module GameStateTypes {

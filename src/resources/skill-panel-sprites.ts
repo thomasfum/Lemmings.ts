@@ -74,7 +74,7 @@ module Lemmings {
 
             /// add space
             this.emptyNumberSprite = new Frame(9, 8);
-            this.emptyNumberSprite.fill(255, 255, 255);
+            this.emptyNumberSprite.fill(243, 211, 211);
         }
 
     }

@@ -79,7 +79,7 @@ module Lemmings {
 
             /// create new game
             this.gameFactory.getGame(this.gameID)
-                .then(game => game.loadLevel(this.levelGroupIndex, this.levelIndex,this.MusicLevel))
+                .then(game => game.loadLevel(this.levelGroupIndex, this.levelIndex,this.MusicLevel, this.musicIndex))
                 .then(game => {
 
                     if (replayString != null) {

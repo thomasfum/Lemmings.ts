@@ -249,7 +249,7 @@ module Lemmings {
 
         /** draw a white rectangle border to the panel */
         private drawSelection(dispaly: DisplayImage, panelIndex: number) {
-            dispaly.drawRect(16 * panelIndex, 16, 16, 23, 255, 255, 255);
+            dispaly.drawRect(16 * panelIndex, 16, 16, 23,243, 211, 211);
         }
 
         /** draw the game time to the panel */

@@ -9,7 +9,8 @@ module Lemmings {
         private soundPlayer: AudioPlayer;
         private soundImage: Promise<SoundImageManager>;
         private mainDat: Promise<FileContainer> = null;
-        public soundEnable = false;
+        public soundEnable: boolean = false;
+        public musicEnable: boolean = false;
         private soundPlayerArray: AudioPlayer[] = [];
 
         constructor(private fileProvider: FileProvider, private config: GameConfig) {

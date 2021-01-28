@@ -337,10 +337,6 @@ module Lemmings {
             let LevelRating=sprites.getLeveRating();
             let MusicNote=sprites.getMusicNote();
 
-            let LeftLemmingWorkingScroller=sprites.getLeftLemmingWorkingScroller();
-            let RighttLemmingWorkingScroller=sprites.getRightLemmingWorkingScroller();
-            let Reel=sprites.getReel();
-
             let mayhemSign=sprites.getMayhemSign();
             let taxingSign=sprites.getTaxingSign();
             let trickySign=sprites.getTrickySign();
@@ -534,7 +530,7 @@ module Lemmings {
          private drawString(dispaly: DisplayImage, text: string, x: number, y: number,sprites: pagesSprites): number {
 
             for (let i = 0; i < text.length; i++) {
-                if((x>0)&&(x<700))
+                if((x>=0)&&(x<700))
                 {
                     let letterImg = sprites.getLetterSprite(text[i]);
                     if (letterImg != null) {

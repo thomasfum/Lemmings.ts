@@ -30,8 +30,12 @@ module Lemmings {
 
         private soundPlayer1: AudioPlayer = null;
         private soundPlayer2: AudioPlayer = null;
+        private musicPlayer: AudioPlayer = null;
+        private musicIndex: number=5;
 
         private finalGameState:GameStateTypes = GameStateTypes.UNKNOWN;
+
+   
 
         constructor(gameResources: GameResources) {
             this.gameResources = gameResources;
@@ -54,15 +58,21 @@ module Lemmings {
         }
 
         /** load a new game/level */
-        public loadLevel(levelGroupIndex: number, levelIndex: number, musicLevel:number): Promise<Game> {
+        public loadLevel(levelGroupIndex: number, levelIndex: number, musicLevel:number, musicIndex:number): Promise<Game> {
 
             this.levelGroupIndex = levelGroupIndex;
             this.levelIndex = levelIndex;
-            
+            this.musicIndex=musicIndex;
             if (musicLevel > 0)
                 this.gameResources.soundEnable = true;
             else
                 this.gameResources.soundEnable = false;
+
+
+            if (musicLevel == 2)
+                this.gameResources.musicEnable = true;
+            else
+                this.gameResources.musicEnable = false;
 
             this.gameResources.getAllSounds(18);
 
@@ -149,8 +159,17 @@ module Lemmings {
 
             this.onGameEnd.dispose();
             this.onGameEnd = null;
-        }
+            this.stopMusic() ;
+            
+        
 
+        }
+        public stopMusic() {
+            if (this.musicPlayer) {
+                this.musicPlayer.stop();
+                this.musicPlayer = null;
+            }
+        }
 
         /** return the game Timer for this game */
         public getGameTimer(): GameTimer {
@@ -202,6 +221,15 @@ module Lemmings {
                 this.objectManager.openDoor()
                 if (this.soundPlayer1 != null)
                     this.soundPlayer1.play();
+
+                if(this.gameResources.musicEnable == true)
+                {
+                    this.gameResources.getMusicPlayer(this.musicIndex)
+                    .then((player) => {
+                        this.musicPlayer = player;
+                        this.musicPlayer.play();
+                    });
+                }
             }
 
 
@@ -250,8 +278,10 @@ module Lemmings {
         }
         public finish() {
             console.log("Finishing game");
-            this.finalGameState = GameStateTypes.FAILED_LESS_LEMMINGS;
-            this.checkForGameOver();
+            this.finalGameState = GameStateTypes.CANCELED;
+            this.gameVictoryCondition.doFinalize();
+            this.stopMusic();
+            this.onGameEnd.trigger(new GameResult(this));
         }
         /** check if the game  */
         private checkForGameOver() {
@@ -264,7 +294,7 @@ module Lemmings {
             if ((state != GameStateTypes.RUNNING) && (state != GameStateTypes.UNKNOWN)) {
                 this.gameVictoryCondition.doFinalize();
                 this.finalGameState = state;
-
+                this.stopMusic();
                 this.onGameEnd.trigger(new GameResult(this));
             }
         }

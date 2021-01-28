@@ -15,7 +15,8 @@ module Lemmings {
         private levelIndex: number = 0;
         private levelGroupIndex: number = 0;
         private gameID: number;
-        private musicIndex: number = 0;
+        private musicIndexLoop: number = 5;
+        
       //  private soundIndex: number = 0;
         private gameResources: GameResources = null;
         private musicPlayer: AudioPlayer = null;
@@ -36,8 +37,7 @@ module Lemmings {
         private WelcomePageTimer: number;
         private WelcomePageTick: number;
         private WelcomePageSprire: pagesSprites;
-
-
+        
         //touch
         public  longtouch:boolean= false ;
         private timeOutEvent  = 0;
@@ -406,9 +406,14 @@ module Lemmings {
                 //----------------------------
                 if (gameResult.state == GameStateTypes.SUCCEEDED) {
                     this.gameState = GameState.ResultGood;//results good
+                    this.musicIndexLoop++;
+                    //if(this.musicIndexLoop>16)
+                    //    this.musicIndexLoop=0;//no need
+
                 }
                 else {
                     this.gameState = GameState.ResultBad;//results bad
+                    this.musicIndexLoop=5;
                 }
                 let gameDisplay = this.stage.getGameDisplay();
                 gameDisplay.clear();
@@ -477,67 +482,7 @@ module Lemmings {
             this.game.getGameTimer().speedFactor = newSpeed;
         }
 
-
-        public playMusic(moveInterval: number) {
-
-            this.stopMusic();
-            if (!this.gameResources) return;
-
-            if (moveInterval == null) moveInterval = 0;
-            this.musicIndex += moveInterval;
-            this.musicIndex = (this.musicIndex < 0) ? 0 : this.musicIndex;
-
-            this.gameResources.getMusicPlayer(this.musicIndex)
-                .then((player) => {
-                    this.musicPlayer = player;
-                    this.musicPlayer.play();
-                });
-        }
-
-
-        public stopMusic() {
-            if (this.musicPlayer) {
-                this.musicPlayer.stop();
-                this.musicPlayer = null;
-            }
-        }
-
-/*
-        public stopSound() {
-            if (this.soundPlayer) {
-                this.soundPlayer.stop();
-                this.soundPlayer = null;
-            }
-        }
-
-        public playSound(moveInterval: number) {
-            this.stopSound();
-
-            if (moveInterval == null) moveInterval = 0;
-
-            this.soundIndex += moveInterval;
-
-            this.soundIndex = (this.soundIndex < 0) ? 0 : this.soundIndex;
-            
-            this.gameResources.getSoundPlayer(this.soundIndex)
-                .then((player) => {
-                    this.soundPlayer = player;
-                    this.soundPlayer.play();
-                });
-            
-            
-        }
-
-
-        public enableDebug() {
-            if (this.game == null) {
-                return;
-            }
-            
-            this.game.setDebugMode(true);
-        }
-*/
-        
+       
 
         /** add/subtract one to the current levelIndex */
         public moveToLevel(moveInterval: number) {
@@ -739,17 +684,17 @@ module Lemmings {
 
                             let gameDisplay = this.stage.getGameDisplay();
                             gameDisplay.clear();
-                            gameDisplay.redraw();
+                           // gameDisplay.redraw();
                             //fullpage
                             let FullPage =this.stage.getFullPageDisplay();
                            
                             FullPage.clear();
-                            this.stage.redrawFullpage();
+                            //this.stage.redrawFullpage();
                             this.stage.resetFade();
 
                             /// create new game
                             this.gameFactory.getGame(this.gameID)
-                                .then(game => game.loadLevel(this.levelGroupIndex, this.levelIndex, this.MusicLevel))
+                                .then(game => game.loadLevel(this.levelGroupIndex, this.levelIndex, this.MusicLevel, this.musicIndexLoop))
                                 .then(game => {
                                     game.setGameDispaly(this.stage.getGameDisplay(), this.stage);
                                     game.setGuiDisplay(this.stage.getGuiDisplay(), this.stage);

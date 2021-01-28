@@ -2,7 +2,7 @@ module Lemmings {
 
     export class Lemming {
         public static readonly LEM_MIN_Y = -5;
-        public static readonly LEM_MAX_FALLING = 50//60 trop grand pour Mayen 0
+        public static readonly LEM_MAX_FALLING = 55 // 50 trp petit level 0 //60 trop grand pour Mayen 0
 
         public x: number = 0;
         public y: number = 0;
