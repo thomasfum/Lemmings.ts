@@ -35,6 +35,7 @@ The goal is to finish it and extand it to custom levels like the ones present he
 
 
 ## ToDo
+* when game is paused, can't see mouse
 * fix some game issues 
 * more tests
 
