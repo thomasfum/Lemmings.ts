@@ -19,25 +19,25 @@ The goal is to finish it and extand it to custom levels like the ones present he
 * Support playing of original music by interpreting the adlib.dat file and using an Adlib emulator(s) (DosBox or Robson Cozendey )
 
 ## Improvements since fork
-* Map added on game page
 * Mouse cursor added with color palette
 * Long touch support
 * No need to change code to add new levels, use only config.json
-* Level presentation page added (objective)
+* Level presentation page added (objective) with map
 * Result page added
 * Original mouse navigation added
 * Welcome page of each game added with mouse and touch pad support
 * Game selection page added with mouse and touch pad support
-* "one way" objects for bathers and miners are now managed
+* "one way" objects for bashers and miners are now managed
 * trap animation are now correctly triggered, with the right sound
-* killing machin now starts the right lemming animation, with right sound
+* killing machines now starts the right lemming animation, with right sound
+* steel ground can't be mined, generate sound and can't be destroyed by explosion
+* music start automatically
 
 
 ## ToDo
-* finish welcome page (Reel)
-* automate music
-* explosion should not destroy some hard part of the level
+* when game is paused, can't see mouse
 * fix some game issues 
+* more tests
 
 ## How to run
 * download the *Lemmings.ts.zip* from <a href="https://github.com/thomasfum/Lemmings.ts/releases">[releases]</a>
