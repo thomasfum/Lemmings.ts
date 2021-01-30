@@ -10626,7 +10626,7 @@ var Lemmings;
                  {
                     console.log("bad => redo");
                     this.gameState = GameState.Objective;
-                    this.continue();
+                    //this.continue();
                     this.moveToLevel(0);
                 }
                 if (Button == 2) //right
@@ -10871,6 +10871,7 @@ var Lemmings;
                 this.game.stop();
                 this.game = null;
             }
+            console.warn("LoadLevel");
             this.gameResources.getLevel(this.levelGroupIndex, this.levelIndex)
                 .then((level) => {
                 if (level == null)
@@ -10882,6 +10883,8 @@ var Lemmings;
                     if (this.stage != null) {
                         let gameDisplay = this.stage.getGameDisplay();
                         gameDisplay.clear();
+                        let gameGiDisplay = this.stage.getGuiDisplay();
+                        gameGiDisplay.clear();
                         // gameDisplay.redraw();
                         //fullpage
                         let FullPage = this.stage.getFullPageDisplay();
