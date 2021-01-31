@@ -23,6 +23,11 @@ module Lemmings {
 
         /** user called this action */
         public triggerLemAction(lem: Lemming): boolean {
+
+            if (lem.action.GetLemState()==LemmingStateType.BASHING) {
+                return false;
+            }
+            
             lem.setAction(this);
 
             return true;

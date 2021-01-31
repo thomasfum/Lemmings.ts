@@ -23,6 +23,7 @@ module Lemmings {
 
         public triggerLemAction(lem: Lemming): boolean {
 
+
             if (lem.action.GetLemState()==LemmingStateType.FALLING) {
                 return false;
             }

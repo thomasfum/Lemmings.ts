@@ -58,6 +58,12 @@ module Lemmings {
         private handleSkillMouseDown(x: number) {
             let panelIndex = Math.trunc(x / 16);
           
+            if (panelIndex == 10) {
+                this.gameTimer.toggleSuspended();
+                return;
+            }
+            if(this.gameTimer.isSuspended()==true)
+                return;
 
             if (panelIndex == 0) {
                 this.deltaReleaseRate = -3;
@@ -71,15 +77,9 @@ module Lemmings {
                 return;
             }
 
-            if (panelIndex == 10) {
-                this.gameTimer.toggle();
-                return;
-            }
 
             let newSkill = this.getSkillByPanelIndex(panelIndex);
             if (newSkill == SkillTypes.UNKNOWN) return;
-
-
             
             if (this.soundPlayer != null)
                 this.soundPlayer.play();
@@ -142,7 +142,6 @@ module Lemmings {
             this.skillSelectionChanged = true;
             this.backgroundChanged = true;
         }
-
 
         /** render the gui to the screen display */
         public render() {
@@ -208,7 +207,6 @@ module Lemmings {
 
             return str+" ".repeat(length - str.length);
         }
-        
 
         /** left pad a string with spaces */
         private stringLeftPad(str: string, length: number): string {

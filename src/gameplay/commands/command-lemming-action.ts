@@ -5,9 +5,11 @@ module Lemmings {
 
         private lemmingId: number;
         private log = new LogHandler("CommandLemmingsAction");
+        private soundPlayer:AudioPlayer=null;
 
-        public constructor(lemmingId?: number) {
+        public constructor(lemmingId?: number,soundPlayer?: AudioPlayer) {
             if (lemmingId != null) this.lemmingId = lemmingId;
+            this.soundPlayer=soundPlayer;
         }
 
         public getCommandKey(): string {
@@ -54,6 +56,8 @@ module Lemmings {
                 return false;
             }
 
+            if (this.soundPlayer!=null)
+                    this.soundPlayer.play();
             /// reduce the available skill count
             return skills.reduseSkill(selectedSkill);
 

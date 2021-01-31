@@ -24,13 +24,15 @@ module Lemmings {
                 this.stage=stage;
             }
             this.dispaly.onMouseDown.on((e) => {
+               
                 //console.log(e.x +" "+ e.y);
                 let lem = this.lemmingManager.getLemmingAt(e.x, e.y);
                 if (!lem) return;
+                /*
                 if (this.soundPlayer3!=null)
                     this.soundPlayer3.play();
-                
-                this.game.queueCmmand(new CommandLemmingsAction(lem.id));
+                */
+                this.game.queueCmmand(new CommandLemmingsAction(lem.id,this.soundPlayer3));
             });
         }
 

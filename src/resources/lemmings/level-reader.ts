@@ -196,7 +196,7 @@ module Lemmings {
         this.steel.push(newRange);
         }
 
-        console.warn("Nb steel:" + this.steel.length);
+        //console.warn("Nb steel:" + this.steel.length);
     }
 
 

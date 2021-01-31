@@ -16,6 +16,11 @@ module Lemmings {
         }
 
         public triggerLemAction(lem: Lemming): boolean {
+
+            if (lem.action.GetLemState()==LemmingStateType.BLOCKING) {
+                return false;
+            }
+
             lem.setAction(this);
 
             return true;

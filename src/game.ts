@@ -87,6 +87,9 @@ module Lemmings {
                         this.gameTimer.onGameTick.on(() => {
                             this.onGameTimerTick()
                         });
+                        this.gameTimer.onGameSuspendedTick.on(() => {
+                            this.onGameTimerSuspendedTick()
+                        });
 
                         this.commandManager = new CommandManager(this, this.gameTimer);
 
@@ -206,6 +209,10 @@ module Lemmings {
             this.showDebug = vale;
         }
 
+
+        private onGameTimerSuspendedTick() {
+                this.render();
+        }
         /** run one step in game time and render the result */
         private onGameTimerTick() {
 

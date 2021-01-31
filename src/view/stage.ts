@@ -118,7 +118,7 @@ module Lemmings {
                         if (this.guiImgProps.display!=null)
                             this.guiImgProps.display.drawFrame(this.level.getGroundMaskLayer().getMiniMap(this.gameImgProps.viewPoint.x,this.level.width,this.level.colorPalette),209,18);
                    
-                        this.redraw();
+                        //this.redraw();
                     }
                     
                 }
@@ -326,7 +326,7 @@ module Lemmings {
                 if (stageImage == null) return;
                 if (stageImage.display == null) return;
                 this.lastMousePos=e;
-                this.displyCursor( this.calcPosition2D(stageImage, e));
+                //this.displyCursor( this.calcPosition2D(stageImage, e));
                 
                 
             });

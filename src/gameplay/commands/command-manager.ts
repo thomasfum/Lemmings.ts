@@ -62,7 +62,10 @@ module Lemmings {
         /** add a command to execute queue */
         public queueCommand(newCommand: ICommand) {
             let currentTick = this.gameTimer.getGameTicks();
+            if(this.gameTimer.isSuspended()==true)
+                return;
 
+                
             if (newCommand.execute(this.game)) {
                 // only log commands that are executable
                 this.loggedCommads[currentTick] = newCommand;

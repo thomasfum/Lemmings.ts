@@ -19,7 +19,7 @@ module Lemmings {
         
       //  private soundIndex: number = 0;
         private gameResources: GameResources = null;
-        private musicPlayer: AudioPlayer = null;
+     //   private musicPlayer: AudioPlayer = null;
       //  private soundPlayer: AudioPlayer = null;
         private game: Game = null;
         private gameFactory = new GameFactory("./");

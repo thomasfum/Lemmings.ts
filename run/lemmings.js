@@ -310,6 +310,9 @@ var Lemmings;
                     this.gameTimer.onGameTick.on(() => {
                         this.onGameTimerTick();
                     });
+                    this.gameTimer.onGameSuspendedTick.on(() => {
+                        this.onGameTimerSuspendedTick();
+                    });
                     this.commandManager = new Lemmings.CommandManager(this, this.gameTimer);
                     this.skills = new Lemmings.GameSkills(level);
                     this.level = level;
@@ -392,6 +395,9 @@ var Lemmings;
         /** enables / disables the display of debug information */
         setDebugMode(vale) {
             this.showDebug = vale;
+        }
+        onGameTimerSuspendedTick() {
+            this.render();
         }
         /** run one step in game time and render the result */
         onGameTimerTick() {
@@ -598,15 +604,21 @@ var Lemmings;
             this.gameTimerHandler = 0;
             /** the current game time in number of steps the game has made  */
             this.tickIndex = 0;
+            this.Suspended = false;
             /** event raising on every tick (one step in time) the game made */
             this.onGameTick = new Lemmings.EventHandler();
             /** event raising on before every tick (one step in time) the game made */
             this.onBeforeGameTick = new Lemmings.EventHandler();
+            /** event raising on before every tick (one step in time) the game made */
+            this.onGameSuspendedTick = new Lemmings.EventHandler();
             this.ticksTimeLimit = this.secondsToTicks(level.timeLimit * 60);
         }
         /** return if the game timer is running or not */
         isRunning() {
             return (this.gameTimerHandler != 0);
+        }
+        isSuspended() {
+            return (this.Suspended);
         }
         /** define a factor to speed up >1 or slow down <1 the game */
         get speedFactor() {
@@ -635,12 +647,12 @@ var Lemmings;
             this.onGameTick.dispose();
         }
         /** toggle between suspend and continue */
-        toggle() {
-            if (this.isRunning()) {
-                this.suspend();
+        toggleSuspended() {
+            if (this.Suspended == false) {
+                this.Suspended = true;
             }
             else {
-                this.continue();
+                this.Suspended = false;
             }
         }
         /** Run the game timer */
@@ -654,11 +666,17 @@ var Lemmings;
         }
         /** run the game one step in time */
         tick() {
-            if (this.onBeforeGameTick != null)
-                this.onBeforeGameTick.trigger(this.tickIndex);
-            this.tickIndex++;
-            if (this.onGameTick != null)
-                this.onGameTick.trigger();
+            if (this.Suspended == false) {
+                if (this.onBeforeGameTick != null)
+                    this.onBeforeGameTick.trigger(this.tickIndex);
+                this.tickIndex++;
+                if (this.onGameTick != null)
+                    this.onGameTick.trigger();
+            }
+            else {
+                if (this.onGameSuspendedTick != null)
+                    this.onGameSuspendedTick.trigger();
+            }
         }
         /** return the past game time in seconds */
         getGameTime() {
@@ -1674,6 +1692,9 @@ var Lemmings;
         }
         /** user called this action */
         triggerLemAction(lem) {
+            if (lem.action.GetLemState() == Lemmings.LemmingStateType.BASHING) {
+                return false;
+            }
             lem.setAction(this);
             return true;
         }
@@ -1744,6 +1765,9 @@ var Lemmings;
             return Lemmings.LemmingStateType.BLOCKING;
         }
         triggerLemAction(lem) {
+            if (lem.action.GetLemState() == Lemmings.LemmingStateType.BLOCKING) {
+                return false;
+            }
             lem.setAction(this);
             return true;
         }
@@ -1944,6 +1968,9 @@ var Lemmings;
             return Lemmings.LemmingStateType.DIGGING;
         }
         triggerLemAction(lem) {
+            if (lem.action.GetLemState() == Lemmings.LemmingStateType.DIGGING) {
+                return false;
+            }
             lem.setAction(this);
             return true;
         }
@@ -2349,6 +2376,9 @@ var Lemmings;
             return Lemmings.LemmingStateType.MINEING;
         }
         triggerLemAction(lem) {
+            if (lem.action.GetLemState() == Lemmings.LemmingStateType.MINEING) {
+                return false;
+            }
             lem.setAction(this);
             return true;
         }
@@ -2568,10 +2598,12 @@ var Lemmings;
 (function (Lemmings) {
     /** Commands actions on lemmings the user has given */
     class CommandLemmingsAction {
-        constructor(lemmingId) {
+        constructor(lemmingId, soundPlayer) {
             this.log = new Lemmings.LogHandler("CommandLemmingsAction");
+            this.soundPlayer = null;
             if (lemmingId != null)
                 this.lemmingId = lemmingId;
+            this.soundPlayer = soundPlayer;
         }
         getCommandKey() {
             return "l";
@@ -2607,6 +2639,8 @@ var Lemmings;
                 this.log.log("unable to execute action on lemming!");
                 return false;
             }
+            if (this.soundPlayer != null)
+                this.soundPlayer.play();
             /// reduce the available skill count
             return skills.reduseSkill(selectedSkill);
         }
@@ -2668,6 +2702,8 @@ var Lemmings;
         /** add a command to execute queue */
         queueCommand(newCommand) {
             let currentTick = this.gameTimer.getGameTicks();
+            if (this.gameTimer.isSuspended() == true)
+                return;
             if (newCommand.execute(this.game)) {
                 // only log commands that are executable
                 this.loggedCommads[currentTick] = newCommand;
@@ -5100,7 +5136,7 @@ var Lemmings;
                 //console.warn("Steel: x=" + newRange.x + ", y=" + newRange.y + ", dx=" + newRange.width + ", dy=" + newRange.height);
                 this.steel.push(newRange);
             }
-            console.warn("Nb steel:" + this.steel.length);
+            //console.warn("Nb steel:" + this.steel.length);
         }
         /** read general Level information */
         readLevelName(fr) {
@@ -10029,9 +10065,11 @@ var Lemmings;
                 let lem = this.lemmingManager.getLemmingAt(e.x, e.y);
                 if (!lem)
                     return;
-                if (this.soundPlayer3 != null)
+                /*
+                if (this.soundPlayer3!=null)
                     this.soundPlayer3.play();
-                this.game.queueCmmand(new Lemmings.CommandLemmingsAction(lem.id));
+                */
+                this.game.queueCmmand(new Lemmings.CommandLemmingsAction(lem.id, this.soundPlayer3));
             });
         }
         renderSub(dispaly) {
@@ -10104,6 +10142,12 @@ var Lemmings;
         /// handel click on the skills panel
         handleSkillMouseDown(x) {
             let panelIndex = Math.trunc(x / 16);
+            if (panelIndex == 10) {
+                this.gameTimer.toggleSuspended();
+                return;
+            }
+            if (this.gameTimer.isSuspended() == true)
+                return;
             if (panelIndex == 0) {
                 this.deltaReleaseRate = -3;
                 this.doReleaseRateChanges();
@@ -10112,10 +10156,6 @@ var Lemmings;
             if (panelIndex == 1) {
                 this.deltaReleaseRate = 3;
                 this.doReleaseRateChanges();
-                return;
-            }
-            if (panelIndex == 10) {
-                this.gameTimer.toggle();
                 return;
             }
             let newSkill = this.getSkillByPanelIndex(panelIndex);
@@ -10313,7 +10353,7 @@ var Lemmings;
             this.musicIndexLoop = 5;
             //  private soundIndex: number = 0;
             this.gameResources = null;
-            this.musicPlayer = null;
+            //   private musicPlayer: AudioPlayer = null;
             //  private soundPlayer: AudioPlayer = null;
             this.game = null;
             this.gameFactory = new Lemmings.GameFactory("./");
@@ -11240,7 +11280,7 @@ var Lemmings;
                         //this.setGameViewPointPosition(newposx,0);
                         if (this.guiImgProps.display != null)
                             this.guiImgProps.display.drawFrame(this.level.getGroundMaskLayer().getMiniMap(this.gameImgProps.viewPoint.x, this.level.width, this.level.colorPalette), 209, 18);
-                        this.redraw();
+                        //this.redraw();
                     }
                 }
                 if ((stageImage == null) || (stageImage.display == null))
@@ -11407,7 +11447,7 @@ var Lemmings;
                 if (stageImage.display == null)
                     return;
                 this.lastMousePos = e;
-                this.displyCursor(this.calcPosition2D(stageImage, e));
+                //this.displyCursor( this.calcPosition2D(stageImage, e));
             });
         }
         handelOnZoom() {

@@ -9,6 +9,7 @@ module Lemmings {
         /** the current game time in number of steps the game has made  */
         private tickIndex: number = 0;
         private ticksTimeLimit: number;
+        private Suspended:boolean = false;
 
         constructor(level: Level) {
             this.ticksTimeLimit = this.secondsToTicks(level.timeLimit * 60);
@@ -17,6 +18,11 @@ module Lemmings {
         /** return if the game timer is running or not */
         public isRunning(): boolean {
             return (this.gameTimerHandler != 0);
+        }
+
+
+        public isSuspended(): boolean {
+            return (this.Suspended);
         }
 
         /** define a factor to speed up >1 or slow down <1 the game */
@@ -42,6 +48,9 @@ module Lemmings {
         /** event raising on before every tick (one step in time) the game made */
         public onBeforeGameTick = new EventHandler<number>();
 
+        /** event raising on before every tick (one step in time) the game made */
+        public onGameSuspendedTick = new EventHandler<number>();
+
         /** Pause the game */
         public suspend() {
             if (this.gameTimerHandler != 0) {
@@ -58,11 +67,11 @@ module Lemmings {
         }
 
         /** toggle between suspend and continue */
-        public toggle() {
-            if (this.isRunning()) {
-                this.suspend();
+        public toggleSuspended() {
+            if (this.Suspended==false) {
+                this.Suspended=true;
             } else {
-                this.continue();
+                this.Suspended=false;
             }
         }
 
@@ -80,9 +89,16 @@ module Lemmings {
 
         /** run the game one step in time */
         public tick() {
-            if (this.onBeforeGameTick != null) this.onBeforeGameTick.trigger(this.tickIndex);
-            this.tickIndex++;
-            if (this.onGameTick != null) this.onGameTick.trigger();
+            if(this.Suspended==false)
+            {
+                if (this.onBeforeGameTick != null) this.onBeforeGameTick.trigger(this.tickIndex);
+                this.tickIndex++;
+                if (this.onGameTick != null) this.onGameTick.trigger();
+            }
+            else
+            {
+                if (this.onGameSuspendedTick != null) this.onGameSuspendedTick.trigger();
+            }
         }
 
         /** return the past game time in seconds */
