@@ -35,7 +35,8 @@ The goal is to finish it and extand it to custom levels like the ones present he
 
 
 ## ToDo
-* when game is paused, can't see mouse
+* oneway arrow do not have the ight color
+* when changing difficulty, keep in memory current level
 * fix some game issues 
 * more tests
 

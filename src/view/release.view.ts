@@ -633,26 +633,10 @@ module Lemmings {
 }
 
 /*
-click menu: 0                   =>OK    
-ouvertur porte 2 puis 1
-new action on lem: 3            =>OK
-expolison cuicui 4 puis 11      =>OK
 
 
-tomner part terre 14            =>OK
-dans la sortie 15               =>OK
-tomber dans l'eau:16            =>OK
-les trois dernieres marches: 17 =>OK
 
-//TF sound
-objets: trap_sound_effect_id
-https://www.html5rocks.com/en/tutorials/webaudio/intro/
-
-soundsystem
-remove sound-system.ts et le repertoir Sounds
-
-
-Lem fun 11 blockeur left                        => OK!
+Lem fun 11 blockeur left                        => OK!      NJMDLCALCR
 Lem trick 04 blockeur left                      => OK!
 Lem Trick 09 blockeur right                     => OK!
 //to be tested
@@ -708,14 +692,9 @@ Lem Taxing 02 2 disserentes traps (son et animation )   5=noy   00
 Oh No wild 14 jet de gaz (son et animation )
 
 
-93 Bliard 3 diff    erente sortie, a voir avec l'original
-93 Bliard 14 porte cachee, a voir  avec l'original
+93 Blizard 3 diff    erente sortie, a voir avec l'original
+93 Blizard 14 porte cachee, a voir  avec l'original
 
-
-
-
-
-//explision ne devrait pas detruire les zones indestructibles
 
 
  graphics set 0:
@@ -845,12 +824,6 @@ Oh No wild 14 jet de gaz (son et animation )
 	                0x0008 = santa-in-the-box bottom
 	                0x0009 = santa-in-the-box top
 	                0x000A- 0x000F = invalid
-
-                M
-//lem fun 1:    5
-
-
-
 
 
 */

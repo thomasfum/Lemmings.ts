@@ -1380,134 +1380,6 @@ var Lemmings;
 })(Lemmings || (Lemmings = {}));
 var Lemmings;
 (function (Lemmings) {
-    /** manage the in-game Lemmings animation sprite */
-    class LemmingsSprite {
-        constructor(fr, colorPalette) {
-            this.lemmingAnimation = []; //- Loockup table from ActionType -> this.animations(); First Element: left-move, Second: right-move
-            this.colorPalette = colorPalette;
-            this.registerAnimation(Lemmings.SpriteTypes.WALKING, 1, fr, 2, 16, 10, -8, -10, 8); //- walking (r)
-            this.registerAnimation(Lemmings.SpriteTypes.JUMPING, 1, fr, 2, 16, 10, -8, -10, 1); //- jumping (r)
-            this.registerAnimation(Lemmings.SpriteTypes.WALKING, -1, fr, 2, 16, 10, -8, -10, 8); //- walking (l)
-            this.registerAnimation(Lemmings.SpriteTypes.JUMPING, -1, fr, 2, 16, 10, -8, -10, 1); //- jumping (l)
-            this.registerAnimation(Lemmings.SpriteTypes.DIGGING, 0, fr, 3, 16, 14, -8, -12, 16); //- digging
-            this.registerAnimation(Lemmings.SpriteTypes.CLIMBING, 1, fr, 2, 16, 12, -8, -12, 8); //- climbing (r)
-            this.registerAnimation(Lemmings.SpriteTypes.CLIMBING, -1, fr, 2, 16, 12, -8, -12, 8); //- climbing (l)
-            this.registerAnimation(Lemmings.SpriteTypes.DROWNING, 0, fr, 2, 16, 10, -8, -10, 16); //- drowning
-            this.registerAnimation(Lemmings.SpriteTypes.POSTCLIMBING, 1, fr, 2, 16, 12, -8, -12, 8); //- post-climb (r)
-            this.registerAnimation(Lemmings.SpriteTypes.POSTCLIMBING, -1, fr, 2, 16, 12, -8, -12, 8); //- post-climb (l)
-            this.registerAnimation(Lemmings.SpriteTypes.BUILDING, 1, fr, 3, 16, 13, -8, -13, 16); //- brick-laying (r)
-            this.registerAnimation(Lemmings.SpriteTypes.BUILDING, -1, fr, 3, 16, 13, -8, -13, 16); //- brick-laying (l)
-            this.registerAnimation(Lemmings.SpriteTypes.BASHING, 1, fr, 3, 16, 10, -8, -10, 32); //- bashing (r)
-            this.registerAnimation(Lemmings.SpriteTypes.BASHING, -1, fr, 3, 16, 10, -8, -10, 32); //- bashing (l)
-            this.registerAnimation(Lemmings.SpriteTypes.MINEING, 1, fr, 3, 16, 13, -8, -12, 24); //- mining (r)
-            this.registerAnimation(Lemmings.SpriteTypes.MINEING, -1, fr, 3, 16, 13, -8, -12, 24); //- mining (l)
-            this.registerAnimation(Lemmings.SpriteTypes.FALLING, 1, fr, 2, 16, 10, -8, -10, 4); //- falling (r)
-            this.registerAnimation(Lemmings.SpriteTypes.FALLING, -1, fr, 2, 16, 10, -8, -10, 4); //- falling (l)
-            this.registerAnimation(Lemmings.SpriteTypes.UMBRELLA, 1, fr, 3, 16, 16, -8, -16, 8); //- pre-umbrella (r)
-            this.registerAnimation(Lemmings.SpriteTypes.UMBRELLA, -1, fr, 3, 16, 16, -8, -16, 8); //- umbrella (r)
-            this.registerAnimation(Lemmings.SpriteTypes.SPLATTING, 0, fr, 2, 16, 10, -8, -10, 16); //- splatting
-            this.registerAnimation(Lemmings.SpriteTypes.EXITING, 0, fr, 2, 16, 13, -8, -13, 8); //- exiting
-            this.registerAnimation(Lemmings.SpriteTypes.FRYING, 1, fr, 4, 16, 14, -8, -10, 14); //- fried
-            this.registerAnimation(Lemmings.SpriteTypes.BLOCKING, 0, fr, 2, 16, 10, -8, -10, 16); //- blocking
-            this.registerAnimation(Lemmings.SpriteTypes.SHRUGGING, 1, fr, 2, 16, 10, -8, -10, 8); //- shrugging (r)
-            this.registerAnimation(Lemmings.SpriteTypes.SHRUGGING, 0, fr, 2, 16, 10, -8, -10, 8); //- shrugging (l)
-            this.registerAnimation(Lemmings.SpriteTypes.OHNO, 0, fr, 2, 16, 10, -8, -10, 16); //- oh-no-ing
-            this.registerAnimation(Lemmings.SpriteTypes.EXPLODING, 0, fr, 3, 32, 32, -8, -10, 1); //- explosion
-        }
-        /** return the animation for a given animation type */
-        getAnimation(state, right) {
-            return this.lemmingAnimation[this.typeToIndex(state, right)];
-        }
-        typeToIndex(state, right) {
-            return state * 2 + (right ? 0 : 1);
-        }
-        registerAnimation(state, dir, fr, bitsPerPixle, width, height, offsetX, offsetY, frames) {
-            //- load animation frames from file (fr)
-            var animation = new Lemmings.Animation();
-            animation.loadFromFile(fr, bitsPerPixle, width, height, frames, this.colorPalette, offsetX, offsetY);
-            //- add animation to cache -add unidirectional (dir == 0) annimations to both lists
-            if (dir >= 0) {
-                this.lemmingAnimation[this.typeToIndex(state, true)] = animation;
-            }
-            if (dir <= 0) {
-                this.lemmingAnimation[this.typeToIndex(state, false)] = animation;
-            }
-        }
-    }
-    Lemmings.LemmingsSprite = LemmingsSprite;
-})(Lemmings || (Lemmings = {}));
-/// <reference path="../resources/lemmings-sprite.ts"/>
-var Lemmings;
-(function (Lemmings) {
-    function BufferLoader(context, urlList, callback) {
-        this.context = context;
-        this.urlList = urlList;
-        this.onload = callback;
-        this.bufferList = new Array();
-        this.loadCount = 0;
-    }
-    BufferLoader.prototype.loadBuffer = function (url, index, self) {
-        // Load buffer asynchronously
-        var request = new XMLHttpRequest();
-        request.open("GET", url, true);
-        request.responseType = "arraybuffer";
-        var loader = this;
-        request.onload = function () {
-            // Asynchronously decode the audio file data in request.response
-            loader.context.decodeAudioData(request.response, function (buffer) {
-                if (!buffer) {
-                    alert('error decoding file data: ' + url);
-                    return;
-                }
-                loader.bufferList[index] = buffer;
-                if (++loader.loadCount == loader.urlList.length)
-                    loader.onload(loader.bufferList, self);
-            }, function (error) {
-                console.error('decodeAudioData error', error);
-            });
-        };
-        request.onerror = function () {
-            alert('BufferLoader: XHR error');
-        };
-        request.send();
-    };
-    BufferLoader.prototype.load = function (self) {
-        for (var i = 0; i < this.urlList.length; ++i)
-            this.loadBuffer(this.urlList[i], i, self);
-    };
-    class SoundSystem {
-        constructor() {
-            this.context = null;
-            this.myBufferList = null;
-        }
-        playSound(lem, soundId) {
-            console.log("Play sound " + soundId);
-        }
-        init() {
-            //window.AudioContext = window.AudioContext || window.webkitAudioContext;
-            this.context = new AudioContext();
-            this.bufferLoader = new BufferLoader(this.context, [
-                '/sounds/ACTION.WAV',
-                '/sounds/AGFALL.WAV',
-            ], this.finishedLoading);
-            var self = this;
-            this.bufferLoader.load(self);
-        }
-        finishedLoading(bufferList, self) {
-            console.log("finishedLoading");
-            self.myBufferList = bufferList;
-        }
-        play() {
-            let source1 = this.context.createBufferSource();
-            source1.buffer = this.myBufferList[0];
-            source1.connect(this.context.destination);
-            source1.start(0);
-        }
-    }
-    Lemmings.SoundSystem = SoundSystem;
-})(Lemmings || (Lemmings = {}));
-var Lemmings;
-(function (Lemmings) {
     /** manages all triggers */
     class TriggerManager {
         constructor(gameTimer) {
@@ -3080,6 +2952,64 @@ var Lemmings;
         }
     }
     Lemmings.GroundRenderer = GroundRenderer;
+})(Lemmings || (Lemmings = {}));
+var Lemmings;
+(function (Lemmings) {
+    /** manage the in-game Lemmings animation sprite */
+    class LemmingsSprite {
+        constructor(fr, colorPalette) {
+            this.lemmingAnimation = []; //- Loockup table from ActionType -> this.animations(); First Element: left-move, Second: right-move
+            this.colorPalette = colorPalette;
+            this.registerAnimation(Lemmings.SpriteTypes.WALKING, 1, fr, 2, 16, 10, -8, -10, 8); //- walking (r)
+            this.registerAnimation(Lemmings.SpriteTypes.JUMPING, 1, fr, 2, 16, 10, -8, -10, 1); //- jumping (r)
+            this.registerAnimation(Lemmings.SpriteTypes.WALKING, -1, fr, 2, 16, 10, -8, -10, 8); //- walking (l)
+            this.registerAnimation(Lemmings.SpriteTypes.JUMPING, -1, fr, 2, 16, 10, -8, -10, 1); //- jumping (l)
+            this.registerAnimation(Lemmings.SpriteTypes.DIGGING, 0, fr, 3, 16, 14, -8, -12, 16); //- digging
+            this.registerAnimation(Lemmings.SpriteTypes.CLIMBING, 1, fr, 2, 16, 12, -8, -12, 8); //- climbing (r)
+            this.registerAnimation(Lemmings.SpriteTypes.CLIMBING, -1, fr, 2, 16, 12, -8, -12, 8); //- climbing (l)
+            this.registerAnimation(Lemmings.SpriteTypes.DROWNING, 0, fr, 2, 16, 10, -8, -10, 16); //- drowning
+            this.registerAnimation(Lemmings.SpriteTypes.POSTCLIMBING, 1, fr, 2, 16, 12, -8, -12, 8); //- post-climb (r)
+            this.registerAnimation(Lemmings.SpriteTypes.POSTCLIMBING, -1, fr, 2, 16, 12, -8, -12, 8); //- post-climb (l)
+            this.registerAnimation(Lemmings.SpriteTypes.BUILDING, 1, fr, 3, 16, 13, -8, -13, 16); //- brick-laying (r)
+            this.registerAnimation(Lemmings.SpriteTypes.BUILDING, -1, fr, 3, 16, 13, -8, -13, 16); //- brick-laying (l)
+            this.registerAnimation(Lemmings.SpriteTypes.BASHING, 1, fr, 3, 16, 10, -8, -10, 32); //- bashing (r)
+            this.registerAnimation(Lemmings.SpriteTypes.BASHING, -1, fr, 3, 16, 10, -8, -10, 32); //- bashing (l)
+            this.registerAnimation(Lemmings.SpriteTypes.MINEING, 1, fr, 3, 16, 13, -8, -12, 24); //- mining (r)
+            this.registerAnimation(Lemmings.SpriteTypes.MINEING, -1, fr, 3, 16, 13, -8, -12, 24); //- mining (l)
+            this.registerAnimation(Lemmings.SpriteTypes.FALLING, 1, fr, 2, 16, 10, -8, -10, 4); //- falling (r)
+            this.registerAnimation(Lemmings.SpriteTypes.FALLING, -1, fr, 2, 16, 10, -8, -10, 4); //- falling (l)
+            this.registerAnimation(Lemmings.SpriteTypes.UMBRELLA, 1, fr, 3, 16, 16, -8, -16, 8); //- pre-umbrella (r)
+            this.registerAnimation(Lemmings.SpriteTypes.UMBRELLA, -1, fr, 3, 16, 16, -8, -16, 8); //- umbrella (r)
+            this.registerAnimation(Lemmings.SpriteTypes.SPLATTING, 0, fr, 2, 16, 10, -8, -10, 16); //- splatting
+            this.registerAnimation(Lemmings.SpriteTypes.EXITING, 0, fr, 2, 16, 13, -8, -13, 8); //- exiting
+            this.registerAnimation(Lemmings.SpriteTypes.FRYING, 1, fr, 4, 16, 14, -8, -10, 14); //- fried
+            this.registerAnimation(Lemmings.SpriteTypes.BLOCKING, 0, fr, 2, 16, 10, -8, -10, 16); //- blocking
+            this.registerAnimation(Lemmings.SpriteTypes.SHRUGGING, 1, fr, 2, 16, 10, -8, -10, 8); //- shrugging (r)
+            this.registerAnimation(Lemmings.SpriteTypes.SHRUGGING, 0, fr, 2, 16, 10, -8, -10, 8); //- shrugging (l)
+            this.registerAnimation(Lemmings.SpriteTypes.OHNO, 0, fr, 2, 16, 10, -8, -10, 16); //- oh-no-ing
+            this.registerAnimation(Lemmings.SpriteTypes.EXPLODING, 0, fr, 3, 32, 32, -8, -10, 1); //- explosion
+        }
+        /** return the animation for a given animation type */
+        getAnimation(state, right) {
+            return this.lemmingAnimation[this.typeToIndex(state, right)];
+        }
+        typeToIndex(state, right) {
+            return state * 2 + (right ? 0 : 1);
+        }
+        registerAnimation(state, dir, fr, bitsPerPixle, width, height, offsetX, offsetY, frames) {
+            //- load animation frames from file (fr)
+            var animation = new Lemmings.Animation();
+            animation.loadFromFile(fr, bitsPerPixle, width, height, frames, this.colorPalette, offsetX, offsetY);
+            //- add animation to cache -add unidirectional (dir == 0) annimations to both lists
+            if (dir >= 0) {
+                this.lemmingAnimation[this.typeToIndex(state, true)] = animation;
+            }
+            if (dir <= 0) {
+                this.lemmingAnimation[this.typeToIndex(state, false)] = animation;
+            }
+        }
+    }
+    Lemmings.LemmingsSprite = LemmingsSprite;
 })(Lemmings || (Lemmings = {}));
 var Lemmings;
 (function (Lemmings) {
@@ -10891,26 +10821,10 @@ var Lemmings;
     Lemmings.ReleaseView = ReleaseView;
 })(Lemmings || (Lemmings = {}));
 /*
-click menu: 0                   =>OK
-ouvertur porte 2 puis 1
-new action on lem: 3            =>OK
-expolison cuicui 4 puis 11      =>OK
 
 
-tomner part terre 14            =>OK
-dans la sortie 15               =>OK
-tomber dans l'eau:16            =>OK
-les trois dernieres marches: 17 =>OK
 
-//TF sound
-objets: trap_sound_effect_id
-https://www.html5rocks.com/en/tutorials/webaudio/intro/
-
-soundsystem
-remove sound-system.ts et le repertoir Sounds
-
-
-Lem fun 11 blockeur left                        => OK!
+Lem fun 11 blockeur left                        => OK!      NJMDLCALCR
 Lem trick 04 blockeur left                      => OK!
 Lem Trick 09 blockeur right                     => OK!
 //to be tested
@@ -10966,14 +10880,9 @@ Lem Taxing 02 2 disserentes traps (son et animation )   5=noy   00
 Oh No wild 14 jet de gaz (son et animation )
 
 
-93 Bliard 3 diff    erente sortie, a voir avec l'original
-93 Bliard 14 porte cachee, a voir  avec l'original
+93 Blizard 3 diff    erente sortie, a voir avec l'original
+93 Blizard 14 porte cachee, a voir  avec l'original
 
-
-
-
-
-//explision ne devrait pas detruire les zones indestructibles
 
 
  graphics set 0:
@@ -11103,12 +11012,6 @@ Oh No wild 14 jet de gaz (son et animation )
                     0x0008 = santa-in-the-box bottom
                     0x0009 = santa-in-the-box top
                     0x000A- 0x000F = invalid
-
-                M
-//lem fun 1:    5
-
-
-
 
 
 */ 
