@@ -243,6 +243,9 @@ module Lemmings {
             let RighttLemmingWorkingScroller = sprites.getRightLemmingWorkingScroller();
             let Reel = sprites.getReel();
 
+
+            
+
             let TickReel = (tick % 16);
             let TickBlink = (tick % 8);
 
@@ -408,12 +411,8 @@ module Lemmings {
       
         }
      
-
-        public RenderStart(pageDisplay: DisplayImage, gameState: GameState, sprites: pagesSprites, survivorPercent: number, g: DisplayImage)
+        private renderBackground(pageDisplay: DisplayImage,brownFrame:Frame)
         {
-
-            let brownFrame=sprites.getPanelSprite();
-
             pageDisplay.clear();
             pageDisplay.drawFrame(brownFrame, 0, 0);
             pageDisplay.drawFrame(brownFrame, 0, 104);
@@ -423,34 +422,40 @@ module Lemmings {
             pageDisplay.drawFrame(brownFrame, 0, 312);
             pageDisplay.drawFrame(brownFrame, 320, 208);
             pageDisplay.drawFrame(brownFrame, 320, 312);
+        }
 
+        public RenderStart(pageDisplay: DisplayImage, gameState: GameState, sprites: pagesSprites, survivorPercent: number, g: DisplayImage)
+        {
 
-         
-            if(gameState==GameState.Objective)//target
-            {
-                
-                console.log("Level "+this.levelIndex+1);
-                console.log("Name "+this.name);
-                console.log("Number of Lemmings "+this.releaseCount);
-                console.log(Math.round(this.needCount*100/this.releaseCount)+ "% To Be Saved");
-                console.log("Release Rate "+this.releaseRate);
-                console.log("Time "+this.timeLimit +" Minutes");
-                console.log("Rating " + this.levelModeText);// +" ( " +this.levelMode+" )");
+            let brownFrame=sprites.getPanelSprite();
+            this.renderBackground(pageDisplay,brownFrame);
+    
+            console.log("Level "+this.levelIndex+1);
+            console.log("Name "+this.name);
+            console.log("Number of Lemmings "+this.releaseCount);
+            console.log(Math.round(this.needCount*100/this.releaseCount)+ "% To Be Saved");
+            console.log("Release Rate "+this.releaseRate);
+            console.log("Time "+this.timeLimit +" Minutes");
+            console.log("Rating " + this.levelModeText);// +" ( " +this.levelMode+" )");
 
-                pageDisplay.setColorMinimap(g);
-                let x = 160;
-                let y = 70;
-                this.drawString(pageDisplay, "Level " + (this.levelIndex + 1) + this.name, 0, y + 26, sprites);
-                this.drawString(pageDisplay, "Number of Lemmings " + this.releaseCount, x, y +70, sprites);
-                this.drawString(pageDisplay, Math.round(this.needCount * 100 / this.releaseCount) + "% To Be Saved", x, y +70+ 38, sprites);
-                this.drawString(pageDisplay, "Release Rate " + this.releaseRate, x, y +70+ (2*38), sprites);
-                this.drawString(pageDisplay, "Time " + this.timeLimit + " Minutes", x, y + 70 + (3 * 38), sprites);
-                this.drawString(pageDisplay, "Rating  " + this.levelModeText, x, y+70 + (4 * 38), sprites);// +" ( " +this.levelMode+" )");
-                this.drawString(pageDisplay, "Press mouse button to continue" , 80, y +280, sprites);// +" ( " +this.levelMode+" )");
-                
-            }
-            if ((gameState == GameState.ResultGood) || (gameState == GameState.ResultBad))//result ok
-            {
+            pageDisplay.setColorMinimap(g);
+            let x = 160;
+            let y = 70;
+            this.drawString(pageDisplay, "Level " + (this.levelIndex + 1) + this.name, 0, y + 26, sprites);
+            this.drawString(pageDisplay, "Number of Lemmings " + this.releaseCount, x, y +70, sprites);
+            this.drawString(pageDisplay, Math.round(this.needCount * 100 / this.releaseCount) + "% To Be Saved", x, y +70+ 38, sprites);
+            this.drawString(pageDisplay, "Release Rate " + this.releaseRate, x, y +70+ (2*38), sprites);
+            this.drawString(pageDisplay, "Time " + this.timeLimit + " Minutes", x, y + 70 + (3 * 38), sprites);
+            this.drawString(pageDisplay, "Rating  " + this.levelModeText, x, y+70 + (4 * 38), sprites);// +" ( " +this.levelMode+" )");
+            this.drawString(pageDisplay, "Press mouse button to continue" , 80, y +280, sprites);// +" ( " +this.levelMode+" )");
+            
+        
+        }
+        public RenderEnd(pageDisplay: DisplayImage, gameState: GameState, sprites: pagesSprites, survivorPercent: number)
+        {
+            let brownFrame=sprites.getPanelSprite();
+            this.renderBackground(pageDisplay,brownFrame);
+    
                 this.drawString(pageDisplay, "All lemmings accounted for.", 113, 20, sprites);
                 this.drawString(pageDisplay, "You rescued " + survivorPercent + "%", 224, 57, sprites);
                 this.drawString(pageDisplay, "You needed  " + Math.round(this.needCount * 100 / this.releaseCount) + "%", 224, 77, sprites);
@@ -523,7 +528,7 @@ module Lemmings {
                 if (gameState == GameState.ResultBad)//result bad
                     this.drawString(pageDisplay, "Press left mouse button to retry level", 23, 332, sprites);
                 this.drawString(pageDisplay, "Press right mouse button for menu", 58, 352, sprites);
-            }
+           
         }
 
          /** draw a text with green letters */

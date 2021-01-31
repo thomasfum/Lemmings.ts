@@ -65,7 +65,7 @@ module Lemmings {
                     let index = x + y * this.width;
                     let c=this.groundMask[index];
                     if(c!=0)
-                        f.setPixel(Math.round(x/stepx) ,Math.round(y/stepy)+1,/*Lemmings.ColorPalette.colorFromRGB(211,211,146)*/palette.getColor(7));
+                        f.setPixel(Math.round(x/stepx) ,Math.round(y/stepy)+1,/*Lemmings.ColorPalette.colorFromRGB(211,211,146)*/palette.getColor(8));
                         
                     else
                         f.setPixel(Math.round(x/stepx) ,Math.round(y/stepy)+1,Lemmings.ColorPalette.colorFromRGB(0,0,0));

@@ -17,10 +17,7 @@ module Lemmings {
         private gameID: number;
         private musicIndexLoop: number = 5;
         
-      //  private soundIndex: number = 0;
         private gameResources: GameResources = null;
-     //   private musicPlayer: AudioPlayer = null;
-      //  private soundPlayer: AudioPlayer = null;
         private game: Game = null;
         private gameFactory = new GameFactory("./");
         private currentLevel: Level;
@@ -277,10 +274,6 @@ module Lemmings {
                 e.preventDefault();
                 return false;
             });
-
-            
-
-
             el.addEventListener("mouseup", (e: MouseEvent) => {
 
                 this.Managemouse(e.clientX, e.clientY, e.button);
@@ -384,32 +377,20 @@ module Lemmings {
                 }
             }
         }
-        //---
-        /** start or continue the game */
-        public start(replayString?:string) {
-            if (!this.gameFactory) return;
-
-            /// is the game already running
-            if (this.game != null) {
-                this.continue();
-                return;
-            }
-       
-        }
-
+  
 
         private onGameEnd(gameResult : GameResult) {
             this.stage.startFadeOut();
             console.dir(gameResult);
             window.setTimeout(() => {
-                this.suspend();
+                if (this.game != null) {
+                    this.game.getGameTimer().suspend(); 
+                }
+                
                 //----------------------------
                 if (gameResult.state == GameStateTypes.SUCCEEDED) {
                     this.gameState = GameState.ResultGood;//results good
                     this.musicIndexLoop++;
-                    //if(this.musicIndexLoop>16)
-                    //    this.musicIndexLoop=0;//no need
-
                 }
                 else {
                     this.gameState = GameState.ResultBad;//results bad
@@ -425,65 +406,14 @@ module Lemmings {
                     let FullPage = this.stage.getFullPageDisplay();
                     FullPage.clear();
                     this.stage.clear();
-                    this.currentLevel.RenderStart(FullPage, this.gameState, pagspr, this.game.getVictoryCondition().getSurvivorPercentage(),null);
+                    this.currentLevel.RenderEnd(FullPage, this.gameState, pagspr, this.game.getVictoryCondition().getSurvivorPercentage());
                     this.stage.redrawFullpage();
                 });
        
             }, 2500);
         }
 
-        /** load and run a replay */
-        public loadReplay(replayString:string) {
-            this.start(replayString);
-        }
-
-        /** pause the game */
-        /*
-        public cheat() {
-            if (this.game == null) {
-                return;
-            }
-
-            this.game.cheat();
-        }
-        */
-        /** pause the game */
-        public suspend() {
-            if (this.game == null) {
-                return;
-            }
-
-            this.game.getGameTimer().suspend(); 
-        }
-
-        /** continue the game after pause/suspend */
-        public continue() {
-            if (this.game == null) {
-                return;
-            }
-            
-            this.game.getGameTimer().continue(); 
-        }
-
-        public nextFrame() {
-            if (this.game == null) {
-                return;
-            }
-            
-            this.game.getGameTimer().tick();
-        }
-
-        public selectSpeedFactor(newSpeed: number) {
-            if (this.game == null) {
-                return;
-            }
-
-            this.gameSpeedFactor = newSpeed;
-            this.game.getGameTimer().speedFactor = newSpeed;
-        }
-
-       
-
+     
         /** add/subtract one to the current levelIndex */
         public moveToLevel(moveInterval: number) {
             if (moveInterval == null) moveInterval = 0;
@@ -518,16 +448,6 @@ module Lemmings {
         private strToNum(str:string):number {
             return Number(str)|0;
         }
-
-        /** switch the selected level group */
-        public selectLevelGroup(newLevelGroupIndex: number) {
-            this.levelGroupIndex = newLevelGroupIndex;
-
-            this.loadLevel();
-        }
-
-
-
         
         public InitGame() {
             console.log("Init Game");
@@ -594,10 +514,7 @@ module Lemmings {
                     this.WelcomePageSprire = pagspr;
                     let gameDisplay = this.stage.getGameDisplay();
                     gameDisplay.clear();
-                    //gameDisplay.redraw();
-                    //fullpage
                     let FullPage =this.stage.getFullPageDisplay();
-                
                     FullPage.clear();
                     this.stage.redrawFullpage();
                     this.stage.resetFade();
@@ -605,7 +522,6 @@ module Lemmings {
                     level.RenderWelcome(FullPage, pagspr, this.MusicLevel, this.levelGroupIndex, this.nbgroup, this.WelcomePageTick);
                     this.stage.redrawFullpage();
                     clearInterval(this.WelcomePageTimer);
-                    let lvl = level;
                     this.WelcomePageTimer = setInterval(() =>{
                         let FullPage = this.stage.getFullPageDisplay();
                         this.WelcomePageTick++;
@@ -647,21 +563,17 @@ module Lemmings {
         }
         private StartActualGame()
         {
-            let FullPage =this.stage.getFullPageDisplay();
-            //FullPage.clear();
-            //FullPage.redraw();
-            console.log("start actual game");
-            
             let gameDisplay = this.stage.getGameDisplay();
             gameDisplay.clear();
             this.stage.resetFade();
-            //this.currentLevel.render(gameDisplay);
             gameDisplay.setScreenPosition(this.currentLevel.screenPositionX, 0);
-            //gameDisplay.redraw();
             this.gameState = GameState.Playing;//palying
-            this.start();
-         
 
+           if (!this.gameFactory) return;
+           /// is the game already running
+           if (this.game != null) {
+               this.game.getGameTimer().continue(); 
+           }
         
         }
 
@@ -680,7 +592,7 @@ module Lemmings {
                     this.currentLevel=level;
             
                     //ici charger les ressources pour les fontes
-                    let PagesPromis = this.gameResources.getPagesSprite(this.GamePalette, this.nbgroup).then((pagspr) => {//or this.GamePalette or level.colorPalette
+                    let PagesPromis = this.gameResources.getPagesSprite(level.colorPalette, this.nbgroup).then((pagspr) => {//or this.GamePalette or level.colorPalette
                         if (this.stage != null){
 
                             let gameDisplay = this.stage.getGameDisplay();
